@@ -3,6 +3,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+// Add session services before building the app
+builder.Services.AddSession(options =>
+{
+    // Set session timeout (e.g., 30 minutes)
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true; // Ensure the session cookie is not accessible via JavaScript
+    options.Cookie.IsEssential = true; // Make the session cookie essential for GDPR compliance
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -15,6 +24,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Add UseSession before UseRouting
+app.UseSession();
 
 app.UseRouting();
 
