@@ -19,6 +19,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddMvc()
+    .AddSessionStateTempDataProvider();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

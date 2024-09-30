@@ -9,7 +9,7 @@ namespace Bookings_Hotel.Pages.Home
     public class VerifyOTPForgotPasswordModel : PageModel
     {
         [BindProperty]
-        public int Otp { get; set; }
+        public int OTP { get; set; }
 
         public string Message { get; set; }
 
@@ -24,23 +24,28 @@ namespace Bookings_Hotel.Pages.Home
             {
                 int storedOTP = Convert.ToInt32(TempData["OTP"]);
 
-                if (Otp == storedOTP)
+                if (OTP == storedOTP)
                 {
                     Message = "OTP xác thực thành công";
-                    TempData["UserID"] = TempData["UserID"];
-                    return RedirectToPage("Datlaimatkhau"); // Chuyển đến trang đặt lại mật khẩu
+
+                    // Lưu lại email của người dùng để chuyển qua ResetPassword
+                    TempData["Email"] = TempData["Email"];
+                    TempData.Keep("Email"); // Đảm bảo giữ lại email sau redirect
+
+                    return RedirectToPage("/Home/ResetPassword"); // Chuyển đến trang đặt lại mật khẩu
                 }
                 else
                 {
-                    ModelState.AddModelError("Otp", "Mã OTP không đúng, vui lòng thử lại");
+                    ModelState.AddModelError("OTP", "Mã OTP không đúng, vui lòng thử lại");
                     return Page();
                 }
             }
             catch (Exception)
             {
-                ModelState.AddModelError("Otp", "Mã OTP không hợp lệ !");
+                ModelState.AddModelError("OTP", "Mã OTP không hợp lệ !");
                 return Page();
             }
         }
+
     }
 }
