@@ -1,4 +1,4 @@
-using Bookings_Hotel.Models;
+﻿using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -25,8 +25,8 @@ namespace Bookings_Hotel.Pages.Home
 
             if (user != null)
             {
-                HttpContext.Session.SetString("user", user.UserId.ToString());
-                return RedirectToPage("Index");
+                HttpContext.Session.SetString("User", user.UserId.ToString());
+                return RedirectToPage("/Index");
             }
             else if (manager != null)
             {

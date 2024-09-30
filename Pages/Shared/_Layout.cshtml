@@ -1,7 +1,4 @@
-﻿@using Bookings_Hotel.Models
-@{
-    var user = ViewData["User"] as Bookings_Hotel.Models.User;
-}
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +103,7 @@
 
 
                             
-
+@* 
                             @{
                                 if (user != null)
                                 {
@@ -126,9 +123,28 @@
                                     </ul>
                                 }
                             }
+ *@
+
+                            @if (Context.Session.GetString("User") != null) // Kiểm tra session
+                            {
+                                <ul class="nav navbar-nav">
+                                    <!-- Sử dụng form POST để đăng xuất -->
+                                    <form method="post" asp-page="/Home/LogOut" class="form-inline">
+                                        <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;">Log Out</button>
+                                    </form>
+                                </ul>
 
 
-                            
+                            }
+                            else
+                            {
+                                <ul class="nav navbar-nav">
+                                    <a asp-page="/Home/Register" class="nav-link">Register</a>
+                                    <a asp-page="/Home/Login" class="nav-link">Login</a>
+
+                                </ul>
+                            }
+                            </ul>
 
                                 
                             

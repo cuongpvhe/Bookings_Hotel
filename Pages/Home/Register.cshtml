@@ -1,57 +1,43 @@
 ﻿@page
 @model Bookings_Hotel.Pages.Home.RegisterModel
 @{
-    ViewBag.Title = "Đăng Ký";
+    ViewData["Title"] = "Register";
     Layout = "~/Pages/Shared/Layout_Login.cshtml";
 }
+
+<h2>Register</h2>
+
 <form method="post">
-    <div class="d-flex align-items-center mb-3 pb-1">
-        <span class="h1 fw-bold mb-0">Booking Hotel</span>
+    <div>
+        <label asp-for="User.Fullname"></label>
+        <input asp-for="User.Fullname" />
+        <span asp-validation-for="User.Fullname"></span>
     </div>
-
-    <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Create your account</h5>
-
-    <!-- Full Name -->
-    <div class="form-outline mb-4">
-        <input type="text" id="fullname" class="form-control form-control-lg" required />
-        <label class="form-label" for="fullname">Full Name</label>
+    <div>
+        <label asp-for="User.Email"></label>
+        <input asp-for="User.Email" />
+        <span asp-validation-for="User.Email"></span>
     </div>
-
-    <!-- Email -->
-    <div class="form-outline mb-4">
-        <input type="email" id="email" class="form-control form-control-lg" required />
-        <label class="form-label" for="email">Email</label>
+    <div>
+        <label asp-for="User.Phonenumber"></label>
+        <input asp-for="User.Phonenumber" />
+        <span asp-validation-for="User.Phonenumber"></span>
     </div>
-
-    <!-- Phone Number -->
-    <div class="form-outline mb-4">
-        <input type="text" id="phonenumber" class="form-control form-control-lg" required />
-        <label class="form-label" for="phonenumber">Phone Number</label>
+    <div>
+        <label asp-for="User.Username"></label>
+        <input asp-for="User.Username" />
+        <span asp-validation-for="User.Username"></span>
     </div>
-
-    <!-- Username -->
-    <div class="form-outline mb-4">
-        <input type="text" id="username" class="form-control form-control-lg" required />
-        <label class="form-label" for="username">Username</label>
+    <div>
+        <label asp-for="User.Password"></label>
+        <input asp-for="User.Password" type="password" />
+        <span asp-validation-for="User.Password"></span>
     </div>
-
-    <!-- Password -->
-    <div class="form-outline mb-4">
-        <input type="password" id="password" class="form-control form-control-lg" required />
-        <label class="form-label" for="password">Password</label>
+    <div>
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" type="password" />
+        <span asp-validation-for="ConfirmPassword"></span>
     </div>
-
-
-    <!-- Address -->
-    <div class="form-outline mb-4">
-        <input type="text" id="address" class="form-control form-control-lg" required />
-        <label class="form-label" for="address">Address</label>
-    </div>
-
-    <!-- Register Button -->
-    <div class="pt-1 mb-4">
-        <button class="btn btn-dark btn-lg btn-block" type="submit">Register</button>
-    </div>
-
-    <a class="small text-muted" href="#!">Already have an account? Login here</a>
+    
+    <button type="submit">Register</button>
 </form>
