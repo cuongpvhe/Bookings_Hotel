@@ -1,9 +1,17 @@
+using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-
-// Add session services before building the app
+builder.Services.AddDbContext<Booking_hotelContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
+builder.Services.AddScoped<Booking_hotelContext>();
+// Add session services
 builder.Services.AddSession(options =>
 {
     // Set session timeout (e.g., 30 minutes)
