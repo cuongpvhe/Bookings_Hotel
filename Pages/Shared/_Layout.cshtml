@@ -107,19 +107,21 @@
                             @{
                                 if (user != null)
                                 {
-                                    <ul class="nav navbar-nav">
-                                        <li>
-                                            <a style="color:red" href="@Url.Action("Details", "User", new { id = user.UserId })"> Profile </a>
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item">
+                                            <a asp-page="/Profile/Index" class="nav-link">Profile</a>
                                         </li>
-                                        <li> @Html.ActionLink("LogOut", "LogOut", "Home", null, new { @class = "MauchuMenu" })</li>
+                                        <li class="nav-item">
+                                            <a asp-page="/Home/Logout" class="nav-link">Logout</a>
+                                        </li>
                                     </ul>
                                 }
                                 else
                                 {
-                                    <ul class="nav navbar-nav">
-                                        <a asp-page="/Home/Register" class="nav-link">Register</a>
-                                        <a asp-page="/Home/Login" class="nav-link">Login</a>
-
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item">
+                                            <a asp-page="/Home/Login" class="nav-link">Login</a>
+                                        </li>
                                     </ul>
                                 }
                             }
