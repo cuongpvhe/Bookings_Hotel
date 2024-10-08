@@ -111,3 +111,23 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        function copyToClipboard(msg) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: msg,
+                timer: 1000,
+                showConfirmButton: false
+            });
+        }
+        function successPayment() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Payment Success!',
+                text: 'Please check your email for your invoice.'
+            });
+        }
+    </script>
+}
