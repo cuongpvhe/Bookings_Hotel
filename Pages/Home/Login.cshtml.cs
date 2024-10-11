@@ -29,14 +29,14 @@ namespace Bookings_Hotel.Pages.Home
             if (account != null)
             {
                 // Kiểm tra nếu là tài khoản người dùng thông thường
-                if (account.RoleId == 1)
+                if (account.RoleId == 2)
                 {
                     // Lưu thông tin người dùng vào session
                     HttpContext.Session.SetString("User", account.AccountId.ToString());
                     return RedirectToPage("/Index");
                 }
                 // Kiểm tra nếu là tài khoản admin
-                else if (account.RoleId == 2)
+                else if (account.RoleId == 1)
                 {
                     HttpContext.Session.SetString("admin", account.AccountId.ToString());
                     return RedirectToPage("Admin/Managers");
