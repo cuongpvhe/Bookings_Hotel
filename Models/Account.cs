@@ -19,6 +19,7 @@ namespace Bookings_Hotel.Models
         public string UseName { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string? Avatar { get; set; }
+        public string? Phonenumber { get; set; }
         public string? Gender { get; set; }
         public string? Address { get; set; }
         public DateTime? CreatedDate { get; set; }

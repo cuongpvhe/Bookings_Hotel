@@ -27,7 +27,7 @@ namespace Bookings_Hotel.Pages.Home
                 if (Otp == storedOTP)
                 {
                     Message = "OTP xác thực thành công";
-                    TempData["UserID"] = TempData["UserID"];
+                    TempData["AccountId"] = TempData["AccountId"];
                     return RedirectToPage("Datlaimatkhau"); // Chuyển đến trang đặt lại mật khẩu
                 }
                 else

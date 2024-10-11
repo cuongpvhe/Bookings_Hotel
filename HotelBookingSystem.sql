@@ -21,6 +21,7 @@ CREATE TABLE Account (
 	[UseName] NVARCHAR(100) NOT NULL,
     [Password] NVARCHAR(255) NOT NULL,
 	[Avatar] NVARCHAR(MAX) NULL,
+	[Phonenumber] NVARCHAR(MAX) NULL,
 	[Gender] NVARCHAR(MAX) NULL, 
 	[Address] NVARCHAR(MAX) NULL,
     [CreatedDate] DATETIME DEFAULT GETDATE(),
@@ -137,11 +138,11 @@ VALUES
     ('Staff');
 
 -- Thêm dữ liệu vào bảng Account
-INSERT INTO Account (ROLE_ID, FullName, DOB, Email, UseName, [Password], Avatar, Gender, [Address])
+INSERT INTO Account (ROLE_ID, FullName, DOB, Email, UseName, [Password], Avatar,[Phonenumber], Gender, [Address])
 VALUES
-    (1, 'Admin', '1985-05-20', 'phamduycuong2k1@gmail.com', 'Admin', '123456', NULL, 'Male', '123 Main St, New York, NY'),
-    (2, 'Customer', '1990-10-15', 'customer@gmail.com', 'Customer', '123456', NULL, 'Female', '456 Broadway, Los Angeles, CA'),
-    (3, 'Staff', '1978-07-12', 'staff@gmail.com', 'Staff', '123456', NULL, 'Male', '789 Market St, San Francisco, CA');
+    (1, 'Admin', '1985-05-20', 'phamduycuong2k1@gmail.com', 'Admin', '123456', NULL,NULL, 'Male', '123 Main St, New York, NY'),
+    (2, 'Customer', '1990-10-15', 'customer@gmail.com', 'Customer', '123456', NULL,NULL, 'Female', '456 Broadway, Los Angeles, CA'),
+    (3, 'Staff', '1978-07-12', 'staff@gmail.com', 'Staff', '123456', NULL,NULL, 'Male', '789 Market St, San Francisco, CA');
 
 -- Thêm dữ liệu vào bảng Service
 INSERT INTO Service (Service_Name, Created_Date, Update_Date, Price, Description)

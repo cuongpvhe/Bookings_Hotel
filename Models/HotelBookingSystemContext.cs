@@ -44,7 +44,7 @@ namespace Bookings_Hotel.Models
             {
                 entity.ToTable("Account");
 
-                entity.HasIndex(e => e.Email, "UQ__Account__A9D10534FB2DA938")
+                entity.HasIndex(e => e.Email, "UQ__Account__A9D10534CCA087EC")
                     .IsUnique();
 
                 entity.Property(e => e.AccountId).HasColumnName("Account_ID");
@@ -112,7 +112,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => e.OdId)
-                    .HasName("PK__Order_De__3D0CE8830516CAC4");
+                    .HasName("PK__Order_De__3D0CE883F3CD00BD");
 
                 entity.ToTable("Order_Details");
 
@@ -310,7 +310,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoom>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__Type_Roo__FE90DDFE6A7646C5");
+                    .HasName("PK__Type_Roo__FE90DDFE089A5616");
 
                 entity.ToTable("Type_Room");
 

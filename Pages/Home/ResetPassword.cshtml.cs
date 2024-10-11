@@ -6,9 +6,9 @@ namespace Bookings_Hotel.Pages.Home
 {
     public class ResetPasswordModel : PageModel
     {
-        private readonly Booking_hotelContext _context;
+        private readonly HotelBookingSystemContext _context;
 
-        public ResetPasswordModel(Booking_hotelContext context)
+        public ResetPasswordModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
