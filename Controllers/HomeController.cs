@@ -12,7 +12,7 @@ namespace Bookings_Hotel.Controllers
 {
     public class HomeController : Controller
     {
-        private Booking_hotelContext _booking_hotelContext;
+        private HotelBookingSystemContext _booking_hotelContext;
         public IActionResult Index()
         {
             return View();
