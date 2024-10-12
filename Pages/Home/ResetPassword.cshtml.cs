@@ -39,7 +39,7 @@ namespace Bookings_Hotel.Pages.Home
             }
 
             // Tìm người dùng trong cơ sở dữ liệu
-            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
+            var user = _context.Accounts.FirstOrDefault(u => u.Email == userEmail);
 
             if (user == null)
             {
@@ -53,7 +53,7 @@ namespace Bookings_Hotel.Pages.Home
             try
             {
                 // Cập nhật thông tin trong cơ sở dữ liệu
-                _context.Users.Update(user);
+                _context.Accounts.Update(user);
                 _context.SaveChanges();
             }
             catch (Exception ex)

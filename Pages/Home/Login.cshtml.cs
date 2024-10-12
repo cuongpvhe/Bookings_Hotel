@@ -28,23 +28,22 @@ namespace Bookings_Hotel.Pages.Home
 
             if (account != null)
             {
-                // Kiểm tra nếu là tài khoản người dùng thông thường
-                if (account.RoleId == 2)
+                // Lưu thông tin tối thiểu của tài khoản vào session
+                HttpContext.Session.SetString("AccountId", account.AccountId.ToString());
+                HttpContext.Session.SetString("UseName", account.UseName);
+                HttpContext.Session.SetInt32("RoleId", (int)account.RoleId);
+
+                // Chuyển hướng theo vai trò của người dùng
+                if (account.RoleId == 2) // Người dùng thông thường
                 {
-                    // Lưu thông tin người dùng vào session
-                    HttpContext.Session.SetString("User", account.AccountId.ToString());
                     return RedirectToPage("/Index");
                 }
-                // Kiểm tra nếu là tài khoản admin
-                else if (account.RoleId == 1)
+                else if (account.RoleId == 1) // Admin
                 {
-                    HttpContext.Session.SetString("admin", account.AccountId.ToString());
                     return RedirectToPage("Admin/Managers");
                 }
-                // Kiểm tra nếu là tài khoản nhân viên
-                else if (account.RoleId == 3)
+                else if (account.RoleId == 3) // Nhân viên
                 {
-                    HttpContext.Session.SetString("staff", account.AccountId.ToString());
                     return RedirectToPage("Staff/Managers");
                 }
             }
