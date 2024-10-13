@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<Booking_hotelContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
-builder.Services.AddScoped<Booking_hotelContext>();
+builder.Services.AddDbContext<HotelBookingSystemContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
+builder.Services.AddScoped<HotelBookingSystemContext>();
 // Add session services
 
 builder.Services.AddSession(options =>
@@ -21,6 +21,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddMvc()
+    .AddSessionStateTempDataProvider();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

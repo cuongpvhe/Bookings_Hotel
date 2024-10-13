@@ -97,49 +97,39 @@
 
 
 
-                            @*
-                            @{
-                            if (user != null)
-                            {
+
+                            <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
-                            <li class="nav-item">
-                            <a asp-page="/Profile/Index" class="nav-link">Profile</a>
-                            </li>
-                            <li class="nav-item">
-                            <a asp-page="/Home/Logout" class="nav-link">Logout</a>
-                            </li>
-                            </ul>
-                            }
-                            else
-                            {
-                            <ul class="navbar-nav">
-                            <li class="nav-item">
-                            <a asp-page="/Home/Login" class="nav-link">Login</a>
-                            </li>
-                            </ul>
-                            }
-                            }
-                            *@
+                                @if (Context.Session.GetString("AccountId") != null)
+                                {
+                                    var username = Context.Session.GetString("UseName");
 
-                            @if (Context.Session.GetString("User") != null) // Kiểm tra session
-                            {
-                                <ul class="nav navbar-nav">
-                                    <!-- Sử dụng form POST để đăng xuất -->
-                                    <form method="post" asp-page="/Home/LogOut" class="form-inline">
-                                        <button type="submit" class="nav-link btn btn-link" style="padding: 0; border: none;">Log Out</button>
-                                    </form>
-                                </ul>
-
-
-                            }
-                            else
-                            {
-                                <ul class="nav navbar-nav">
-                                    <a asp-page="/Home/Register" class="nav-link">Register</a>
-                                    <a asp-page="/Home/Login" class="nav-link">Login</a>
-
-                                </ul>
-                            }
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                            <li><a class="dropdown-item" href="/Profile">Profile</a></li>
+                                            <li><a class="dropdown-item" href="/OrderHistory">Order History</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <form method="post" asp-page="/Home/LogOut">
+                                                    <button type="submit" class="dropdown-item">Log Out</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <!-- Display Register and Login buttons if not logged in -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-page="/Home/Register">Register</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" asp-page="/Home/Login">Login</a>
+                                    </li>
+                                }
                             </ul>
 
 
@@ -220,13 +210,12 @@
                         <div class="bg-primary rounded p-4">
                             <a asp-page="Index"><h1 class="text-white text-uppercase mb-3">Hotelier</h1></a>
                             <p class="text-white mb-0">
-                                Download <a class="text-dark fw-medium" href="https://htmlcodex.com/hotel-html-template-pro">Hotelier – Premium Version</a>, build a professional website for your hotel business and grab the attention of new visitors upon your site’s launch.
                             </p>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <h6 class="section-title text-start text-primary text-uppercase mb-4">Contact</h6>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Khu Công Nghệ Cao Hòa Lạc, km 29, Đại lộ, Thăng Long, Hà Nội, Việt Nam</p>
                         <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
                         <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
                         <div class="d-flex pt-2">
