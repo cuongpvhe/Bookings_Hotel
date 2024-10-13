@@ -28,7 +28,8 @@ namespace Bookings_Hotel.Pages.Home
                     if (accountJson != null)
                     {
                         // Deserialize đối tượng Account từ JSON
-                        Account account = JsonSerializer.Deserialize<Account>(accountJson);
+                        Bookings_Hotel.Models.Account account = JsonSerializer.Deserialize<Bookings_Hotel.Models.Account>(accountJson);
+
 
                         if (account != null)
                         {

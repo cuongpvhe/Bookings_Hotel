@@ -109,16 +109,8 @@
                                             <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                            <li>
-                                                <form method="post" asp-page="/Users/Profile">
-                                                    <button type="submit" class="dropdown-item">Profile</button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Order history</button>
-                                                </form>
-                                            </li>
+                                            <li><a class="dropdown-item" href="/Profile">Profile</a></li>
+                                            <li><a class="dropdown-item" href="/OrderHistory">Order History</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <form method="post" asp-page="/Home/LogOut">
@@ -149,7 +141,7 @@
             </div>
         </div>
         <!-- Header End -->
-        <!-- Carousel Start -->
+      @*   <!-- Carousel Start -->
         <div class="container-fluid p-0 mb-5">
             <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -188,7 +180,7 @@
                 </button>
             </div>
         </div>
-        <!-- Carousel End -->
+        <!-- Carousel End --> *@
         <div class="container body-content">
             @RenderBody()
             <hr />
@@ -288,8 +280,8 @@
     <script src="~/template/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @RenderSection("Scripts", required: false)
-    
 
-    
+
+
 </body>
 </html>
