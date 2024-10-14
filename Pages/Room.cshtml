@@ -19,33 +19,30 @@
                         <span class="text-primary text-uppercase fw-bold">Filter</span>
                     </div>
 
-                    <form method="get"> 
+                    <form method="get">
                         <div class="row g-2">
                             <div class="col-md-10">
                                 <div class="row g-2">
                                     <div class="col-md-3">
                                         <div class="form-floating">
-                                            <input type="number" class="form-control" id="price"
-                                                   placeholder="price">
-                                            <label for="price">Price Min</label>
+                                            <input type="number" class="form-control" id="priceMin" name="PriceMin" value="@Model.PriceMin" placeholder="price">
+                                            <label for="priceMin">Price Min</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-floating">
-                                            <input type="number" class="form-control" id="price"
-                                                   placeholder="price">
-                                            <label for="price">Price Max</label>
+                                            <input type="number" class="form-control" id="priceMax" name="PriceMax" value="@Model.PriceMax" placeholder="price">
+                                            <label for="priceMax">Price Max</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-floating">
-                                            <select class="form-select" id="floatingSelect"
-                                                    aria-label="Floating label select example">
-                                                <option value="3" selected>Common Variation</option>
+                                            <select asp-for="SortPrice" class="form-select" id="sortPrice" name="SortPrice" aria-label="Floating label select example">
+                                                <option value="3">Common Variation</option>
                                                 <option value="1">Price Ascending</option>
                                                 <option value="2">Price Descending</option>
                                             </select>
-                                            <label for="floatingSelect">Sort By Price</label>
+                                            <label for="sortOrder">Sort By Price</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -62,7 +59,9 @@
                                                     <li class="my-2">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox"
-                                                                   value="@service.ServiceName" id="@service.ServiceId">
+                                                                   name="SelectedServices" value="@service.ServiceName"
+                                                                   id="@service.ServiceId"
+                                                            @(Model.SelectedServices.Contains(service.ServiceName) ? "checked" : "")>
                                                             <label class="form-check-label" for="checkbox1">
                                                                 @service.ServiceName
                                                             </label>
@@ -180,3 +179,37 @@
     </div>
 </div>
 <!-- Testimonial End -->
+<!-- Scripts Start-->
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ratings = document.querySelectorAll('.rating');
+
+            ratings.forEach(function (ratingElement) {
+                var rating = ratingElement.getAttribute('data-rating');
+
+                if (!rating) {
+                    rating = 0;
+                } else {
+                    rating = parseFloat(rating);
+                }
+
+                for (var i = 0; i < 5; i++) {
+                    var star = document.createElement('small');
+                    star.classList.add('fa', 'fa-star');
+
+                    if (i < Math.floor(rating)) {
+                        star.style.color = 'gold';
+                    } else if (i < rating) {
+                        star.style.color = 'gold';
+                        star.classList.add('fa-star-half-alt');
+                    } else {
+                        star.style.color = 'lightgray';
+                    }
+                    ratingElement.appendChild(star);
+                }
+            });
+        });
+    </script>
+}
+<!-- Scripts End-->
