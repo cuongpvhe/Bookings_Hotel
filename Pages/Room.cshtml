@@ -10,6 +10,7 @@
             <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
             <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
         </div>
+
         <!-- Filter Start -->
         <div class="container-fluid pb-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container">
@@ -17,336 +18,110 @@
                     <div class="row align-items-center justify-content-center mb-2">
                         <span class="text-primary text-uppercase fw-bold">Filter</span>
                     </div>
-                    <div class="row g-2">
-                        <div class="col-md-10">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <div class="form-floating">
-                                        <input type="email" class="form-control" id="email"
-                                               placeholder="Your Email">
-                                        <label for="email">Price Min</label>
+
+                    <form method="get"> 
+                        <div class="row g-2">
+                            <div class="col-md-10">
+                                <div class="row g-2">
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="price"
+                                                   placeholder="price">
+                                            <label for="price">Price Min</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating">
-                                        <input type="email" class="form-control" id="email"
-                                               placeholder="Your Email">
-                                        <label for="email">Price Max</label>
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control" id="price"
+                                                   placeholder="price">
+                                            <label for="price">Price Max</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-floating">
-                                        <select class="form-select" id="floatingSelect"
-                                                aria-label="Floating label select example">
-                                            <option value="3" selected>Common Variation</option>
-                                            <option value="1">Price Ascending</option>
-                                            <option value="2">Price Descending</option>
-                                        </select>
-                                        <label for="floatingSelect">Sort By</label>
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="floatingSelect"
+                                                    aria-label="Floating label select example">
+                                                <option value="3" selected>Common Variation</option>
+                                                <option value="1">Price Ascending</option>
+                                                <option value="2">Price Descending</option>
+                                            </select>
+                                            <label for="floatingSelect">Sort By Price</label>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="dropdown h-100">
-                                        <button class="form-select text-start h-100 w-100" type="button"
-                                                id="dropdownMenuButton" data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                            Services
-                                        </button>
-                                        <ul class="dropdown-menu w-100 p-2" aria-labelledby="dropdownMenuButton"
-                                            style="z-index: 1000;">
-                                            <li class="my-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           value="option1" id="checkbox1">
-                                                    <label class="form-check-label" for="checkbox1">
-                                                        Service 1
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class="my-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           value="option2" id="checkbox2">
-                                                    <label class="form-check-label" for="checkbox2">
-                                                        Service 2
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li class="my-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           value="option3" id="checkbox3">
-                                                    <label class="form-check-label" for="checkbox3">
-                                                        Service 3
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                    <div class="col-md-3">
+                                        <div class="dropdown h-100">
+                                            <button class="form-select text-start h-100 w-100" type="button"
+                                                    id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                Services
+                                            </button>
+                                            <ul class="dropdown-menu w-100 p-2" aria-labelledby="dropdownMenuButton"
+                                                style="z-index: 1000;">
+                                                @foreach (var service in Model.Services)
+                                                {
+                                                    <li class="my-2">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   value="@service.ServiceName" id="@service.ServiceId">
+                                                            <label class="form-check-label" for="checkbox1">
+                                                                @service.ServiceName
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100 h-100" type="submit">Apply</button>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-primary w-100 h-100" type="button">Apply</button>
-                        </div>
-                    </div>
+                    </form>
+
                 </div>
             </div>
         </div>
         <!-- Filter End -->
+
         <div class="row g-4">
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-1.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Junior Suite</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
+            @foreach (var room in Model.Rooms)
+            {
+                var rate = room.Reviews.Any() ? room.Reviews.Average(r => r.Rating) : 0;
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="room-item shadow rounded overflow-hidden">
+                        <div class="position-relative">
+                            <img class="img-fluid" src="~/template/@room.RoomImages.FirstOrDefault()" alt="">
+                            <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
+                                @room.Price/Night
+                            </small>
+                        </div>
+                        <div class="p-4 mt-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">@room.Type.TypeName</h5>
+                                <div class="ps-2 rating" data-rating="@rate"></div>
                             </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
+                            <div class="d-flex mb-3">
+                                <small class="border-end me-3 pe-3">
+                                    <i class="fa fa-bed text-primary me-2"></i>3
+                                    Bed
+                                </small>
+                                <small class="border-end me-3 pe-3">
+                                    <i class="fa fa-bath text-primary me-2"></i>2
+                                    Bath
+                                </small>
+                                <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
+                            </div>
+                            <p class="text-body mb-3">@room.Description</p>
+                            <div class="d-flex justify-content-between">
+                                <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail" asp-route-id="@room.RoomId">View Detail</a>
+                                <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking" asp-route-id="@room.RoomId">Book Now</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-2.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Executive Suite</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-3.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Super Deluxe</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.6s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-3.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Super Deluxe</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-1.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Junior Suite</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="room-item shadow rounded overflow-hidden">
-                    <div class="position-relative">
-                        <img class="img-fluid" src="~/template/img/room-2.jpg" alt="">
-                        <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$100/Night</small>
-                    </div>
-                    <div class="p-4 mt-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h5 class="mb-0">Executive Suite</h5>
-                            <div class="ps-2">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-3">
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bed text-primary me-2"></i>3
-                                Bed
-                            </small>
-                            <small class="border-end me-3 pe-3">
-                                <i class="fa fa-bath text-primary me-2"></i>2
-                                Bath
-                            </small>
-                            <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
-                        </div>
-                        <p class="text-body mb-3">
-                            Erat ipsum justo amet duo et elitr dolor, est duo duo eos
-                            lorem sed diam stet diam sed stet lorem.
-                        </p>
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail">View Detail</a>
-                            <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking">
-                                Book
-                                Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>
