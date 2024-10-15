@@ -1,31 +1,36 @@
-using Bookings_Hotel.Models;
+﻿using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddRazorPages();
 
-builder.Services.AddDbContext<HotelBookingSystemContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
+
+builder.Services.AddDbContext<HotelBookingSystemContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
 builder.Services.AddScoped<HotelBookingSystemContext>();
-// Add session services
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
 
-builder.Services.AddMvc()
-    .AddSessionStateTempDataProvider();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";  
+        options.LogoutPath = "/Home/LogOut"; 
+        options.AccessDeniedPath = "/Home/AccessDenied"; 
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); 
+    });
+
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -35,11 +40,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Use session before routing
-app.UseSession();
+
 
 app.UseRouting();
 
+
+app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapRazorPages();

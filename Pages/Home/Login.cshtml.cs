@@ -1,11 +1,15 @@
 ﻿using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bookings_Hotel.Pages.Home
 {
+
     public class LoginModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
@@ -21,34 +25,44 @@ namespace Bookings_Hotel.Pages.Home
         [BindProperty]
         public string Password { get; set; }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            // Tìm kiếm người dùng theo Username và Password (có thể thêm logic mã hóa mật khẩu)
+           
             var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
 
             if (account != null)
             {
-                // Lưu thông tin tối thiểu của tài khoản vào session
-                HttpContext.Session.SetString("AccountId", account.AccountId.ToString());
-                HttpContext.Session.SetString("UseName", account.UseName);
-                HttpContext.Session.SetInt32("RoleId", (int)account.RoleId);
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, account.UseName),
+                    new Claim("AccountId", account.AccountId.ToString()),
+                    new Claim(ClaimTypes.Email, account.Email),
+                    new Claim(ClaimTypes.Role, account.RoleId.ToString())
+                };
 
-                // Chuyển hướng theo vai trò của người dùng
-                if (account.RoleId == 2) // Người dùng thông thường
+               
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+             
+                if (account.RoleId == 2) 
                 {
                     return RedirectToPage("/Index");
                 }
-                else if (account.RoleId == 1) // Admin
+                else if (account.RoleId == 1)
                 {
-                    return RedirectToPage("Admin/Managers");
+                    return RedirectToPage("/Admin/Managers");
                 }
-                else if (account.RoleId == 3) // Nhân viên
+                else if (account.RoleId == 3) 
                 {
-                    return RedirectToPage("Staff/Managers");
+                    return RedirectToPage("/Staff/Managers");
                 }
             }
 
-            // Thông báo lỗi khi thông tin đăng nhập không hợp lệ
+            
             ModelState.AddModelError("Error_Login", "Invalid username or password.");
             return Page();
         }

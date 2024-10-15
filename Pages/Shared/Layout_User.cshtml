@@ -102,7 +102,7 @@
                             <ul class="navbar-nav">
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    var username = User.Identity.Name; 
+                                    var username = User.Identity.Name;
 
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -142,7 +142,6 @@
 
 
 
-
                         </div>
 
                     </nav>
@@ -150,7 +149,7 @@
             </div>
         </div>
         <!-- Header End -->
-        <!-- Carousel Start -->
+      @*   <!-- Carousel Start -->
         <div class="container-fluid p-0 mb-5">
             <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -189,7 +188,7 @@
                 </button>
             </div>
         </div>
-        <!-- Carousel End -->
+        <!-- Carousel End --> *@
         <div class="container body-content">
             @RenderBody()
             <hr />
@@ -289,8 +288,8 @@
     <script src="~/template/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @RenderSection("Scripts", required: false)
-    
 
-    
+
+
 </body>
 </html>

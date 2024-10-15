@@ -16,7 +16,7 @@ namespace Bookings_Hotel.Pages.Home
         private readonly IConfiguration _configuration; // Để lấy thông tin cấu hình SMTP
 
         [BindProperty]
-        public Account Account { get; set; }  // Thay User thành Account
+        public Bookings_Hotel.Models.Account Account { get; set; }
 
         public string ConfirmPassword { get; set; }
 
@@ -31,7 +31,8 @@ namespace Bookings_Hotel.Pages.Home
             if (TempData.ContainsKey("Account"))
             {
                 // Deserialize đối tượng Account từ JSON
-                Account = JsonSerializer.Deserialize<Account>(TempData["Account"].ToString());
+                Account = JsonSerializer.Deserialize<Bookings_Hotel.Models.Account>(TempData["Account"].ToString());
+
             }
         }
 
