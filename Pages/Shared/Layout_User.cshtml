@@ -100,17 +100,25 @@
 
                             <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
-                                @if (Context.Session.GetString("AccountId") != null)
+                                @if (User.Identity.IsAuthenticated)
                                 {
-                                    var username = Context.Session.GetString("UseName");
+                                    var username = User.Identity.Name;
 
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                            <li><a class="dropdown-item" href="/Profile">Profile</a></li>
-                                            <li><a class="dropdown-item" href="/OrderHistory">Order History</a></li>
+                                            <li>
+                                                <form method="post" asp-page="/Users/Profile">
+                                                    <button type="submit" class="dropdown-item">Profile</button>
+                                                </form>
+                                            </li>
+                                            <li>
+                                                <form method="post" asp-page="/Users/Order">
+                                                    <button type="submit" class="dropdown-item">Order history</button>
+                                                </form>
+                                            </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <form method="post" asp-page="/Home/LogOut">

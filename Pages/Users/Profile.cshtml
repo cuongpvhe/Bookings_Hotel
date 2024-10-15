@@ -9,45 +9,45 @@
     <h2>User Profile</h2>
     <form method="post" enctype="multipart/form-data">
         <div class="row mb-3">
-            <label asp-for="Account.Avatar" class="form-label">Avatar</label>
+            <label asp-for="account.Avatar" class="form-label">Avatar</label>
             <div>
-                <img src="@Model.Account.Avatar" alt="User Avatar" style="width: 150px; height: 150px; border-radius: 50%;" />
+                <img src="@Model.account.Avatar" alt="User Avatar" style="width: 150px; height: 150px; border-radius: 50%;" />
             </div>
             <input type="file" asp-for="AvatarUpload" class="form-control mt-2" />
         </div>
 
         <div class="row mb-3">
-            <label asp-for="Account.FullName" class="form-label">Full Name</label>
-            <input asp-for="Account.FullName" class="form-control" />
-            <span asp-validation-for="Account.FullName" class="text-danger"></span>
+            <label asp-for="account.FullName" class="form-label">Full Name</label>
+            <input asp-for="account.FullName" class="form-control" />
+            <span asp-validation-for="account.FullName" class="text-danger"></span>
         </div>
 
         <div class="row mb-3">
-            <label asp-for="Account.Dob" class="form-label">Date of Birth</label>
-            <input asp-for="Account.Dob" type="date" class="form-control" />
-            <span asp-validation-for="Account.Dob" class="text-danger"></span>
+            <label asp-for="account.Dob" class="form-label">Date of Birth</label>
+            <input asp-for="account.Dob" type="date" class="form-control" />
+            <span asp-validation-for="account.Dob" class="text-danger"></span>
         </div>
 
         <div class="row mb-3">
-            <label asp-for="Account.Phonenumber" class="form-label">Phone Number</label>
-            <input asp-for="Account.Phonenumber" class="form-control" />
-            <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
+            <label asp-for="account.Phonenumber" class="form-label">Phone Number</label>
+            <input asp-for="account.Phonenumber" class="form-control" />
+            <span asp-validation-for="account.Phonenumber" class="text-danger"></span>
         </div>
 
         <div class="row mb-3">
-            <label asp-for="Account.Gender" class="form-label">Gender</label>
-            <select asp-for="Account.Gender" class="form-select">
+            <label asp-for="account.Gender" class="form-label">Gender</label>
+            <select asp-for="account.Gender" class="form-select">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
             </select>
-            <span asp-validation-for="Account.Gender" class="text-danger"></span>
+            <span asp-validation-for="account.Gender" class="text-danger"></span>
         </div>
 
         <div class="row mb-3">
-            <label asp-for="Account.Address" class="form-label">Address</label>
-            <input asp-for="Account.Address" class="form-control" />
-            <span asp-validation-for="Account.Address" class="text-danger"></span>
+            <label asp-for="account.Address" class="form-label">Address</label>
+            <input asp-for="account.Address" class="form-control" />
+            <span asp-validation-for="account.Address" class="text-danger"></span>
         </div>
 
         <div class="mt-4">

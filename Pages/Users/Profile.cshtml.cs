@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Bookings_Hotel.Pages.Users
@@ -19,57 +20,41 @@ namespace Bookings_Hotel.Pages.Users
         }
 
         [BindProperty]
-        public Bookings_Hotel.Models.Account Account { get; set; }
+        public Bookings_Hotel.Models.Account account { get; set; }
 
         [BindProperty]
         public IFormFile AvatarUpload { get; set; }
-
-        public async Task<IActionResult> OnGetAsync()
-        {
-            // Lấy AccountId từ session
-            int? accountId = int.TryParse(HttpContext.Session.GetString("AccountId"), out var id) ? id : (int?)null;
-
-
-            // Kiểm tra xem accountId có null không
-            if (accountId == null)
-            {
-                // Trả về NotFound nếu accountId không hợp lệ
-                return NotFound();
-            }
-
-            // Tìm tài khoản trong cơ sở dữ liệu
-            Account = await _context.Accounts.FindAsync(accountId);
-
-            // Kiểm tra xem tài khoản có tồn tại không
-            if (Account == null)
-            {
-                // Trả về NotFound nếu không tìm thấy tài khoản
-                return NotFound();
-            }
-
-            return Page();
-        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                return Page();
+                return Page();  // Nếu dữ liệu không hợp lệ, trả về trang hiện tại
             }
 
-            var accountInDb = await _context.Accounts.FindAsync(Account.AccountId);
+            // Lấy AccountId từ Claims
+            int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
+                ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
+                : (int?)null;
+
+            if (accountId == null)
+            {
+                return NotFound();  // Nếu không có AccountId, trả về NotFound
+            }
+
+            var accountInDb = await _context.Accounts.FindAsync(accountId);
 
             if (accountInDb == null)
             {
-                return NotFound();
+                return NotFound();  // Nếu không tìm thấy tài khoản trong CSDL, trả về NotFound
             }
 
             // Cập nhật thông tin của người dùng
-            accountInDb.FullName = Account.FullName;
-            accountInDb.Dob = Account.Dob;
-            accountInDb.Phonenumber = Account.Phonenumber;
-            accountInDb.Gender = Account.Gender;
-            accountInDb.Address = Account.Address;
+            accountInDb.FullName = account.FullName;
+            accountInDb.Dob = account.Dob;
+            accountInDb.Phonenumber = account.Phonenumber;
+            accountInDb.Gender = account.Gender;
+            accountInDb.Address = account.Address;
 
             // Xử lý tải ảnh Avatar
             if (AvatarUpload != null)
@@ -79,34 +64,34 @@ namespace Bookings_Hotel.Pages.Users
 
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    await AvatarUpload.CopyToAsync(fileStream);
+                    await AvatarUpload.CopyToAsync(fileStream);  // Lưu ảnh lên server
                 }
 
-                accountInDb.Avatar = $"/uploads/{fileName}";
+                accountInDb.Avatar = $"/uploads/{fileName}";  // Cập nhật đường dẫn Avatar
             }
 
             accountInDb.UpdateDate = DateTime.Now;
 
-            _context.Attach(accountInDb).State = EntityState.Modified;
-
+            // Không cần gán lại State, vì _context đã theo dõi accountInDb
             try
             {
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();  // Lưu thay đổi vào cơ sở dữ liệu
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AccountExists(Account.AccountId))
+                if (!AccountExists(accountId.Value))
                 {
-                    return NotFound();
+                    return NotFound();  // Nếu xảy ra lỗi trong quá trình cập nhật, kiểm tra lại tồn tại của Account
                 }
                 else
                 {
-                    throw;
+                    throw;  // Ném lỗi nếu xảy ra vấn đề khác
                 }
             }
 
-            return RedirectToPage("/Users/Profile");
+            return RedirectToPage("/Users/Profile");  // Chuyển hướng về trang Profile sau khi cập nhật thành công
         }
+
 
         private bool AccountExists(int id)
         {
