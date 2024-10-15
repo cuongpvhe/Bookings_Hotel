@@ -1,9 +1,7 @@
 ﻿using Bookings_Hotel.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +21,6 @@ namespace Bookings_Hotel.Pages.Users
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // Lấy AccountId từ Claims
             int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
                 ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
                 : (int?)null;
@@ -33,7 +30,6 @@ namespace Bookings_Hotel.Pages.Users
                 return NotFound();
             }
 
-            // Tìm tài khoản trong CSDL
             account = await _context.Accounts.FindAsync(accountId);
 
             if (account == null)
@@ -44,15 +40,19 @@ namespace Bookings_Hotel.Pages.Users
             return Page();
         }
 
-        // Phương thức để lưu thay đổi khi người dùng nhấn nút "Save Changes"
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                // Log validation errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error);
+                }
                 return Page();
             }
 
-            // Lấy AccountId từ Claims
             int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
                 ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
                 : (int?)null;
@@ -62,7 +62,6 @@ namespace Bookings_Hotel.Pages.Users
                 return NotFound();
             }
 
-            // Tìm tài khoản trong CSDL
             var accountToUpdate = await _context.Accounts.FindAsync(accountId);
 
             if (accountToUpdate == null)
@@ -70,15 +69,23 @@ namespace Bookings_Hotel.Pages.Users
                 return NotFound();
             }
 
-            // Cập nhật thông tin tài khoản
-            accountToUpdate.FullName = account.FullName;
-            accountToUpdate.Dob = account.Dob;
-            accountToUpdate.Phonenumber = account.Phonenumber;
-            accountToUpdate.Gender = account.Gender;
-            accountToUpdate.Address = account.Address;
+            // Log account details before updating
+            Console.WriteLine($"Account Info - FullName: {account.FullName}, Dob: {account.Dob}, Email: {account.Email}, Phonenumber: {account.Phonenumber}, Gender: {account.Gender}, Address: {account.Address}");
 
-            // Lưu thay đổi vào CSDL
+
+            var newAccount = new Account
+            {
+                FullName = account.FullName,
+                Dob = account.Dob,
+                Email = account.Email,
+                Phonenumber = account.Phonenumber,
+                Gender = account.Gender,
+                Address = account.Address
+            };
+
+            _context.Accounts.Update(newAccount);
             await _context.SaveChangesAsync();
+
 
             return RedirectToPage("/Users/Profile");
         }
