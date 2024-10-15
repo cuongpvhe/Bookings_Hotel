@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Bookings_Hotel.Pages.Home
 {
+
     public class LoginModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

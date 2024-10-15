@@ -5,57 +5,51 @@
     Layout = "~/Pages/Shared/Layout_User.cshtml";
 }
 
-<div class="container mt-5">
-    <h2>User Profile</h2>
-    <form method="post" enctype="multipart/form-data">
-        <div class="row mb-3">
-            <label asp-for="account.Avatar" class="form-label">Avatar</label>
-            <div>
-                <img src="@Model.account.Avatar" alt="User Avatar" style="width: 150px; height: 150px; border-radius: 50%;" />
-            </div>
-            <input type="file" asp-for="AvatarUpload" class="form-control mt-2" />
-        </div>
+<h2>User Profile</h2>
 
-        <div class="row mb-3">
-            <label asp-for="account.FullName" class="form-label">Full Name</label>
-            <input asp-for="account.FullName" class="form-control" />
+<form method="post">
+    <div class="profile-container">
+        <h3>Account Information</h3>
+        <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" asp-for="account.FullName" class="form-control" />
             <span asp-validation-for="account.FullName" class="text-danger"></span>
         </div>
-
-        <div class="row mb-3">
-            <label asp-for="account.Dob" class="form-label">Date of Birth</label>
-            <input asp-for="account.Dob" type="date" class="form-control" />
+        <div class="form-group">
+            <label>Date of Birth:</label>
+            <input type="date" asp-for="account.Dob" class="form-control" />
             <span asp-validation-for="account.Dob" class="text-danger"></span>
         </div>
-
-        <div class="row mb-3">
-            <label asp-for="account.Phonenumber" class="form-label">Phone Number</label>
-            <input asp-for="account.Phonenumber" class="form-control" />
+        <div class="form-group">
+            <label>Phone Number:</label>
+            <input type="text" asp-for="account.Phonenumber" class="form-control" />
             <span asp-validation-for="account.Phonenumber" class="text-danger"></span>
         </div>
-
-        <div class="row mb-3">
-            <label asp-for="account.Gender" class="form-label">Gender</label>
-            <select asp-for="account.Gender" class="form-select">
+        <div class="form-group">
+            <label>Gender:</label>
+            <select asp-for="account.Gender" class="form-control">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
             </select>
-            <span asp-validation-for="account.Gender" class="text-danger"></span>
         </div>
-
-        <div class="row mb-3">
-            <label asp-for="account.Address" class="form-label">Address</label>
-            <input asp-for="account.Address" class="form-control" />
-            <span asp-validation-for="account.Address" class="text-danger"></span>
+        <div class="form-group">
+            <label>Address:</label>
+            <textarea asp-for="account.Address" class="form-control"></textarea>
         </div>
-
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+        <div class="form-group">
+            <label>Avatar:</label>
+            @if (!string.IsNullOrEmpty(Model.account.Avatar))
+            {
+                <img src="@Model.account.Avatar" alt="Avatar" style="width: 100px; height: 100px;" />
+            }
+            else
+            {
+                <p>No avatar uploaded.</p>
+            }
         </div>
-    </form>
-</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<a asp-page="/Users/Profile" class="btn btn-secondary">Load</a>

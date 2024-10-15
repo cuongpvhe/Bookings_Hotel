@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,16 +19,37 @@ namespace Bookings_Hotel.Pages.Users
         }
 
         [BindProperty]
-        public Bookings_Hotel.Models.Account account { get; set; }
+        public Account account { get; set; }
 
-        [BindProperty]
-        public IFormFile AvatarUpload { get; set; }
+        public async Task<IActionResult> OnGetAsync()
+        {
+            // Lấy AccountId từ Claims
+            int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
+                ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
+                : (int?)null;
 
+            if (accountId == null)
+            {
+                return NotFound();
+            }
+
+            // Tìm tài khoản trong CSDL
+            account = await _context.Accounts.FindAsync(accountId);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Page();
+        }
+
+        // Phương thức để lưu thay đổi khi người dùng nhấn nút "Save Changes"
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                return Page();  // Nếu dữ liệu không hợp lệ, trả về trang hiện tại
+                return Page();
             }
 
             // Lấy AccountId từ Claims
@@ -39,63 +59,28 @@ namespace Bookings_Hotel.Pages.Users
 
             if (accountId == null)
             {
-                return NotFound();  // Nếu không có AccountId, trả về NotFound
+                return NotFound();
             }
 
-            var accountInDb = await _context.Accounts.FindAsync(accountId);
+            // Tìm tài khoản trong CSDL
+            var accountToUpdate = await _context.Accounts.FindAsync(accountId);
 
-            if (accountInDb == null)
+            if (accountToUpdate == null)
             {
-                return NotFound();  // Nếu không tìm thấy tài khoản trong CSDL, trả về NotFound
+                return NotFound();
             }
 
-            // Cập nhật thông tin của người dùng
-            accountInDb.FullName = account.FullName;
-            accountInDb.Dob = account.Dob;
-            accountInDb.Phonenumber = account.Phonenumber;
-            accountInDb.Gender = account.Gender;
-            accountInDb.Address = account.Address;
+            // Cập nhật thông tin tài khoản
+            accountToUpdate.FullName = account.FullName;
+            accountToUpdate.Dob = account.Dob;
+            accountToUpdate.Phonenumber = account.Phonenumber;
+            accountToUpdate.Gender = account.Gender;
+            accountToUpdate.Address = account.Address;
 
-            // Xử lý tải ảnh Avatar
-            if (AvatarUpload != null)
-            {
-                var fileName = $"{accountInDb.AccountId}_{Path.GetFileName(AvatarUpload.FileName)}";
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+            // Lưu thay đổi vào CSDL
+            await _context.SaveChangesAsync();
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await AvatarUpload.CopyToAsync(fileStream);  // Lưu ảnh lên server
-                }
-
-                accountInDb.Avatar = $"/uploads/{fileName}";  // Cập nhật đường dẫn Avatar
-            }
-
-            accountInDb.UpdateDate = DateTime.Now;
-
-            // Không cần gán lại State, vì _context đã theo dõi accountInDb
-            try
-            {
-                await _context.SaveChangesAsync();  // Lưu thay đổi vào cơ sở dữ liệu
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(accountId.Value))
-                {
-                    return NotFound();  // Nếu xảy ra lỗi trong quá trình cập nhật, kiểm tra lại tồn tại của Account
-                }
-                else
-                {
-                    throw;  // Ném lỗi nếu xảy ra vấn đề khác
-                }
-            }
-
-            return RedirectToPage("/Users/Profile");  // Chuyển hướng về trang Profile sau khi cập nhật thành công
-        }
-
-
-        private bool AccountExists(int id)
-        {
-            return _context.Accounts.Any(e => e.AccountId == id);
+            return RedirectToPage("/Users/Profile");
         }
     }
 }
