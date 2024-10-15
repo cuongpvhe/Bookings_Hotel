@@ -33,9 +33,9 @@ namespace Bookings_Hotel.Pages.Home
             // Gửi OTP qua email
             if (SendOTPForgotPass(Email, otp))
             {
-                TempData["UserID"] = GetUserIdByEmail(Email); // Lưu UserID
+                TempData["Account_ID"] = GetUserIdByEmail(Email); // Lưu UserID
                 Message = "Mã OTP đã được gửi đến email của bạn.";
-                return RedirectToPage("VerifyOTPForgotPassword"); // Chuyển đến trang xác thực OTP
+                return RedirectToPage("/Home/VerifyOTPForgotPassword"); // Chuyển đến trang xác thực OTP
             }
             else
             {

@@ -7,9 +7,9 @@ namespace Bookings_Hotel.Pages.Home
 {
     public class VerifyOTPModel : PageModel
     {
-        private readonly Booking_hotelContext _context;
+        private readonly HotelBookingSystemContext _context;
 
-        public VerifyOTPModel(Booking_hotelContext context)
+        public VerifyOTPModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
@@ -24,38 +24,37 @@ namespace Bookings_Hotel.Pages.Home
                 int storedOTP = Convert.ToInt32(TempData.Peek("OTP")); // Sử dụng Peek() để giữ lại giá trị OTP
                 if (otp == storedOTP)
                 {
-                    var userJson = TempData.Peek("User") as string; // Lấy giá trị JSON của đối tượng User từ TempData
-                    if (userJson != null)
+                    var accountJson = TempData.Peek("Account") as string; // Lấy giá trị JSON của đối tượng Account từ TempData
+                    if (accountJson != null)
                     {
-                        // Deserialize đối tượng User từ JSON
-                        User user = JsonSerializer.Deserialize<User>(userJson);
+                        // Deserialize đối tượng Account từ JSON
+                        Account account = JsonSerializer.Deserialize<Account>(accountJson);
 
-                        if (user != null)
+                        if (account != null)
                         {
-                            user.Phonenumber = user.Phonenumber.Trim();
-                            user.Username = user.Username.Trim();
+                            account.Phonenumber = account.Phonenumber.Trim();
+                            account.UseName = account.UseName.Trim();
 
-                            _context.Users.Add(user);
+                            _context.Accounts.Add(account); // Thêm tài khoản vào bảng Accounts
                             _context.SaveChanges();
                             return RedirectToPage("/Home/Login");
                         }
                     }
 
-                    ModelState.AddModelError("OTP", "Thông tin người dùng không hợp lệ.");
+                    ModelState.AddModelError("OTP", "Thông tin tài khoản không hợp lệ.");
                     return Page();
                 }
                 else
                 {
-                    ModelState.AddModelError("OTP", "Mã OTP không đúng vui lòng thử lại");
+                    ModelState.AddModelError("OTP", "Mã OTP không đúng, vui lòng thử lại.");
                     return Page();
                 }
             }
             catch
             {
-                ModelState.AddModelError("OTP", "Mã OTP Không hợp lệ !");
+                ModelState.AddModelError("OTP", "Mã OTP không hợp lệ!");
                 return Page();
             }
         }
-
     }
 }

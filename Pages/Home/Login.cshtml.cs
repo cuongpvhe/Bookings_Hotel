@@ -1,47 +1,54 @@
 ﻿using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace Bookings_Hotel.Pages.Home
 {
     public class LoginModel : PageModel
     {
-        private readonly Booking_hotelContext _context;
+        private readonly HotelBookingSystemContext _context;
 
-        public LoginModel(Booking_hotelContext context)
+        public LoginModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public string Username { get; set; }
+
         [BindProperty]
         public string Password { get; set; }
 
         public IActionResult OnPost()
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == Username.Trim() && u.Password == Password);
-            var manager = _context.Managers.FirstOrDefault(u => u.Username == Username.Trim() && u.Password == Password);
+            // Tìm kiếm người dùng theo Username và Password (có thể thêm logic mã hóa mật khẩu)
+            var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
 
-            if (user != null)
+            if (account != null)
             {
-                HttpContext.Session.SetString("User", user.UserId.ToString());
-                return RedirectToPage("/Index");
-            }
-            else if (manager != null)
-            {
-                if (manager.Role == 1)
+                // Lưu thông tin tối thiểu của tài khoản vào session
+                HttpContext.Session.SetString("AccountId", account.AccountId.ToString());
+                HttpContext.Session.SetString("UseName", account.UseName);
+                HttpContext.Session.SetInt32("RoleId", (int)account.RoleId);
+
+                // Chuyển hướng theo vai trò của người dùng
+                if (account.RoleId == 2) // Người dùng thông thường
                 {
-                    HttpContext.Session.SetString("admin", manager.ManagerId.ToString());
+                    return RedirectToPage("/Index");
+                }
+                else if (account.RoleId == 1) // Admin
+                {
                     return RedirectToPage("Admin/Managers");
                 }
-                else if (manager.Role == 2)
+                else if (account.RoleId == 3) // Nhân viên
                 {
-                    HttpContext.Session.SetString("staff", manager.ManagerId.ToString());
                     return RedirectToPage("Staff/Managers");
                 }
             }
 
+            // Thông báo lỗi khi thông tin đăng nhập không hợp lệ
             ModelState.AddModelError("Error_Login", "Invalid username or password.");
             return Page();
         }
