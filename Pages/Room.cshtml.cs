@@ -29,29 +29,29 @@ namespace Bookings_Hotel.Pages
         public List<Room> Rooms { get; set; }
         public List<Service> Services { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             Services = await _context.Services.ToListAsync();
 
             var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
 
-            //Filter price
+            // Filter price
             if (PriceMin.HasValue)
             {
                 query = query.Where(x => x.Price >= PriceMin.Value);
             }
-            else if (PriceMax.HasValue)
+            if (PriceMax.HasValue)
             {
                 query = query.Where(x => x.Price <= PriceMax.Value);
             }
 
-            //Filter services
+            // Filter services
             if (SelectedServices != null && SelectedServices.Count > 0)
             {
                 query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
             }
 
-            //Filter sort price
+            // Sort price
             switch (SortPrice)
             {
                 case 1:
@@ -64,7 +64,16 @@ namespace Bookings_Hotel.Pages
                     SortPrice = 3;
                     break;
             }
+
             Rooms = await query.ToListAsync();
+
+            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Partial("PartialViews/_RoomsPartialView", Rooms);
+            }
+
+            return Page();
         }
+
     }
 }
