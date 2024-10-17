@@ -57,7 +57,7 @@ namespace Bookings_Hotel.Pages.Users
             // Lưu thay đổi vào cơ sở dữ liệu
             _context.SaveChanges();
 
-            return RedirectToPage("/Users/Profile", new { id = existingAccount.AccountId }); // Chuyển hướng đến trang hồ sơ
+            return RedirectToPage("/Users/Profile", new { id = existingAccount.AccountId }); 
         }
 
     }
