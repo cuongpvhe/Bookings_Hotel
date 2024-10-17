@@ -1,9 +1,7 @@
 ﻿using Bookings_Hotel.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,66 +19,46 @@ namespace Bookings_Hotel.Pages.Users
         [BindProperty]
         public Account account { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet(int id) 
         {
-            // Lấy AccountId từ Claims
-            int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
-                ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
-                : (int?)null;
-
-            if (accountId == null)
-            {
-                return NotFound();
-            }
-
-            // Tìm tài khoản trong CSDL
-            account = await _context.Accounts.FindAsync(accountId);
-
+            account = _context.Accounts.Find(id);
             if (account == null)
             {
                 return NotFound();
             }
-
             return Page();
         }
 
-        // Phương thức để lưu thay đổi khi người dùng nhấn nút "Save Changes"
-        public async Task<IActionResult> OnPostAsync()
+
+        // OnPost method to handle updates
+        public IActionResult OnPost()
         {
+            // Kiểm tra tính hợp lệ của ModelState
             if (!ModelState.IsValid)
             {
-                return Page();
+                return Page(); // Nếu không hợp lệ, quay lại trang với thông tin hiện tại
             }
 
-            // Lấy AccountId từ Claims
-            int? accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value != null
-                ? int.Parse(User.Claims.FirstOrDefault(c => c.Type == "AccountId").Value)
-                : (int?)null;
-
-            if (accountId == null)
+            // Tìm tài khoản hiện tại trong cơ sở dữ liệu
+            var existingAccount = _context.Accounts.Find(account.AccountId);
+            if (existingAccount == null)
             {
-                return NotFound();
-            }
-
-            // Tìm tài khoản trong CSDL
-            var accountToUpdate = await _context.Accounts.FindAsync(accountId);
-
-            if (accountToUpdate == null)
-            {
-                return NotFound();
+                return NotFound(); // Trả về 404 nếu tài khoản không tồn tại
             }
 
             // Cập nhật thông tin tài khoản
-            accountToUpdate.FullName = account.FullName;
-            accountToUpdate.Dob = account.Dob;
-            accountToUpdate.Phonenumber = account.Phonenumber;
-            accountToUpdate.Gender = account.Gender;
-            accountToUpdate.Address = account.Address;
+            existingAccount.FullName = account.FullName;
+            existingAccount.Dob = account.Dob;
+            existingAccount.Email = account.Email;
+            existingAccount.Phonenumber = account.Phonenumber;
+            existingAccount.Gender = account.Gender;
+            existingAccount.Address = account.Address;
 
-            // Lưu thay đổi vào CSDL
-            await _context.SaveChangesAsync();
+            // Lưu thay đổi vào cơ sở dữ liệu
+            _context.SaveChanges();
 
-            return RedirectToPage("/Users/Profile");
+            return RedirectToPage("/Users/Profile", new { id = existingAccount.AccountId }); 
         }
+
     }
 }

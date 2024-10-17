@@ -35,8 +35,8 @@ namespace Bookings_Hotel.Pages.Home
                         {
                             account.Phonenumber = account.Phonenumber.Trim();
                             account.UseName = account.UseName.Trim();
-
-                            _context.Accounts.Add(account); // Thêm tài khoản vào bảng Accounts
+                            account.RoleId = 2;
+                            _context.Accounts.Add(account); 
                             _context.SaveChanges();
                             return RedirectToPage("/Home/Login");
                         }
