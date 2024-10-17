@@ -1,3 +1,4 @@
+using Bookings_Hotel.Common;
 using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,6 +15,7 @@ namespace Bookings_Hotel.Pages
             _context = context;
         }
 
+        //Attribute for filter
         [BindProperty(SupportsGet = true)]
         public decimal? PriceMin { get; set; }
 
@@ -23,9 +25,17 @@ namespace Bookings_Hotel.Pages
         [BindProperty(SupportsGet = true)]
         public int? SortPrice { get; set; }
 
+        //Pagination
+        [BindProperty(SupportsGet = true)]
+        public int CurrentPage { get; set; } = 1;
+
+        public int TotalPages { get; set; }
+
+        public const int ItemsPerPage = 20;
+
+        //List
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedServices { get; set; } = new List<string>();
-
         public List<Room> Rooms { get; set; }
         public List<Service> Services { get; set; }
 
@@ -65,7 +75,10 @@ namespace Bookings_Hotel.Pages
                     break;
             }
 
-            Rooms = await query.ToListAsync();
+            var totalRooms = await query.CountAsync();
+            TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
+
+            Rooms = Pagination.GetCurrentPageData(query.ToList(), CurrentPage, ItemsPerPage).ToList();
 
             if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

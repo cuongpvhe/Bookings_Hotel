@@ -19,12 +19,14 @@
                     </div>
                     <div class="d-flex mb-3">
                         <small class="border-end me-3 pe-3">
-                            <i class="fa fa-bed text-primary me-2"></i>3 Bed
+                            <i class="fa fa-bed text-primary me-2"></i>@room.NumberOfBed
                         </small>
                         <small class="border-end me-3 pe-3">
-                            <i class="fa fa-bath text-primary me-2"></i>2 Bath
+                            <i class="fa fa-user text-primary me-2"></i>@room.NumberOfAdult 
                         </small>
-                        <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
+                        <small>
+                            <i class="fa fa-child text-primary me-2"></i>@room.NumberOfChild
+                        </small>
                     </div>
                     <p class="text-body mb-3">@room.Description</p>
                     <div class="d-flex justify-content-between">
