@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Net;
 using System.Net.Mail;
@@ -8,11 +10,18 @@ namespace Bookings_Hotel.Pages.Home
 {
     public class ForgotPasswordModel : PageModel
     {
+        private readonly HotelBookingSystemContext _context;
+        private readonly IConfiguration _configuration;
         [BindProperty]
         public string Email { get; set; }
 
         public string Message { get; set; }
 
+        public ForgotPasswordModel(HotelBookingSystemContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
         public IActionResult OnGet()
         {
             return Page();
@@ -54,20 +63,23 @@ namespace Bookings_Hotel.Pages.Home
         {
             try
             {
-                // Cấu hình SMTP client
-                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587);
+                // Lấy thông tin cấu hình SMTP từ appsettings.json
+                var smtpServer = _configuration["Smtp:Server"];
+                var smtpPort = int.Parse(_configuration["Smtp:Port"]);
+                var smtpUser = _configuration["Smtp:User"];
+                var smtpPass = _configuration["Smtp:Pass"];
+
+                SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort);
                 smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential("phamduycuong2k1@gmail.com", "krowpvhmjfsndfum");
+                smtpClient.Credentials = new NetworkCredential(smtpUser, smtpPass);
                 smtpClient.EnableSsl = true;
 
-                // Soạn thảo email
                 MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress("phamduycuong2k1@gmail.com");
+                mailMessage.From = new MailAddress(smtpUser);
                 mailMessage.To.Add(email);
-                mailMessage.Subject = "Mã OTP để đặt lại mật khẩu";
-                mailMessage.Body = "Mã OTP của bạn là: " + otp.ToString();
+                mailMessage.Subject = "Your OTP for Registration";
+                mailMessage.Body = "Your OTP is: " + otp.ToString();
 
-                // Gửi email
                 smtpClient.Send(mailMessage);
                 return true;
             }
@@ -80,9 +92,10 @@ namespace Bookings_Hotel.Pages.Home
 
         private int GetUserIdByEmail(string email)
         {
-            // Thực hiện truy vấn để lấy UserID từ email
-            // Trả về UserID tương ứng
-            return 1; // Thay đổi để lấy giá trị thực tế
+            // Tìm tài khoản trong cơ sở dữ liệu theo email
+            var account = _context.Accounts.FirstOrDefault(a => a.Email == email);
+            return account?.AccountId ?? -1; // Trả về -1 nếu không tìm thấy tài khoản
         }
+
     }
 }

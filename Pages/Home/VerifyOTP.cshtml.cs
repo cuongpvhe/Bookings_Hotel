@@ -28,14 +28,15 @@ namespace Bookings_Hotel.Pages.Home
                     if (accountJson != null)
                     {
                         // Deserialize đối tượng Account từ JSON
-                        Account account = JsonSerializer.Deserialize<Account>(accountJson);
+                        Bookings_Hotel.Models.Account account = JsonSerializer.Deserialize<Bookings_Hotel.Models.Account>(accountJson);
+
 
                         if (account != null)
                         {
                             account.Phonenumber = account.Phonenumber.Trim();
                             account.UseName = account.UseName.Trim();
-
-                            _context.Accounts.Add(account); // Thêm tài khoản vào bảng Accounts
+                            account.RoleId = 2;
+                            _context.Accounts.Add(account); 
                             _context.SaveChanges();
                             return RedirectToPage("/Home/Login");
                         }

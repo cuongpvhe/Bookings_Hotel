@@ -1,0 +1,48 @@
+﻿@page
+@model Bookings_Hotel.Pages.Users.ProfileModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Pages/Shared/Layout_User.cshtml";
+}
+
+<h2>User Profile</h2>
+
+<form method="post">
+    <div class="profile-container">
+        <h3>Account Information</h3>
+        <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" asp-for="account.FullName" class="form-control" />
+            <span asp-validation-for="account.FullName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Date of Birth:</label>
+            <input type="date" asp-for="account.Dob" class="form-control" />
+            <span asp-validation-for="account.Dob" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" asp-for="account.Email" class="form-control" />
+            <span asp-validation-for="account.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Phone Number:</label>
+            <input type="text" asp-for="account.Phonenumber" class="form-control" />
+            <span asp-validation-for="account.Phonenumber" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Gender:</label>
+            <select asp-for="account.Gender" class="form-control">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Address:</label>
+            <textarea asp-for="account.Address" class="form-control"></textarea>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
