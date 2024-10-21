@@ -27,7 +27,7 @@ namespace Bookings_Hotel.Pages
         public List<string> SelectedServices { get; set; } = new List<string>();
 
         public List<Room> Rooms { get; set; }
-        public List<Service> Services { get; set; }
+        public List<Bookings_Hotel.Models.Service> Services { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
