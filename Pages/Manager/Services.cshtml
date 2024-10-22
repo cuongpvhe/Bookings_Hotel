@@ -51,19 +51,20 @@
         </select>
     </div>
 
-    <div class="">
+    <div class="pagination-container">
         <nav aria-label="...">
             <ul class="pagination m-0">
-                <li class="page-item disabled">
-                    <a class="page-link">Previous</a>
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="#" data-page="@(Model.CurrentPage - 1)">Previous</a>
                 </li>
-                <li class="page-item active"><a class="page-link " href="#">1</a></li>
-                <li class="page-item " aria-current="page">
-                    <a class="page-link text-dark" href="#">2</a>
-                </li>
-                <li class="page-item "><a class="page-link text-dark" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link text-dark" href="#">Next</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="#" data-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="#" data-page="@(Model.CurrentPage + 1)">Next</a>
                 </li>
             </ul>
         </nav>
@@ -79,15 +80,37 @@
                 $.ajax({
                     url: '/Manager/Services?handler=Search',
                     type: 'GET',
-                    data: { searchTerm: query },
+                    data: { searchTerm: query, pageIndex: 1 },
                     success: function (result) {
-                        $('#servicesTable').html(result);
+                        $('#roomListContainer').html(result);
                     },
                     error: function () {
                         alert('Error searching data');
                     }
                 });
             });
+
+            // Handle pagination clicks
+            $(document).on('click', '.pagination .page-link', function (e) {
+                e.preventDefault();
+                var pageIndex = $(this).data('page');
+
+                if (pageIndex > 0) {
+                    var query = $('#searchInput').val();
+                    $.ajax({
+                        url: '/Manager/Services?handler=Search',
+                        type: 'GET',
+                        data: { searchTerm: query, pageIndex: pageIndex },
+                        success: function (result) {
+                            $('#roomListContainer').html(result);
+                        },
+                        error: function () {
+                            alert('Error fetching data');
+                        }
+                    });
+                }
+            });
         });
     </script>
 }
+
