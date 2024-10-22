@@ -20,7 +20,7 @@ namespace Bookings_Hotel.Pages.Manager
         // Pagination
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
-        public const int PageSize = 2;
+        public const int PageSize = 20;
 
         public async Task<IActionResult> OnGetAsync(int pageIndex = 1)
         {
