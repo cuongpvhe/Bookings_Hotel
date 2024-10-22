@@ -1,0 +1,93 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.ServicesModel
+@{
+    ViewData["Title"] = "Services";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/room.css" />
+</head>
+
+<div class="main-header d-flex justify-content-between">
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Manager Services</span>
+    </div>
+
+    <div>
+        <button class="btn btn-primary rounded-pill px-4" type="button">Add</button>
+    </div>
+</div>
+
+<div class="search-bar d-flex justify-content-start">
+    <div class="me-2">
+        <select class="form-select" aria-label="Default select example">
+            <option value="1">All Status</option>
+            <option value="2">Booked</option>
+            <option value="3">Available</option>
+        </select>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <input id="searchInput" class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
+        <button class="btn btn-primary me-0" type="button" id="searchButton"><i class="ri-search-line"></i></button>
+    </div>
+</div>
+
+<div class="table-container">
+    <!-- List Service Start -->
+    <div id="roomListContainer">
+        @await Html.PartialAsync("PartialViews/Manager/_ServicesPartialView", Model)
+    </div>
+    <!-- List Service End -->
+</div>
+
+
+<div class="pagination-container ">
+    <div class="me-2">
+        <select class="form-select" aria-label="Default select example">
+            <option value="1">10</option>
+            <option value="2">20</option>
+            <option value="3">30</option>
+        </select>
+    </div>
+
+    <div class="">
+        <nav aria-label="...">
+            <ul class="pagination m-0">
+                <li class="page-item disabled">
+                    <a class="page-link">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link " href="#">1</a></li>
+                <li class="page-item " aria-current="page">
+                    <a class="page-link text-dark" href="#">2</a>
+                </li>
+                <li class="page-item "><a class="page-link text-dark" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link text-dark" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#searchButton').on('click', function () {
+                var query = $('#searchInput').val();
+                $.ajax({
+                    url: '/Manager/Services?handler=Search',
+                    type: 'GET',
+                    data: { searchTerm: query },
+                    success: function (result) {
+                        $('#servicesTable').html(result);
+                    },
+                    error: function () {
+                        alert('Error searching data');
+                    }
+                });
+            });
+        });
+    </script>
+}
