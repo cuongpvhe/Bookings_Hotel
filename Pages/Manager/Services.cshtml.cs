@@ -15,7 +15,7 @@ namespace Bookings_Hotel.Pages.Manager
 
         // List
         public List<string>? TableHeaders { get; set; } = new List<string> { ".No", "Service Id", "Service Name", "Created Date", "Update Date", "Price", "Actions" };
-        public List<Service> Services { get; set; }
+        public List<Bookings_Hotel.Models.Service> Services { get; set; }
 
         // Pagination
         public int CurrentPage { get; set; } = 1;
@@ -38,7 +38,7 @@ namespace Bookings_Hotel.Pages.Manager
         public async Task<IActionResult> OnGetSearchAsync(string searchTerm, int pageIndex = 1)
         {
             CurrentPage = pageIndex;
-            IQueryable<Service> servicesQuery;
+            IQueryable<Bookings_Hotel.Models.Service> servicesQuery;
 
             if (string.IsNullOrWhiteSpace(searchTerm))
             {
