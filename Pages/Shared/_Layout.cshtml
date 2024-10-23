@@ -107,10 +107,10 @@
                                 {
                                     var username = User.Identity.Name;
                                     var accountId = User.FindFirst("AccountId")?.Value; // Ensure "AccountId" is stored in claims
-
+                                    var avatarPath = User.FindFirst("Avatar")?.Value ?? "/path/to/default/avatar";
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
+                                            <img src="@avatarPath" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                             <li>

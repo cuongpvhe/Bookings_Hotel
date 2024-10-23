@@ -34,6 +34,12 @@ namespace Bookings_Hotel.Pages.Home
                 ModelState.AddModelError("Email", "Vui lòng nhập địa chỉ email.");
                 return Page();
             }
+            var account = _context.Accounts.FirstOrDefault(a => a.Email == Email);
+            if (account == null)
+            {
+                ModelState.AddModelError("Email", "Email chưa được đăng ký.");
+                return Page(); // Return to the page with the error message
+            }
 
             // Tạo mã OTP
             int otp = GenerateOTP();

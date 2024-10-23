@@ -4,66 +4,104 @@
     Layout = "~/Pages/Shared/Layout_User.cshtml";
 }
 
-<h2>Profile</h2>
+<form method="post" enctype="multipart/form-data">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center mb-5">User Profile</h2>
+            </div>
+        </div>
 
-<form method="post">
-    <div class="form-group">
-        <label asp-for="Account.UseName">Username:</label>
-        <input type="text" asp-for="Account.UseName" class="form-control" readonly />
-        <span asp-validation-for="Account.UseName" class="text-danger"></span>
-    </div>
+        <div class="row">
+            <!-- Cột trái: Thông tin người dùng -->
+            <div class="col-md-8">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-4">Personal Information</h4>
 
-    <div class="form-group">
-        <label asp-for="Account.Email">Email:</label>
-        <input type="email" asp-for="Account.Email" class="form-control" />
-        <span asp-validation-for="Account.Email" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.UseName" class="form-label">Username:</label>
+                        <input type="text" asp-for="Account.UseName" class="form-control" readonly />
+                        <span asp-validation-for="Account.UseName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
 
-    <div class="form-group">
-        
-        <input type="hidden" asp-for="Account.Password" class="form-control"  readonly />
-        <span asp-validation-for="Account.Password" class="text-danger"></span>
-        
-    </div>
+                        <input type="hidden" asp-for="Account.Password" class="form-control" />
+                        <span asp-validation-for="Account.Password" class="text-danger"></span>
+                    </div>
 
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.Email" class="form-label">Email:</label>
+                        <input type="email" asp-for="Account.Email" class="form-control" />
+                        <span asp-validation-for="Account.Email" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Account.FullName">Full Name:</label>
-        <input type="text" asp-for="Account.FullName" class="form-control" />
-        <span asp-validation-for="Account.FullName" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.FullName" class="form-label">Full Name:</label>
+                        <input type="text" asp-for="Account.FullName" class="form-control" />
+                        <span asp-validation-for="Account.FullName" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Account.Dob">Date of Birth:</label>
-        <input type="date" asp-for="Account.Dob" class="form-control" />
-        <span asp-validation-for="Account.Dob" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.Dob" class="form-label">Date of Birth:</label>
+                        <input type="date" asp-for="Account.Dob" class="form-control" />
+                        <span asp-validation-for="Account.Dob" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Account.Phonenumber">Phone Number:</label>
-        <input type="text" asp-for="Account.Phonenumber" class="form-control" />
-        <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.Phonenumber" class="form-label">Phone Number:</label>
+                        <input type="text" asp-for="Account.Phonenumber" class="form-control" />
+                        <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Account.Gender">Gender:</label>
-        <select asp-for="Account.Gender" class="form-control">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
-        <span asp-validation-for="Account.Gender" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.Gender" class="form-label">Gender:</label>
+                        <select asp-for="Account.Gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Account.Gender" class="text-danger"></span>
+                    </div>
 
-    <div class="form-group">
-        <label asp-for="Account.Address">Address:</label>
-        <input type="text" asp-for="Account.Address" class="form-control" />
-        <span asp-validation-for="Account.Address" class="text-danger"></span>
-    </div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Account.Address" class="form-label">Address:</label>
+                        <input type="text" asp-for="Account.Address" class="form-control" />
+                        <span asp-validation-for="Account.Address" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Save Changes</button>
+            <!-- Cột phải: Avatar -->
+            <div class="col-md-4 text-center">
+                <div class="card shadow-sm p-4">
+                    <h4 class="mb-4">Profile Picture</h4>
+
+                    <div class="mb-3">
+                        @if (!string.IsNullOrEmpty(Model.Account.Avatar))
+                        {
+                            <img src="@Model.Account.Avatar" alt="User Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
+                        }
+                        else
+                        {
+                            <img src="/path/to/default/avatar.png" alt="Default Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <input type="file" asp-for="AvatarUpload" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-primary px-5">Save Changes</button>
+            </div>
+        </div>
 </form>
 
-
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 
 

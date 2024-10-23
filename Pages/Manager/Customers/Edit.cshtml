@@ -1,0 +1,29 @@
+﻿@page "{id:int}"
+@model Bookings_Hotel.Pages.Manager.Customers.EditModel
+@{
+    ViewData["Title"] = "Edit customer";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+
+<h2>Edit Customer</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Account.AccountId" />
+    
+    <div class="form-group">
+        <label asp-for="Account.FullName"></label>
+        <input asp-for="Account.FullName" class="form-control" />
+        <span asp-validation-for="Account.FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Account.Email"></label>
+        <input asp-for="Account.Email" class="form-control" />
+        <span asp-validation-for="Account.Email" class="text-danger"></span>
+    </div>
+
+    <!-- Các trường khác tương tự như form Create -->
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

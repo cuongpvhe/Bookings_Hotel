@@ -1,0 +1,49 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Customers.CreateModel
+@{
+    ViewData["Title"] = "Add new customer";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+
+<h2>Create Customer</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Account.FullName"></label>
+        <input asp-for="Account.FullName" class="form-control" />
+        <span asp-validation-for="Account.FullName" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="Account.Email"></label>
+        <input asp-for="Account.Email" class="form-control" />
+        <span asp-validation-for="Account.Email" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="Account.UseName"></label>
+        <input asp-for="Account.UseName" class="form-control" />
+        <span asp-validation-for="Account.UseName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Account.Password"></label>
+        <input asp-for="Account.Password" type="password" class="form-control" />
+        <span asp-validation-for="Account.Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Account.Phonenumber"></label>
+        <input asp-for="Account.Phonenumber" class="form-control" />
+        <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Account.Address"></label>
+        <input asp-for="Account.Address" class="form-control" />
+        <span asp-validation-for="Account.Address" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

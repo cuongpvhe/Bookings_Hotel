@@ -1,0 +1,36 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Customers.ListModel
+@{
+    ViewData["Title"] = "List customer";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+<h2>Customer List</h2>
+<div class="mb-3">
+    <a asp-page="Create" class="btn btn-success">Create New Customer</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model.Accounts)
+        {
+            <tr>
+                <td>@customer.FullName</td>
+                <td>@customer.Email</td>
+                <td>@customer.Phonenumber</td>
+                <td>@customer.Gender</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@customer.AccountId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
