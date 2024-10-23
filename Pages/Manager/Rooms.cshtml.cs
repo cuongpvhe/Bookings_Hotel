@@ -1,34 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Bookings_Hotel.Models; // Đảm bảo bạn đã thêm namespace của mô hình
 
 namespace Bookings_Hotel.Pages.Manager
 {
     public class RoomsModel : PageModel
     {
-        public List<string>? TableHeaders { get; set; }
-        public List<Room>? RoomsList { get; set; }
+        private readonly HotelBookingSystemContext _context;
 
-        public void OnGet()
+        public RoomsModel(HotelBookingSystemContext context)
         {
-            // Khởi tạo tiêu đề và danh sách phòng
-            TableHeaders = new List<string> { "#", "Room Id", "Room Number", "Room Type", "Price", "Capacity", "Status", "Actions" };
-            RoomsList = new List<Room>
-        {
-            new Room { Id = 1, RoomId = 101, RoomNumber = "A101", RoomType = "Deluxe", Price = 500000, Capacity = 2, Status = "Available" },
-            new Room { Id = 2, RoomId = 102, RoomNumber = "A102", RoomType = "Standard", Price = 300000, Capacity = 2, Status = "Booked" }
-        };
+            _context = context;
         }
 
-        public class Room
+        public List<RoomViewModel> RoomsList { get; set; }
+        public List<string> TableHeaders { get; set; } = 
+            new List<string> { "#", "Room Number", "Room Type", "Price", "Capacity", "Status", "Actions" };
+
+        public async Task OnGetAsync()
         {
-            public int? Id { get; set; }
-            public int? RoomId { get; set; }
-            public string? RoomNumber { get; set; }
-            public string? RoomType { get; set; }
-            public decimal? Price { get; set; }
-            public int? Capacity { get; set; }
-            public string? Status { get; set; }
+            // Lấy danh sách các phòng từ DB, bao gồm thông tin loại phòng
+            RoomsList = await _context.Rooms
+                .Include(r => r.Type) // Bao gồm thông tin loại phòng
+                .Select(r => new RoomViewModel
+                {
+                    RoomId = r.RoomId,
+                    RoomNumber = r.RoomNumber,
+                    RoomType = r.Type != null ? r.Type.TypeName : "N/A", // Nếu không có loại phòng thì hiển thị "N/A"
+                    Price = r.Price,
+                    Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
+                    Status = r.RoomStatus,
+                    Description = r.Description
+                })
+                .ToListAsync();
         }
+    }
+
+    public class RoomViewModel
+    {
+        public int RoomId { get; set; }
+        public int RoomNumber { get; set; }
+        public string RoomType { get; set; }
+        public decimal Price { get; set; }
+        public string Capacity { get; set; }
+        public string Status { get; set; }
+        public string Description { get; set; }
     }
 }

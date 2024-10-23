@@ -45,6 +45,7 @@
                 {
                     <th scope="col" class="bg-table-head">@header</th>
                 }
+                @* <th scope="col" class="bg-table-head">Description</th>  *@
             </tr>
         </thead>
         <tbody>
@@ -52,11 +53,12 @@
             {
                 <tr>
                     <td>@(i + 1)</td>
-                    <td>@Model.RoomsList[i].RoomId</td>
+                    @*    <td>@Model.RoomsList[i].RoomId</td> *@
                     <td>@Model.RoomsList[i].RoomNumber</td>
                     <td>@Model.RoomsList[i].RoomType</td>
                     <td>@Model.RoomsList[i].Price</td>
                     <td>@Model.RoomsList[i].Capacity</td>
+                    @*  <td>@Model.RoomsList[i].Description</td>  *@
                     <td>
                         @if (Model.RoomsList[i].Status == "Available")
                         {
@@ -67,6 +69,8 @@
                             <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Booked</span>
                         }
                     </td>
+
+
                     <td class="action-column">
                         <div class="dropdown dropstart">
                             <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -83,6 +87,7 @@
         </tbody>
     </table>
 </div>
+
 
 
 <div class="pagination-container ">
