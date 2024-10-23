@@ -38,13 +38,13 @@ namespace Bookings_Hotel.Pages
 
             if (string.IsNullOrEmpty(accountId))
             {
-                return Unauthorized();
+                return Redirect("/Login");
             }
 
             var account = await _context.Accounts.FindAsync(int.Parse(accountId));
             if (account == null)
             {
-                return Unauthorized();
+                return Redirect("/Login");
             }
 
             //Process
@@ -54,6 +54,7 @@ namespace Bookings_Hotel.Pages
             {
                 return NotFound();
             }
+
 
             roomDTOGet = new RoomDTO(
                 room.RoomId,
@@ -95,8 +96,12 @@ namespace Bookings_Hotel.Pages
 
             //Get Room
             var room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
+            if (room == null)
+            {
+                return BadRequest("Room not found");
+            }
 
-            //Caculate Total Money
+            //Convert Date
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
                 return BadRequest("Invalid Check-In Date format.");
@@ -106,6 +111,24 @@ namespace Bookings_Hotel.Pages
             {
                 return BadRequest("Invalid Check-Out Date format.");
             }
+
+            //Check if the room is booked 
+            var conflictingOrderDetails = _context.OrderDetails
+                .Where(od => od.RoomId == room.RoomId &&
+                             ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) || // Checkin mới trùng với khoảng thời gian đã đặt
+                              (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) || // Checkout mới trùng với khoảng thời gian đã đặt
+                              (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))) // Khoảng thời gian mới bao phủ toàn bộ thời gian đã đặt
+                .ToList();
+            if (conflictingOrderDetails.Any())
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "The room is already booked for the selected dates."
+                });
+            }
+
+            //Caculate Total Money
             var numberOfNights = (checkoutDate - checkinDate).Days;
             if (numberOfNights <= 0)
             {

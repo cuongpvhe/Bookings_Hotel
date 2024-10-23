@@ -26,5 +26,16 @@
             Price = price;
             PriceString = priceString;
         }
+        public RoomDTO(int roomId, int roomNumber, int? numberOfChild, int? numberOfAdult, int? numberOfBed, decimal price, string priceString, string? description)
+        {
+            RoomId = roomId;
+            RoomNumber = roomNumber;
+            NumberOfChild = numberOfChild;
+            NumberOfAdult = numberOfAdult;
+            NumberOfBed = numberOfBed;
+            Price = price;
+            PriceString = priceString;
+            Description = description;
+        }
     }
 }
