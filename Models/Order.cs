@@ -7,6 +7,7 @@ namespace Bookings_Hotel.Models
     {
         public Order()
         {
+            OrderDetails = new HashSet<OrderDetail>();
             Reviews = new HashSet<Review>();
         }
 
@@ -16,8 +17,11 @@ namespace Bookings_Hotel.Models
         public decimal? Discount { get; set; }
         public string? OrderStatus { get; set; }
         public int? AccountId { get; set; }
+        public string? Note { get; set; }
+        public string? PaymentCode { get; set; }
 
         public virtual Account? Account { get; set; }
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
     }
 }

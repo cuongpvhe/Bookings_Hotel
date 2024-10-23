@@ -4,104 +4,61 @@
     ViewData["Title"] = "Payment";
 }
 
-<div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
-        <div class="bg-white shadow" style="padding: 35px;">
-            <div class="row g-2">
-                <div class="col-md-10">
-                    <div class="row g-2">
-                        <div class="col-md-3">
-                            <div class="date" id="date1" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input"
-                                       placeholder="Check in" data-target="#date1" data-toggle="datetimepicker" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="date" id="date2" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input"
-                                       placeholder="Check out" data-target="#date2" data-toggle="datetimepicker" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Adult</option>
-                                <option value="1">Adult 1</option>
-                                <option value="2">Adult 2</option>
-                                <option value="3">Adult 3</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Child</option>
-                                <option value="1">Child 1</option>
-                                <option value="2">Child 2</option>
-                                <option value="3">Child 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title text-center text-primary text-uppercase">Room Booking</h6>
-            <h1 class="mb-5">Payment  <img src="~/template/img/MB_Bank_Logo.jpeg" width="200" alt=""></h1>
+            <h6 class="section-title text-center text-primary text-uppercase">Payment</h6>
+            <h1 class="mb-5"><img src="~/template/img/VietinbankLogo.png" width="200" alt=""></h1>
         </div>
         <div class="row g-5">
             <div class="col-lg-6">
                 <div class="row g-3">
                     <div class="col-12 text-center">
-                        <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s"
-                             src="~/template/img/QR_code_for_mobile_English_Wikipedia.svg.png">
+                        <img id="qrImage" class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s"
+                             src="" alt="QR Code">
+
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 d-flex align-items-center">
                 <div class="wow fadeInUp" data-wow-delay="0.2s">
                     <form>
+                        @Html.AntiForgeryToken()
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="name" value="MB Bank" disabled>
+                                    <input type="text" class="form-control" id="name" value="@Model.paymentDTO.BankName" disabled>
                                     <label for="name">Bank</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating input-group">
                                     <input type="text" class="form-control" id="accountNumber"
-                                           value="0977 111 993 228" disabled>
+                                           value="@Model.paymentDTO.AccountNumber" disabled>
                                     <label for="accountNumber">Account Number</label>
-                                    <button class="btn btn-outline-secondary" type="button"
-                                            onclick="copyToClipboard('Account number has been copied to clipboard.')">
+                                    <button class="btn btn-outline-secondary" type="button">
                                         <i class="fa-regular fa-copy"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="money" value="1.200.000 VNĐ" disabled>
+                                    <input type="text" class="form-control" id="money" value="@Model.paymentDTO.MoneyString VNĐ" disabled>
                                     <label for="money">Money</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating input-group">
                                     <input type="text" class="form-control" id="accountNumber"
-                                           value="i138r00p1" disabled>
+                                           value="@Model.paymentDTO.CurrencyCode" disabled>
                                     <label for="accountNumber">Description</label>
-                                    <button class="btn btn-outline-secondary" type="button"
-                                            onclick="copyToClipboard('Description has been copied to clipboard.')">
+                                    <button class="btn btn-outline-secondary" type="button">
                                         <i class="fa-regular fa-copy"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="button" onclick="successPayment()">Check</button>
+                                <button class="btn btn-primary w-100 py-3" type="button" id="check-btn">Check</button>
                             </div>
                         </div>
                     </form>
@@ -113,21 +70,64 @@
 </div>
 @section Scripts {
     <script>
-        function copyToClipboard(msg) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Copied!',
-                text: msg,
-                timer: 1000,
-                showConfirmButton: false
-            });
-        }
-        function successPayment() {
-            Swal.fire({
-                icon: 'success',
-                title: 'Payment Success!',
-                text: 'Please check your email for your invoice.'
-            });
+        $(document).ready(function () {
+            //Genderate QR Code
+            $('#qrImage').attr('src', `https://img.vietqr.io/image/@Model.paymentDTO.BankName-@Model.paymentDTO.AccountNumber-compact2.png?amount=@Model.paymentDTO.Money&addInfo=@Model.paymentDTO.CurrencyCode&accountName=@Model.paymentDTO.AccountName`);
+
+            checkPayment();
+        });
+
+        function checkPayment() {
+            $('#check-btn').click(function(){
+                $.ajax({
+                    url: '/Payment?handler=CheckPayment',
+                    type: 'POST',
+                    data: {
+                        orderID: @Model.paymentDTO.OrderID
+                    },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    beforeSend: function () {
+                        Swal.fire({
+                            title: 'Processing',
+                            text: 'Please wait while we checking...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    },
+                    success: function (response) {
+                        // On success, redirect to the payment page
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Payment Successful',
+                                text: 'Check your email to get your booking details!'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: 'Please check the transfer amount and transfer content again, if there is any problem please contact my customer service'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'There was an error processing your checking!'
+                        });
+
+                        var errorMessage = xhr.responseText; // Log the server error message
+                        console.log(errorMessage);
+                    }
+                });
+            })
         }
     </script>
 }

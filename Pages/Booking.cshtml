@@ -3,60 +3,68 @@
 @{
     ViewData["Title"] = "Booking";
 }
-<!-- Booking Start -->
-<div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s">
-    <div class="container">
-        <div class="bg-white shadow" style="padding: 35px;">
-            <div class="row g-2">
-                <div class="col-md-10">
-                    <div class="row g-2">
-                        <div class="col-md-3">
-                            <div class="date" id="date1" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input"
-                                       placeholder="Check in" data-target="#date1" data-toggle="datetimepicker" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="date" id="date2" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" placeholder="Check out" data-target="#date2" data-toggle="datetimepicker" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Adult</option>
-                                <option value="1">Adult 1</option>
-                                <option value="2">Adult 2</option>
-                                <option value="3">Adult 3</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Child</option>
-                                <option value="1">Child 1</option>
-                                <option value="2">Child 2</option>
-                                <option value="3">Child 3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 <!-- Booking End -->
 <!-- Booking Start -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
             <h6 class="section-title text-center text-primary text-uppercase">Room Booking</h6>
-            <h1 class="mb-5">Book A <span class="text-primary text-uppercase">Luxury Room</span></h1>
+            <h1 class="mb-5">Booking <span class="text-primary text-uppercase">Details</span></h1>
         </div>
         <div class="row g-5">
             <div class="col-lg-6">
                 <div class="row g-3">
+                    <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Room</h6>
+                    </div>
+                    <div class="col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa-solid fa-house  fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.roomDTOGet.RoomNumber</h2>
+                                <p class="mb-0">Room number</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-male fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">2</h2>
+                                <p class="mb-0">Adult</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-child fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">1</h2>
+                                <p class="mb-0">Child</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-bed fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">1</h2>
+                                <p class="mb-0">Bed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.roomDTOGet.PriceString VNĐ</h2>
+                                <p class="mb-0">Price Per Night</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* <div class="row g-3">
                     <div class="col-6 text-end">
                         <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s" src="~/template/img/about-1.jpg" style="margin-top: 25%;">
                     </div>
@@ -69,64 +77,35 @@
                     <div class="col-6 text-start">
                         <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s" src="~/template/img/about-4.jpg">
                     </div>
-                </div>
+                </div> *@
             </div>
             <div class="col-lg-6">
                 <div class="wow fadeInUp" data-wow-delay="0.2s">
                     <form>
+                        @Html.AntiForgeryToken()
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                    <label for="name">Your Name</label>
-                                </div>
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Booking</h6>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="email" placeholder="Your Email">
-                                    <label for="email">Your Email</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating date" id="date3" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" id="checkin" placeholder="Check In" data-target="#date3" data-toggle="datetimepicker" />
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <input type="date" class="form-control" id="checkin" name="checkin" placeholder="Check In" />
                                     <label for="checkin">Check In</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-floating date" id="date4" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" id="checkout" placeholder="Check Out" data-target="#date4" data-toggle="datetimepicker" />
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <input type="date" class="form-control" id="checkout" name="checkout" placeholder="Check Out" />
                                     <label for="checkout">Check Out</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <select class="form-select" id="select1">
-                                        <option value="1">Adult 1</option>
-                                        <option value="2">Adult 2</option>
-                                        <option value="3">Adult 3</option>
-                                    </select>
-                                    <label for="select1">Select Adult</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <select class="form-select" id="select2">
-                                        <option value="1">Child 1</option>
-                                        <option value="2">Child 2</option>
-                                        <option value="3">Child 3</option>
-                                    </select>
-                                    <label for="select2">Select Child</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <select class="form-select" id="select3">
-                                        <option value="1">Room 1</option>
-                                        <option value="2">Room 2</option>
-                                        <option value="3">Room 3</option>
-                                    </select>
-                                    <label for="select3">Selected Room</label>
+                            <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="border rounded p-1">
+                                    <div class="border rounded text-center p-4">
+                                        <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                        <h2 class="mb-1"><span id="total-money">@Model.roomDTOGet.PriceString</span> VNĐ</h2>
+                                        <p class="mb-0">Total Price</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -136,13 +115,184 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <a class="btn btn-primary w-100 py-3" asp-page="Payment">Book Now</a>
+                                <button type="button" id="submit-order-btn" class="btn btn-primary w-100 py-3">Payment</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        <div class="row mt-5">
+            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                <h6 class="section-title text-center text-primary text-uppercase">Room Images</h6>
+            </div>
+            <!-- Carousel Start -->
+            <div class="container-fluid p-0 my-4 wow fadeInUp">
+                <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="w-100" src="~/template/img/carousel-1.jpg" alt="Image">
+                        </div>
+                        <div class="carousel-item">
+                            <img class="w-100" src="~/template/img/carousel-2.jpg" alt="Image">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#header-carousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Carousel End -->
+        </div>
     </div>
 </div>
 <!-- Booking End -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            setDefaultDate();
+            validRoomDate();
+            submit();
+        });
+        function setDefaultDate(){
+            const yesterday = new Date();
+
+            // Giá trị mặc định cho checkin (ngày mai)
+            const checkin = new Date();
+            checkin.setDate(yesterday.getDate() + 1);  // Ngày mai
+            const checkinDateString = checkin.toISOString().split('T')[0];  // Chuyển sang định dạng YYYY-MM-DD
+            $('#checkin').val(checkinDateString);  // Sử dụng jQuery để đặt giá trị cho input
+
+            // Giá trị mặc định cho checkout (ngày mốt)
+            const checkout = new Date();
+            checkout.setDate(yesterday.getDate() + 2);  // Ngày mốt
+            const checkoutDateString = checkout.toISOString().split('T')[0];  // Chuyển sang định dạng YYYY-MM-DD
+            $('#checkout').val(checkoutDateString);  // Sử dụng jQuery để đặt giá trị cho input
+
+            // Hàm xử lý khi người dùng thay đổi giá trị checkin
+            $('#checkin').on('change', function () {
+                const checkinDate = $('#checkin').val();
+                const checkoutDate = $('#checkout').val();
+
+                // Kiểm tra nếu checkin nhỏ hơn ngày hôm nay
+                if (new Date(checkinDate) < new Date()) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Check-in Date',
+                        text: 'Check-in date cannot be earlier than today!',
+                    });
+                    $('#checkin').val(checkinDateString);  // Đặt lại về ngày mặc định (ngày mai)
+                } else if (checkoutDate && new Date(checkoutDate) <= new Date(checkinDate)) {
+                    // Kiểm tra nếu check-out nhỏ hơn hoặc bằng check-in
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Check-out Date',
+                        text: 'Check-out date must be later than check-in date!',
+                    });
+                    $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
+                }
+                caculatePrice();
+            });
+
+            // Hàm xử lý khi người dùng thay đổi giá trị checkout
+            $('#checkout').on('change', function () {
+                const checkinDate = $('#checkin').val();
+                const checkoutDate = $('#checkout').val();
+
+                // Kiểm tra nếu check-out nhỏ hơn hoặc bằng check-in
+                if (new Date(checkoutDate) <= new Date(checkinDate)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Check-out Date',
+                        text: 'Check-out date must be later than check-in date!',
+                    });
+                    $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
+                }
+                caculatePrice();
+            });
+        }
+        function caculatePrice(){
+            const price = @Model.roomDTOGet.Price;
+            const checkin = new Date($('#checkin').val());
+            checkin.setHours(0, 0, 0, 0);
+            const checkout = new Date($('#checkout').val());
+            checkout.setHours(0, 0, 0, 0);
+
+            const differenceInDays = checkout.getDate() - checkin.getDate();
+
+            var totalMoney = price * differenceInDays;
+
+            $('#total-money').text(totalMoney.toLocaleString('vi-VN'))
+        }
+        function validRoomDate(){
+
+        }
+        function submit() {
+            $('#submit-order-btn').on('click', function () {
+                const data = {
+                    RoomId : @Model.roomDTOGet.RoomId,
+                    CheckInDate: $('#checkin').val(),
+                    CheckOutDate: $('#checkout').val(),
+                    SpecialRequest: $('#message').val() || ''
+                };
+
+                if (!data.CheckInDate || !data.CheckOutDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Please select check-in and check-out dates!'
+                    });
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Booking?handler=SubmitOrder',
+                    type: 'POST',
+                    data: data,
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    beforeSend: function () {
+                        Swal.fire({
+                            title: 'Processing your order',
+                            text: 'Please wait while we process your booking...',
+                            allowOutsideClick: false,  
+                            showConfirmButton: false, 
+                            willOpen: () => {
+                                Swal.showLoading(); 
+                            }
+                        });
+                    },
+                    success: function (response) {
+                        // On success, redirect to the payment page
+                        window.location.href = '/Payment?oid=' + response.data;
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        if (xhr.status === 401) {  // Detect 401 Unauthorized error
+                            window.location.href = '/login';
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was an error processing your booking!'
+                            });
+                        }
+
+                        var errorMessage = xhr.responseText; // Log the server error message
+                        console.log(errorMessage);
+                    }
+                });
+
+            });
+        }
+
+    
+
+    </script>
+}
