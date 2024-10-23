@@ -1,0 +1,36 @@
+﻿@model Bookings_Hotel.Pages.Manager.ServicesModel
+
+<table class="table m-0" id="servicesTable">
+    <thead>
+        <tr>
+            @foreach (var header in Model.TableHeaders)
+            {
+                <th scope="col" class="bg-table-head">@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Services.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model.Services[i].ServiceId</td>
+                <td>@Model.Services[i].ServiceName</td>
+                <td>@Model.Services[i].CreatedDate</td>
+                <td>@Model.Services[i].UpdateDate</td>
+                <td>@Model.Services[i].Price</td>
+                <td class="action-column">
+                    <div class="dropdown dropstart">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-2-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete</a></li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

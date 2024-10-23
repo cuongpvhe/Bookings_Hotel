@@ -83,12 +83,37 @@
             </div>
         </div>
         <!-- Filter End -->
-
         <!-- List Room Start -->
         <div id="roomListContainer">
             @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.Rooms)
         </div>
         <!-- List Room End -->
+        <!-- Pagination Start -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link ajax-page" href="?CurrentPage=@(Model.CurrentPage - 1)&PriceMin=@Model.PriceMin&PriceMax=@Model.PriceMax&SortPrice=@Model.SortPrice" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link ajax-page" href="?CurrentPage=@i&PriceMin=@Model.PriceMin&PriceMax=@Model.PriceMax&SortPrice=@Model.SortPrice">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link ajax-page" href="?CurrentPage=@(Model.CurrentPage + 1)&PriceMin=@Model.PriceMin&PriceMax=@Model.PriceMax&SortPrice=@Model.SortPrice" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Pagination End -->
+
     </div>
 </div>
 <!-- Room End -->
@@ -179,19 +204,66 @@
             });
         });
 
+
         $(document).ready(function () {
             $('#filterForm').on('submit', function (e) {
                 e.preventDefault();
+                loadPageContent($(this).serialize());
+            });
+
+            $(document).on('click', '.ajax-page', function (e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                loadPageContent(url.split('?')[1]);
+                updatePagination(url);
+            });
+
+            function loadPageContent(queryString) {
                 $.ajax({
-                    url: '@Url.Page("Room")',
+                    url: '@Url.Page("Room")?' + queryString,
                     type: 'get',
-                    data: $(this).serialize(),
                     success: function (result) {
                         $('#roomListContainer').html(result);
+                        updatePagination('@Url.Page("Room")?' + queryString);
                     }
                 });
-            });
+            }
+
+            function updatePagination(url) {
+                var urlParams = new URLSearchParams(url.split('?')[1]);
+                var currentPage = urlParams.get('CurrentPage');
+
+                $('.pagination .page-item').removeClass('active');
+                $('.pagination .page-item').each(function () {
+                    var pageLink = $(this).find('.page-link');
+                    if (pageLink.text() === currentPage) {
+                        $(this).addClass('active');
+                    }
+                });
+
+                var prevPageItem = $('.pagination .page-item').first();
+                var nextPageItem = $('.pagination .page-item').last();
+
+                prevPageItem.toggleClass('disabled', currentPage === '1');
+                nextPageItem.toggleClass('disabled', currentPage === '@Model.TotalPages.ToString()');
+
+                var prevPage = parseInt(currentPage) - 1;
+                var nextPage = parseInt(currentPage) + 1;
+
+                prevPageItem.find('.page-link').attr('href', updateUrlParameter(url, 'CurrentPage', prevPage));
+                nextPageItem.find('.page-link').attr('href', updateUrlParameter(url, 'CurrentPage', nextPage));
+            }
+
+            function updateUrlParameter(url, key, value) {
+                var urlParts = url.split('?');
+                var baseUrl = urlParts[0];
+                var urlParams = new URLSearchParams(urlParts[1]);
+                urlParams.set(key, value);
+                return baseUrl + '?' + urlParams.toString();
+            }
         });
+
+
     </script>
 }
 <!-- Scripts End-->
