@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bookings_Hotel.Pages.Manager
+namespace Bookings_Hotel.Pages.Manager.Services
 {
     public class ServicesModel : PageModel
     {
@@ -15,7 +15,7 @@ namespace Bookings_Hotel.Pages.Manager
 
         // List
         public List<string>? TableHeaders { get; set; } = new List<string> { ".No", "Service Id", "Service Name", "Created Date", "Update Date", "Price", "Actions" };
-        public List<Bookings_Hotel.Models.Service> Services { get; set; }
+        public List<Models.Service> Services { get; set; }
 
         // Pagination
         public int CurrentPage { get; set; } = 1;
@@ -38,7 +38,7 @@ namespace Bookings_Hotel.Pages.Manager
         public async Task<IActionResult> OnGetSearchAsync(string searchTerm, int pageIndex = 1)
         {
             CurrentPage = pageIndex;
-            IQueryable<Bookings_Hotel.Models.Service> servicesQuery;
+            IQueryable<Models.Service> servicesQuery;
 
             if (string.IsNullOrWhiteSpace(searchTerm))
             {

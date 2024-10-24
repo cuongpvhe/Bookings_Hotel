@@ -1,5 +1,5 @@
 ﻿@page
-@model Bookings_Hotel.Pages.Manager.ServicesModel
+@model ServicesModel
 @{
     ViewData["Title"] = "Services";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
@@ -95,7 +95,7 @@
 
             function loadPageContent(data) {
                 $.ajax({
-                    url: '/Manager/Services?handler=Search',
+                    url: '/Manager/Services/List?handler=Search',
                     type: 'GET',
                     data: data,
                     success: function (result) {
