@@ -16,27 +16,27 @@ namespace Bookings_Hotel.Pages.Manager
         {
             _context = context;
         }
-
+        [BindProperty]
         public List<RoomViewModel> RoomsList { get; set; }
         public List<string> TableHeaders { get; set; } = 
             new List<string> { "#", "Room Number", "Room Type", "Price", "Capacity", "Status", "Actions" };
 
         public async Task OnGetAsync()
         {
-            // Lấy danh sách các phòng từ DB, bao gồm thông tin loại phòng
             RoomsList = await _context.Rooms
-                .Include(r => r.Type) // Bao gồm thông tin loại phòng
-                .Select(r => new RoomViewModel
-                {
-                    RoomId = r.RoomId,
-                    RoomNumber = r.RoomNumber,
-                    RoomType = r.Type != null ? r.Type.TypeName : "N/A", // Nếu không có loại phòng thì hiển thị "N/A"
-                    Price = r.Price,
-                    Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
-                    Status = r.RoomStatus,
-                    Description = r.Description
-                })
-                .ToListAsync();
+           .Include(r => r.Type) 
+           .Where(r => r.RoomStatus != "Deleted") 
+           .Select(r => new RoomViewModel
+           {
+               RoomId = r.RoomId,
+               RoomNumber = r.RoomNumber,
+               RoomType = r.Type != null ? r.Type.TypeName : "N/A",
+               Price = r.Price,
+               Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
+               Status = r.RoomStatus,
+               Description = r.Description
+           })
+           .ToListAsync();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
@@ -52,7 +52,12 @@ namespace Bookings_Hotel.Pages.Manager
             room.RoomStatus = "Deleted";
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Room/List"); // Điều hướng lại trang danh sách phòng sau khi xóa
+
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Delete Success"
+            });
         }
 
     }

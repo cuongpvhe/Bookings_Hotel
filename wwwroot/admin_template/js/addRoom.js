@@ -221,7 +221,7 @@ async function submitRoomForm() {
 
     try {
         // Gửi dữ liệu qua Ajax
-        const response = await fetch('@Url.Page("/Manager/AddNewRoom")', {
+        const response = await fetch('@Url.Page("/Manager/Room/Create")', {
             method: 'POST',
             body: formData
         });
@@ -235,7 +235,7 @@ async function submitRoomForm() {
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = '/Manager/Rooms'; // Redirect sau khi thành công
+                window.location.href = '/Manager/Room/List'; // Redirect sau khi thành công
             });
         } else {
             Swal.fire({

@@ -62,13 +62,13 @@
                     <td>@Model.RoomsList[i].Capacity</td>
                     @*  <td>@Model.RoomsList[i].Description</td>  *@
                     <td>
-                        @if (Model.RoomsList[i].Status == "Available")
+                        @if (Model.RoomsList[i].Status == "Active")
                         {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Available</span>
+                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Active</span>
                         }
                         else
                         {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Booked</span>
+                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Inactive</span>
                         }
                     </td>
 
@@ -79,7 +79,7 @@
                                 <i class="ri-more-2-fill"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Edit</a></li>
+                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
                                 <li>
                                     <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
                                         <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete
@@ -123,6 +123,7 @@
         </nav>
     </div>
 </div>
+@Html.AntiForgeryToken()
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -141,8 +142,56 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
-                window.location.href = '/Manager/Room/List?handler=Delete&id=' + roomId;
+                deleteRoom(roomId);
             }
         });
     }
-    </script>
+
+
+    function deleteRoom(roomId) {
+        $.ajax({
+            url: '/Manager/Room/List?handler=Delete',
+            type: 'POST',
+            data: {
+                id: roomId
+            },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            beforeSend: function () {
+                Swal.fire({
+                    title: 'Processing',
+                    text: 'Please wait while we checking...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function (response) {
+                // On success, redirect to the payment page
+                if (response.success) { 
+                    window.location.reload();
+                }
+                
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was an error processing your checking!'
+                });
+
+                var errorMessage = xhr.responseText; // Log the server error message
+                console.log(errorMessage);
+            }
+        });
+    }
+
+
+
+
+
+</script>
