@@ -297,6 +297,8 @@ namespace Bookings_Hotel.Models
                     .HasMaxLength(100)
                     .HasColumnName("Service_Name");
 
+                entity.Property(e => e.Status).HasMaxLength(50);
+
                 entity.Property(e => e.UpdateDate)
                     .HasColumnType("date")
                     .HasColumnName("Update_Date");
