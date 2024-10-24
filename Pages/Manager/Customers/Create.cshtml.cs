@@ -29,7 +29,10 @@ namespace Bookings_Hotel.Pages.Manager.Customers
             {
                 return Page();
             }
-
+            Account.RoleId = 2;
+            Account.CreatedDate = DateTime.Now;
+            Account.Status = "Active";
+            
             _context.Accounts.Add(Account);
             await _context.SaveChangesAsync();
 

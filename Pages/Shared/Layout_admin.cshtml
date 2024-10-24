@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -46,10 +47,13 @@
                     <img src="~/admin_template/img/perfil.png" alt="image">
                 </div>
 
-                <div class="sidebar__info">
-                    <h3>quanmn67</h3>
-                    <span>Role: ADMIN</span>
-                </div>
+               @if (User.Identity.IsAuthenticated)
+                                {
+                                    var username = User.Identity.Name;
+                                    
+                                    var accountId = User.FindFirst("AccountId")?.Value;                                                                                                             
+                                       @username
+                                }
             </div>
 
             <div class="sidebar__content">

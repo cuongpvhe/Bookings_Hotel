@@ -9,23 +9,43 @@
 <div class="mb-3">
     <a asp-page="Create" class="btn btn-success">Create New Customer</a>
 </div>
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchString" class="form-control" placeholder="Search" value="@Model.SearchString" />
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
             <th>Full Name</th>
             <th>Email</th>
             <th>Phone Number</th>
+            <th>Dob</th>
+            <th>Gender</th>
+            <th>Address</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var customer in Model.Accounts)
         {
-            <tr>
+            <tr ondblclick="window.location='@Url.Page("Detail", new { id = customer.AccountId })'">
                 <td>@customer.FullName</td>
                 <td>@customer.Email</td>
                 <td>@customer.Phonenumber</td>
+                <td>@customer.Dob</td>
                 <td>@customer.Gender</td>
+                <td>@customer.Address</td>
+                <td>
+                    <form method="post" asp-page-handler="ToggleStatus">
+                        <input type="hidden" name="id" value="@customer.AccountId" />
+                        <button type="button" onclick="confirmDeactivation(this)" class="btn @(customer.Status == "Active" ? "btn-success" : "btn-warning")">
+                            @(customer.Status)
+                        </button>
+                    </form>
+                </td>
                 <td>
                     <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Edit</a>
                     <a asp-page="Delete" asp-route-id="@customer.AccountId" class="btn btn-danger">Delete</a>
@@ -34,3 +54,21 @@
         }
     </tbody>
 </table>
+
+<script>
+    function confirmDeactivation(button) {
+        const form = button.closest('form'); 
+        const currentStatus = button.innerText;
+
+        let actionText = currentStatus === 'Active' ? 'ngừng hoạt động' : 'kích hoạt lại';
+
+       
+        console.log("Confirming deactivation for:", currentStatus);
+
+        if (confirm(`Bạn có muốn tài khoản này ${actionText} không?`)) {
+            form.submit(); 
+        } else {
+            console.log("User cancelled the action."); 
+        }
+    }
+</script>

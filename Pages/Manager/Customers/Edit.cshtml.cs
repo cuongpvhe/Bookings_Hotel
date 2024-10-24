@@ -37,7 +37,27 @@ namespace Bookings_Hotel.Pages.Manager.Customers
                 return Page();
             }
 
-            _context.Attach(Account).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            var accountToUpdate = await _context.Accounts.FindAsync(Account.AccountId);
+
+            if (accountToUpdate == null)
+            {
+                return NotFound();
+            }
+
+        
+            accountToUpdate.FullName = Account.FullName;
+            accountToUpdate.Email = Account.Email;
+            accountToUpdate.Phonenumber = Account.Phonenumber;
+            accountToUpdate.Gender = Account.Gender;
+            accountToUpdate.Address = Account.Address;
+
+            if (string.IsNullOrEmpty(Account.Status))
+            {
+                Account.Status = accountToUpdate.Status; 
+            }
+
+            
+            accountToUpdate.UpdateDate = DateTime.Now;
 
             try
             {
@@ -57,5 +77,6 @@ namespace Bookings_Hotel.Pages.Manager.Customers
 
             return RedirectToPage("List");
         }
+
     }
 }

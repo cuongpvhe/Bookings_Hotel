@@ -32,13 +32,18 @@ namespace Bookings_Hotel.Pages.Home
 
             if (account != null)
             {
-                
+                if (account.Status == "InActive")
+                {
+                    ModelState.AddModelError(string.Empty, "Tài khoản không hoạt động.");
+                    return Page();
+                }
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, account.UseName),
                     new Claim("AccountId", account.AccountId.ToString()),
                     new Claim(ClaimTypes.Email, account.Email),
-                    new Claim(ClaimTypes.Role, account.RoleId.ToString()),
+                    new Claim("RoleId", account.RoleId.ToString()),
                     new Claim("Avatar", account.Avatar ?? "/path/to/default/avatar")
                 };
 
@@ -66,6 +71,7 @@ namespace Bookings_Hotel.Pages.Home
             
             ModelState.AddModelError("Error_Login", "Invalid username or password.");
             return Page();
+
         }
     }
 }
