@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bookings_Hotel.Models; // Đảm bảo bạn đã thêm namespace của mô hình
+using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Mvc; // Đảm bảo bạn đã thêm namespace của mô hình
 
 namespace Bookings_Hotel.Pages.Manager
 {
@@ -37,6 +38,23 @@ namespace Bookings_Hotel.Pages.Manager
                 })
                 .ToListAsync();
         }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+
+            // Cập nhật trạng thái phòng thành "Deleted"
+            room.RoomStatus = "Deleted";
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Room/List"); // Điều hướng lại trang danh sách phòng sau khi xóa
+        }
+
     }
 
     public class RoomViewModel

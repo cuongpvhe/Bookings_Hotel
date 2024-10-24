@@ -30,25 +30,21 @@ namespace Bookings_Hotel.Pages.Manager
 
         public async Task<IActionResult> OnPostAsync(List<IFormFile> Images, List<int> ImageIndexes, int RoomTypeId, List<int> ServiceIds)
         {
-            // Kiểm tra dữ liệu từ form có đầy đủ không
             if (!ModelState.IsValid)
             {
-                // Nếu không hợp lệ, trả về trang hiện tại
                 return Page();
             }
 
-            // Kiểm tra nếu RoomTypeId hoặc ServiceIds bị null hoặc rỗng
             if (RoomTypeId == 0 || ServiceIds == null || !ServiceIds.Any())
             {
                 ModelState.AddModelError(string.Empty, "Please select room type and services.");
                 return Page();
             }
 
-            // Tiếp tục với logic lưu dữ liệu
             try
             {
                 // Tạo Room mới
-                var newRoom = new Room
+                var newRoom = new Models.Room
                 {
                     RoomNumber = int.Parse(Request.Form["RoomNumber"]),
                     NumberOfBed = int.Parse(Request.Form["NumberOfBeds"]),
@@ -78,28 +74,52 @@ namespace Bookings_Hotel.Pages.Manager
                 // Xử lý upload ảnh
                 for (int i = 0; i < Images.Count; i++)
                 {
-                    var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                    try
                     {
-                        File = new FileDescription(Images[i].FileName, Images[i].OpenReadStream())
-                    });
+                        // Upload ảnh lên Cloudinary trong thư mục holtes_image
+                        var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                        {
+                            File = new FileDescription(Images[i].FileName, Images[i].OpenReadStream()),
+                            Folder = "hotel_images" // Upload vào thư mục
+                        });
 
-                    _context.RoomImages.Add(new RoomImage
+                        // Kiểm tra nếu upload không thành công
+                        if (uploadResult == null || string.IsNullOrEmpty(uploadResult.SecureUrl?.ToString()))
+                        {
+                            var errorMessage = $"Failed to upload image {Images[i].FileName}. No URL returned.";
+                            Console.WriteLine(errorMessage); // Ghi log lỗi
+                            ModelState.AddModelError(string.Empty, errorMessage);
+                            return Page();
+                        }
+
+                        // Lưu URL ảnh vào RoomImage
+                        _context.RoomImages.Add(new RoomImage
+                        {
+                            RoomId = newRoom.RoomId,
+                            ImageUrl = uploadResult.SecureUrl.ToString(),
+                            ImageIndex = ImageIndexes[i]
+                        });
+                    }
+                    catch (Exception ex)
                     {
-                        RoomId = newRoom.RoomId,
-                        ImageUrl = uploadResult.SecureUrl.ToString(),
-                        ImageIndex = ImageIndexes[i]
-                    });
+                        var errorMessage = $"Error uploading image {Images[i].FileName}: {ex.Message}";
+                        Console.WriteLine(errorMessage); // Ghi log lỗi
+                        ModelState.AddModelError(string.Empty, errorMessage);
+                        return Page();
+                    }
                 }
 
                 await _context.SaveChangesAsync();
-                return RedirectToPage("/Manager/Rooms");
+
+                // Redirect về trang Manager/Rooms sau khi thành công
+                return RedirectToPage("/Manager/Room/Rooms");
             }
             catch (Exception ex)
             {
-                // Log chi tiết lỗi
-                Console.WriteLine(ex.Message);
+                // Ghi log lỗi
+                Console.WriteLine($"An error occurred: {ex.Message}");
 
-                // Thêm thông báo lỗi vào ModelState để hiển thị trong trang
+                // Thêm lỗi vào ModelState để hiển thị trên trang
                 ModelState.AddModelError(string.Empty, "An error occurred while saving the room.");
                 return Page();
             }

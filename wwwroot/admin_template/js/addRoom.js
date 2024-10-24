@@ -12,13 +12,6 @@ let currentImageIndex;
 
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
-        const file = input.files[0];
-
-        if (file.size > 5 * 1024 * 1024) {
-            Swal.fire('Error', 'Image size exceeds 5MB', 'error');
-            return;
-        }
-
         const reader = new FileReader();
         reader.onload = function (e) {
             $('#cropImageModal').modal('show');
@@ -54,14 +47,12 @@ $('#cropImageModal').on('hidden.bs.modal', function () {
     }
 });
 
-// Called when the "Save" button in the cropper modal is clicked
 $('#cropImageButton').on('click', function () {
     const canvas = cropper.getCroppedCanvas({
         width: 1000,
         height: 600,
     });
 
-    // Convert the cropped image to a Blob
     canvas.toBlob(function (blob) {
         const url = URL.createObjectURL(blob);
         if (currentImageIndex === imageIndex) {
@@ -75,7 +66,6 @@ $('#cropImageButton').on('click', function () {
         $('#cropImageModal').modal('hide');
     }, 'image/jpeg');
 });
-
 
 function handleThumbnailChange(input, index) {
     if (input.files && input.files[0]) {
@@ -116,6 +106,7 @@ function addImageToCarousel(imageSrc) {
     carouselInner.appendChild(div);
     imageIndex++;
 }
+
 function addThumbnail(imageSrc) {
     const thumbnailContainer = document.querySelector('.thumbnail-container');
     const thumbnailItem = document.createElement('div');
@@ -146,6 +137,7 @@ function addThumbnail(imageSrc) {
     thumbnailItem.appendChild(input);
     thumbnailContainer.appendChild(thumbnailItem);
 }
+
 function updateImageInCarousel(imageSrc, index) {
     const carouselInner = document.getElementById('carousel-inner');
     const items = carouselInner.getElementsByClassName('carousel-item');
@@ -155,6 +147,7 @@ function updateImageInCarousel(imageSrc, index) {
         }
     }
 }
+
 function updateThumbnail(imageSrc, index) {
     const thumbnailContainer = document.querySelector('.thumbnail-container');
     const imgs = thumbnailContainer.getElementsByTagName('img');
@@ -199,6 +192,8 @@ document.getElementById('scaleY').addEventListener('click', function () {
     cropper.scaleY(-currentScaleY);
 });
 
+
+
 function collectImageDTOs() {
     const imageDTOs = [];
     for (let index in uploadedImages) {
@@ -213,40 +208,50 @@ function collectImageDTOs() {
 }
 
 
-// Submit form và xử lý upload ảnh
-$('#addRoomForm').on('submit', function (e) {
-    e.preventDefault();
+async function submitRoomForm() {
+    // Tạo FormData để chứa tất cả dữ liệu form
+    const formData = new FormData(document.getElementById('addRoomForm'));
 
-    // Kiểm tra dữ liệu trước khi submit
-    const roomTypeId = $('#RoomTypeId').val();
-    const serviceIds = $('#Services').val();
-
-    if (!roomTypeId || !serviceIds.length) {{
-        Swal.fire('Error', 'Please select a room type and at least one service.', 'error');
-        return;
-    }
-
-    const formData = new FormData(this);
-
-    // Thu thập dữ liệu ảnh
+    // Lấy các ảnh từ hàm collectImageDTOs
     const imageDTOs = collectImageDTOs();
-    imageDTOs.forEach(dto => {
-        formData.append('Images', dto.imageFile);
-        formData.append('ImageIndexes', dto.index);
+    imageDTOs.forEach(imageDTO => {
+        formData.append('Images', imageDTO.imageFile); // Thêm ảnh vào formData
+        formData.append('ImageIndexes', imageDTO.index); // Thêm index của ảnh
     });
 
-    // AJAX request to submit form
-    $.ajax({
-        url: '/Manager/AddNewRoom',  // Đường dẫn tới trang xử lý
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            Swal.fire('Success', 'Room added successfully!', 'success');
-        },
-        error: function () {
-            Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+    try {
+        // Gửi dữ liệu qua Ajax
+        const response = await fetch('@Url.Page("/Manager/AddNewRoom")', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Room has been added successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/Manager/Rooms'; // Redirect sau khi thành công
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: result.errorMessage || 'An error occurred while saving the room.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
-    });
-});
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
