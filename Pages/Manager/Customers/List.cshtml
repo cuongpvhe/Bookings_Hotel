@@ -35,7 +35,16 @@
                 <td>@customer.FullName</td>
                 <td>@customer.Email</td>
                 <td>@customer.Phonenumber</td>
-                <td>@customer.Dob</td>
+                <td>
+                   @if (customer.Dob.HasValue)
+                  {
+                   @customer.Dob.Value.ToString("dd/MM/yyyy")
+                  }
+                  else
+                  {
+                   <span>N/A</span>
+                  }
+                </td>
                 <td>@customer.Gender</td>
                 <td>@customer.Address</td>
                 <td>
@@ -48,8 +57,15 @@
                 </td>
                 <td>
                     <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Edit</a>
-                    <a asp-page="Delete" asp-route-id="@customer.AccountId" class="btn btn-danger">Delete</a>
+    
+                    <form method="post" asp-page-handler="Delete" style="display:inline-block; margin-left: 10px;">
+                        <input type="hidden" name="id" value="@customer.AccountId" />
+                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">Delete</button>
+                    </form>
                 </td>
+
+
+
             </tr>
         }
     </tbody>
@@ -71,4 +87,12 @@
             console.log("User cancelled the action."); 
         }
     }
+   function confirmDelete(accountId) {
+    if (confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
+        const form = document.querySelector(`input[value='${accountId}']`).closest('form');
+        form.submit(); 
+    } else {
+        console.log("User cancelled the delete action.");
+    }
+}
 </script>

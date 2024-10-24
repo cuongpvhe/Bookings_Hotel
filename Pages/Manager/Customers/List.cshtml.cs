@@ -49,21 +49,26 @@ namespace Bookings_Hotel.Pages.Manager.Customers
         }
 
 
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var account = await _context.Accounts.FindAsync(id);
+            if (account != null)
+            {
+                _context.Accounts.Remove(account);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToPage("List");
+        }
+
         public async Task<IActionResult> OnPostToggleStatusAsync(int id)
         {
             var account = await _context.Accounts.FindAsync(id);
-            if (account == null)
+            if (account != null)
             {
-                return NotFound();
+                account.Status = account.Status == "Active" ? "Inactive" : "Active";
+                await _context.SaveChangesAsync();
             }
-
-            account.Status = account.Status == "Active" ? "InActive" : "Active";
-
-            
-            _context.Accounts.Update(account);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("/Manager/Customers/List");
+            return RedirectToPage("List");
         }
     }
 }

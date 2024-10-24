@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Bookings_Hotel.Pages.Users
         public Account Account { get; set; }
 
         [BindProperty]
-        public IFormFile AvatarUpload { get; set; }
+        public IFormFile? AvatarUpload { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -67,6 +68,29 @@ namespace Bookings_Hotel.Pages.Users
                 return NotFound();
             }
 
+            // Kiểm tra trùng lặp dữ liệu
+            if (await _context.Accounts.AnyAsync(a => a.Email == Account.Email && a.AccountId != existingAccount.AccountId))
+            {
+                ModelState.AddModelError("Email", "Email already exists.");
+            }
+
+            if (await _context.Accounts.AnyAsync(a => a.UseName == Account.UseName && a.AccountId != existingAccount.AccountId))
+            {
+                ModelState.AddModelError("UseName", "Username already exists.");
+            }
+
+            if (await _context.Accounts.AnyAsync(a => a.FullName == Account.FullName && a.AccountId != existingAccount.AccountId))
+            {
+                ModelState.AddModelError("FullName", "Full Name already exists.");
+            }
+
+            if (await _context.Accounts.AnyAsync(a => a.Phonenumber == Account.Phonenumber && a.AccountId != existingAccount.AccountId))
+            {
+                ModelState.AddModelError("Phonenumber", "Phone number already exists.");
+            }
+
+          
+
             // Cập nhật thông tin tài khoản
             existingAccount.FullName = Account.FullName;
             existingAccount.Dob = Account.Dob;
@@ -77,9 +101,29 @@ namespace Bookings_Hotel.Pages.Users
             existingAccount.Gender = Account.Gender;
             existingAccount.Address = Account.Address;
 
-            // Xử lý việc tải ảnh lên
+            // Chỉ xử lý việc tải ảnh lên nếu có
             if (AvatarUpload != null && AvatarUpload.Length > 0)
             {
+                // Kiểm tra định dạng tệp
+                var permittedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var extension = Path.GetExtension(AvatarUpload.FileName).ToLowerInvariant();
+
+                if (!permittedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("AvatarUpload", "Please upload a valid image file (jpg, jpeg, png, gif).");
+                    return Page();
+                }
+
+                // Kiểm tra loại MIME
+                var contentType = AvatarUpload.ContentType.ToLowerInvariant();
+                var permittedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
+
+                if (!permittedMimeTypes.Contains(contentType))
+                {
+                    ModelState.AddModelError("AvatarUpload", "Please upload a valid image file (jpg, jpeg, png, gif).");
+                    return Page();
+                }
+
                 // Lưu đường dẫn tới thư mục uploads trong wwwroot
                 var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads");
 
@@ -116,10 +160,15 @@ namespace Bookings_Hotel.Pages.Users
                 await HttpContext.SignInAsync(User);
             }
 
+            
+
+
+            existingAccount.UpdateDate = DateTime.Now;
             // Lưu thay đổi vào database
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/Users/Profile");
         }
+
     }
 }
