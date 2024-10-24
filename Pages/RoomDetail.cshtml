@@ -70,13 +70,13 @@
             <div class="col-lg-6">
                 <h6 class="section-title text-start text-primary text-uppercase">Room Information</h6>
                 <h1 class="mb-4">Welcome to <span class="text-primary text-uppercase">Single Room</span></h1>
-                <p class="mb-4">Our single room offers a cozy and comfortable space, ideal for guests looking for a relaxing stay. Fully equipped with modern amenities, the room features a spacious single bed, a luxurious private bathroom, and free Wi-Fi. This is definitely a great choice for a peaceful and relaxing getaway.</p>
+                <p class="mb-4">@Model.roomDTOGet.Description</p>
                 <div class="row g-3 pb-4">
                     <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">2.000.000 VNĐ</h2>
+                                <h2 class="mb-1">@Model.roomDTOGet.PriceString VNĐ</h2>
                                 <p class="mb-0">Price Per Night</p>
                             </div>
                         </div>
@@ -85,17 +85,8 @@
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-bed fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">1</h2>
+                                <h2 class="mb-1">@Model.roomDTOGet.NumberOfBed</h2>
                                 <p class="mb-0">Bed</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4 wow fadeIn" data-wow-delay="0.3s">
-                        <div class="border rounded p-1">
-                            <div class="border rounded text-center p-4">
-                                <i class="fa fa-bath fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">1</h2>
-                                <p class="mb-0">Bath</p>
                             </div>
                         </div>
                     </div>
@@ -103,7 +94,7 @@
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-male fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">2</h2>
+                                <h2 class="mb-1">@Model.roomDTOGet.NumberOfAdult</h2>
                                 <p class="mb-0">Adult</p>
                             </div>
                         </div>
@@ -112,22 +103,13 @@
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-child fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">1</h2>
+                                <h2 class="mb-1">@Model.roomDTOGet.NumberOfChild</h2>
                                 <p class="mb-0">Child</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4 wow fadeIn" data-wow-delay="0.5s">
-                        <div class="border rounded p-1">
-                            <div class="border rounded text-center p-4">
-                                <i class="fa fa-wifi fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1">Free</h2>
-                                <p class="mb-0">Wifi</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <a class="btn btn-primary py-3 px-5 mt-2" asp-page="Booking">Book Now</a>
+                <a class="btn btn-primary py-3 px-5 mt-2" asp-page="Booking" asp-route-id="@Model.roomDTOGet.RoomId">Book Now</a>
             </div>
         </div>
     </div>
