@@ -17,7 +17,9 @@
             <div class="col-md-8">
                 <div class="card shadow-sm p-4">
                     <h4 class="mb-4">Personal Information</h4>
-
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="Account.AccountId" />
+                    <input type="hidden" asp-for="Account.RoleId" />
                     <div class="form-group mb-3">
                         <label asp-for="Account.UseName" class="form-label">Username:</label>
                         <input type="text" asp-for="Account.UseName" class="form-control" readonly />
@@ -79,19 +81,19 @@
                     <div class="mb-3">
                         @if (!string.IsNullOrEmpty(Model.Account.Avatar))
                         {
-                            <img src="@Model.Account.Avatar" alt="User Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
+                            <img id="avatarImage" src="@Model.Account.Avatar" alt="User Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
                         }
                         else
                         {
-                            <img src="/path/to/default/avatar.png" alt="Default Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
+                            <img id="avatarImage" src="/path/to/default/avatar.png" alt="Default Avatar" class="rounded-circle img-thumbnail" style="width: 200px; height: 200px;" />
                         }
                     </div>
                     <div class="mb-3">
-                        <input type="file" asp-for="AvatarUpload" class="form-control" />
+                        <input type="file" asp-for="AvatarUpload" class="form-control" accept="image/*" onchange="previewImage(event)" />
                     </div>
                 </div>
             </div>
-        </div>
+
 
         <div class="row mt-4">
             <div class="col text-center">
@@ -103,5 +105,20 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+<script>
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const avatarImage = document.getElementById('avatarImage');
+            avatarImage.src = e.target.result; // Cập nhật src của ảnh đại diện
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); // Đọc file ảnh
+        }
+    }
+</script>
 
 
