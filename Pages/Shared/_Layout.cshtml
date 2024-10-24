@@ -1,4 +1,4 @@
-﻿
+﻿@using System.Security.Claims
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,21 +96,39 @@
                             </div>
 
 
+                          
+                            @{
+                                var roleId = User.FindFirst("RoleId")?.Value;
+                            }
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <script type="text/javascript">
+                                    var roleId = '@roleId';
+                                    if (roleId === "1") { 
+                                        window.location.href = '/Admin/IndexAdmin';
+                                    } else if (roleId === "3") { 
+                                        window.location.href = '/Manager/IndexStaff';
+                                    }
+                                </script>
+                            }
+
 
 
 
                             <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
-                                @using System.Security.Claims
+                               
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     var username = User.Identity.Name;
+                                    
                                     var accountId = User.FindFirst("AccountId")?.Value; // Ensure "AccountId" is stored in claims
-
+                                    var avatarPath = User.FindFirst("Avatar")?.Value ?? "/path/to/default/avatar";
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
+                                            <img src="@avatarPath" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
                                         </a>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                             <li>
@@ -128,6 +146,7 @@
                                                     <button type="submit" class="dropdown-item">Log Out</button>
                                                 </form>
                                             </li>
+
                                         </ul>
                                     </li>
                                 }

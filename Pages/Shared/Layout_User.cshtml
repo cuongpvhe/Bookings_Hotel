@@ -85,7 +85,7 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a asp-page="/Shared/Index" class="nav-item nav-link">Home</a>
+                                <a asp-page="Index" class="nav-item nav-link">Home</a>
                                 <a asp-page="AboutUs" class="nav-item nav-link">About</a>
                                 <a asp-page="Services" class="nav-item nav-link">Services</a>
                                 <a asp-page="Room" class="nav-item nav-link">Rooms</a>
@@ -104,10 +104,10 @@
                             {
                                 var username = User.Identity.Name;
                                 var accountId = User.FindFirst("AccountId")?.Value; // Ensure "AccountId" is stored in claims
-
+                                var avatarPath = User.FindFirst("Avatar")?.Value ?? "/path/to/default/avatar";
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="path_to_avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
+                                        <img src="@avatarPath" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;"> @username
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                         <li>
