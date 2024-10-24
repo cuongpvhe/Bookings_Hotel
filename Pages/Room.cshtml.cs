@@ -36,12 +36,17 @@ namespace Bookings_Hotel.Pages
         //List
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedServices { get; set; } = new List<string>();
+
+        [BindProperty(SupportsGet = true)]
+        public List<string> SelectedTypeRooms { get; set; } = new List<string>();
         public List<Room> Rooms { get; set; }
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
+        public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             Services = await _context.Services.ToListAsync();
+            TypeRooms = await _context.TypeRooms.ToListAsync();
 
             var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
 
@@ -59,6 +64,12 @@ namespace Bookings_Hotel.Pages
             if (SelectedServices != null && SelectedServices.Count > 0)
             {
                 query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
+            }
+
+            // Filter typeRooms
+            if (SelectedTypeRooms != null && SelectedTypeRooms.Count > 0)
+            {
+                query = query.Where(room => room.Type != null && SelectedTypeRooms.Contains(room.Type.TypeName));
             }
 
             // Sort price
