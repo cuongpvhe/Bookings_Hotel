@@ -8,7 +8,7 @@
 <head>
     <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
  <div class="main-header d-flex justify-content-start">
@@ -16,117 +16,104 @@
          <div>
             <span class="mb-0 fs-3 fw-bold">Add new room</span>
          </div>
-      </div>
+</div>
 
 
-<form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addRoomForm">
-         <div class="col m-0 p-0">
-            <div class=" carousel-container">
-               <div>
-                  <div class="carousel slide" id="carouselExample">
-                     <div class="carousel-inner" id="carousel-inner">
+<form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addRoomForm" enctype="multipart/form-data">
+    <div class="col m-0 p-0">
+        <div class="carousel-container">
+            <div>
+                <div class="carousel slide" id="carouselExample">
+                    <div class="carousel-inner" id="carousel-inner">
                         <!-- Images will be added here dynamically -->
-                     </div>
-                     <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample"
+                    </div>
+                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample"
                         type="button">
                         <span aria-hidden="true" class="carousel-control-prev-icon"></span>
                         <span class="visually-hidden">Previous</span>
-                     </button>
-                     <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample"
+                    </button>
+                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample"
                         type="button">
                         <span aria-hidden="true" class="carousel-control-next-icon"></span>
                         <span class="visually-hidden">Next</span>
-                     </button>
-                  </div>
+                    </button>
+                </div>
 
-                  <div class="mt-2 mb-5 d-flex btn-carousel">
-                     <button class="btn btn-primary  me-2" type="button"
-                        onclick="document.getElementById('imageInput').click()">Thêm ảnh
-                        mới
-                     </button>
-
-                     <button class="btn btn-secondary "  type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
-                  </div>
-               </div>
+                <div class="mt-2 mb-5 d-flex btn-carousel">
+                    <button class="btn btn-primary me-2" type="button"
+                        onclick="document.getElementById('imageInput').click()">Thêm ảnh mới</button>
+                    <button class="btn btn-secondary" type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
+                </div>
             </div>
+        </div>
 
-            <div class=" me-2 ">
+        <div class="me-2">
+            <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;"
+                type="file">
 
-               <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;"
-                  type="file">
+            <div class="thumbnail-container"></div>
+        </div>
+    </div>
 
-               <div class="thumbnail-container">
-
-               </div>
-            </div>
-         </div>
-    <div class="col m-0 p-0" >
+    <div class="col m-0 p-0">
         <div class="row">
+
+
             <div class="mb-3">
-                <label asp-for="NewRoom.RoomNumber" class="form-label"></label>
-                <input asp-for="NewRoom.RoomNumber" class="form-control" />
-                <span asp-validation-for="NewRoom.RoomNumber" class="text-danger"></span>
+                <label for="RoomNumber" class="form-label">Room Number <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="Enter room number" required />
             </div>
 
             <div class="mb-3">
-                <label asp-for="NewRoom.NumberOfBed" class="form-label"></label>
-                <input asp-for="NewRoom.NumberOfBed" class="form-control" />
-                <span asp-validation-for="NewRoom.NumberOfBed" class="text-danger"></span>
+                <label for="NumberOfBeds" class="form-label">Number of Beds <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="NumberOfBeds" name="NumberOfBeds" placeholder="Enter number of beds" required />
             </div>
 
             <div class="mb-3">
-                <label asp-for="NewRoom.NumberOfAdult" class="form-label"></label>
-                <input asp-for="NewRoom.NumberOfAdult" class="form-control" />
-                <span asp-validation-for="NewRoom.NumberOfAdult" class="text-danger"></span>
+                <label for="NumberOfAdults" class="form-label">Number of Adults <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="NumberOfAdults" name="NumberOfAdults" placeholder="Enter number of adults" required />
             </div>
 
             <div class="mb-3">
-                <label asp-for="NewRoom.NumberOfChild" class="form-label"></label>
-                <input asp-for="NewRoom.NumberOfChild" class="form-control" />
-                <span asp-validation-for="NewRoom.NumberOfChild" class="text-danger"></span>
+                <label for="NumberOfChildren" class="form-label">Number of Children <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="NumberOfChildren" name="NumberOfChildren" placeholder="Enter number of children" required />
             </div>
 
             <div class="mb-3">
-                <label asp-for="NewRoom.Price" class="form-label"></label>
-                <input asp-for="NewRoom.Price" class="form-control" />
-                <span asp-validation-for="NewRoom.Price" class="text-danger"></span>
+                <label for="Price" class="form-label">Price <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="Price" name="Price" placeholder="Enter price" required />
             </div>
 
             <div class="mb-3">
-                <label asp-for="NewRoom.TypeId" class="form-label"></label>
-                <select asp-for="NewRoom.TypeId" class="form-select">
-                    <option selected disabled>Select room type</option>
-                    @foreach (var type in Model.TypeRooms)
+                <label for="RoomTypeId" class="form-label">Room Type <span class="text-danger">*</span></label>
+                <select class="form-select" id="RoomTypeId" name="RoomTypeId" required>
+                    @foreach (var type in Model.RoomTypes)
                     {
                         <option value="@type.TypeId">@type.TypeName</option>
                     }
                 </select>
-                <span asp-validation-for="NewRoom.TypeId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label for="roomServices" class="form-label">Room Services <span class="text-danger">*</span></label>
-                <select id="roomServices" name="SelectedServiceIds" class="form-select" multiple>
+                <label for="Services" class="form-label">Services <span class="text-danger">*</span></label>
+                <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple" required>
                     @foreach (var service in Model.Services)
                     {
                         <option value="@service.ServiceId">@service.ServiceName</option>
                     }
                 </select>
-                <span asp-validation-for="SelectedServiceIds" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label for="note" class="form-label">Description</label>
-                <textarea class="form-control" id="note" name="NewRoom.Description" rows="5" placeholder="Enter a description"></textarea>
+                <label for="Description" class="form-label">Description</label>
+                <textarea class="form-control" id="Description" name="Description" rows="5"></textarea>
             </div>
-        </div>
 
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary px-4 rounded-pill">Save</button>
         </div>
     </div>
-
-      </form>
+</form>
 
 
 <!--        Model-->
@@ -205,36 +192,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="~/admin_template/js/addRoom.js"></script>
 
-
 <script>
-    // Handle form submission spinner
-    document.getElementById('addRoomForm').addEventListener('submit', function (e) {
-        // Show loading spinner using SweetAlert2 when form is submitted
-        Swal.fire({
-            title: 'Saving...',
-            text: 'Please wait while we save the room details.',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
     });
 </script>
-
-@if (TempData["Success"] != null)
-{
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Room has been saved successfully!',
-            confirmButtonText: 'Close'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '/Manager/Rooms';
-            }
-        });
-    </script>
-}

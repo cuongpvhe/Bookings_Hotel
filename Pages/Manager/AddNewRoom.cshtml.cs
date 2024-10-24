@@ -1,4 +1,4 @@
-using Bookings_Hotel.Models;
+﻿using Bookings_Hotel.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,94 +12,97 @@ namespace Bookings_Hotel.Pages.Manager
         private readonly HotelBookingSystemContext _context;
         private readonly Cloudinary _cloudinary;
 
+        public List<TypeRoom> RoomTypes { get; set; }
+        public List<Service> Services { get; set; }
+
         public AddNewRoomModel(HotelBookingSystemContext context, Cloudinary cloudinary)
         {
             _context = context;
             _cloudinary = cloudinary;
         }
 
-        [BindProperty]
-        public Room NewRoom { get; set; }
-
-        [BindProperty]
-        public List<int> SelectedServiceIds { get; set; } // Holds selected service IDs
-
-        [BindProperty]
-        public IFormFileCollection Images { get; set; } // Holds uploaded images
-
-        public List<TypeRoom> TypeRooms { get; set; }
-        public List<Service> Services { get; set; }
-
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            TypeRooms = await _context.TypeRooms.ToListAsync();
+            RoomTypes = await _context.TypeRooms.ToListAsync();
             Services = await _context.Services.ToListAsync();
+            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(List<IFormFile> Images, List<int> ImageIndexes, int RoomTypeId, List<int> ServiceIds)
         {
-            if (!ModelState.IsValid || SelectedServiceIds == null || !SelectedServiceIds.Any())
+            // Kiểm tra dữ liệu từ form có đầy đủ không
+            if (!ModelState.IsValid)
             {
-                // Re-populate dropdowns if there's an error
-                TypeRooms = await _context.TypeRooms.ToListAsync();
-                Services = await _context.Services.ToListAsync();
-                ModelState.AddModelError("SelectedServiceIds", "At least one service must be selected.");
+                // Nếu không hợp lệ, trả về trang hiện tại
                 return Page();
             }
 
-            // Set default RoomStatus to "Available"
-            NewRoom.RoomStatus = "Available";
-            NewRoom.CreatedDate = DateTime.Now;
-            NewRoom.UpdateDate = DateTime.Now;
-
-            // Add the new room to the database
-            _context.Rooms.Add(NewRoom);
-            await _context.SaveChangesAsync();
-
-            // Add RoomServices for each selected service
-            foreach (var serviceId in SelectedServiceIds)
+            // Kiểm tra nếu RoomTypeId hoặc ServiceIds bị null hoặc rỗng
+            if (RoomTypeId == 0 || ServiceIds == null || !ServiceIds.Any())
             {
-                var roomService = new RoomService
-                {
-                    RoomId = NewRoom.RoomId,
-                    ServiceId = serviceId
-                };
-                _context.RoomServices.Add(roomService);
+                ModelState.AddModelError(string.Empty, "Please select room type and services.");
+                return Page();
             }
 
-            // Upload images to Cloudinary
-            var roomImages = new List<RoomImage>();
-            foreach (var image in Images)
+            // Tiếp tục với logic lưu dữ liệu
+            try
             {
-                var uploadResult = await UploadImageToCloudinary(image);
-                if (uploadResult != null)
+                // Tạo Room mới
+                var newRoom = new Room
                 {
-                    roomImages.Add(new RoomImage
+                    RoomNumber = int.Parse(Request.Form["RoomNumber"]),
+                    NumberOfBed = int.Parse(Request.Form["NumberOfBeds"]),
+                    NumberOfAdult = int.Parse(Request.Form["NumberOfAdults"]),
+                    NumberOfChild = int.Parse(Request.Form["NumberOfChildren"]),
+                    Price = decimal.Parse(Request.Form["Price"]),
+                    TypeId = RoomTypeId,
+                    Description = Request.Form["Description"],
+                    CreatedDate = DateTime.Now,
+                    UpdateDate = DateTime.Now,
+                    RoomStatus = "Available",
+                };
+
+                _context.Rooms.Add(newRoom);
+                await _context.SaveChangesAsync();
+
+                // Lưu RoomService
+                foreach (var serviceId in ServiceIds)
+                {
+                    _context.RoomServices.Add(new RoomService
                     {
-                        RoomId = NewRoom.RoomId,
-                        ImageUrl = uploadResult.SecureUrl.AbsoluteUri
+                        RoomId = newRoom.RoomId,
+                        ServiceId = serviceId
                     });
                 }
+
+                // Xử lý upload ảnh
+                for (int i = 0; i < Images.Count; i++)
+                {
+                    var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                    {
+                        File = new FileDescription(Images[i].FileName, Images[i].OpenReadStream())
+                    });
+
+                    _context.RoomImages.Add(new RoomImage
+                    {
+                        RoomId = newRoom.RoomId,
+                        ImageUrl = uploadResult.SecureUrl.ToString(),
+                        ImageIndex = ImageIndexes[i]
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("/Manager/Rooms");
             }
-
-            _context.RoomImages.AddRange(roomImages);
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Room created successfully!";
-            return RedirectToPage();
-        }
-
-        private async Task<ImageUploadResult> UploadImageToCloudinary(IFormFile image)
-        {
-            using var stream = image.OpenReadStream();
-            var uploadParams = new ImageUploadParams
+            catch (Exception ex)
             {
-                File = new FileDescription(image.FileName, stream),
-                Folder = "hotel_images", // Cloudinary folder
-                Transformation = new Transformation().Width(1000).Height(600).Crop("fit")
-            };
-            return await _cloudinary.UploadAsync(uploadParams);
+                // Log chi tiết lỗi
+                Console.WriteLine(ex.Message);
+
+                // Thêm thông báo lỗi vào ModelState để hiển thị trong trang
+                ModelState.AddModelError(string.Empty, "An error occurred while saving the room.");
+                return Page();
+            }
         }
     }
-
 }

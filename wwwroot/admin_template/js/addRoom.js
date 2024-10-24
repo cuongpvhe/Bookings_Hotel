@@ -64,19 +64,15 @@ $('#cropImageButton').on('click', function () {
     // Convert the cropped image to a Blob
     canvas.toBlob(function (blob) {
         const url = URL.createObjectURL(blob);
-
-        // Add the image to the carousel and thumbnail list
-        addImageToCarousel(url);
-        addThumbnail(url);
-
-        // Store the blob in uploadedImages object with its index
-        uploadedImages[currentImageIndex] = {
-            blob: blob,
-            order: currentImageIndex
-        };
-
+        if (currentImageIndex === imageIndex) {
+            addImageToCarousel(url);
+            addThumbnail(url);
+        } else {
+            updateImageInCarousel(url, currentImageIndex);
+            updateThumbnail(url, currentImageIndex);
+        }
+        uploadedImages[currentImageIndex] = new File([blob], 'croppedImage.jpg', { type: 'image/jpeg' });
         $('#cropImageModal').modal('hide');
-        imageIndex++;
     }, 'image/jpeg');
 });
 
@@ -120,7 +116,6 @@ function addImageToCarousel(imageSrc) {
     carouselInner.appendChild(div);
     imageIndex++;
 }
-
 function addThumbnail(imageSrc) {
     const thumbnailContainer = document.querySelector('.thumbnail-container');
     const thumbnailItem = document.createElement('div');
@@ -151,7 +146,6 @@ function addThumbnail(imageSrc) {
     thumbnailItem.appendChild(input);
     thumbnailContainer.appendChild(thumbnailItem);
 }
-
 function updateImageInCarousel(imageSrc, index) {
     const carouselInner = document.getElementById('carousel-inner');
     const items = carouselInner.getElementsByClassName('carousel-item');
@@ -161,7 +155,6 @@ function updateImageInCarousel(imageSrc, index) {
         }
     }
 }
-
 function updateThumbnail(imageSrc, index) {
     const thumbnailContainer = document.querySelector('.thumbnail-container');
     const imgs = thumbnailContainer.getElementsByTagName('img');
@@ -206,3 +199,54 @@ document.getElementById('scaleY').addEventListener('click', function () {
     cropper.scaleY(-currentScaleY);
 });
 
+function collectImageDTOs() {
+    const imageDTOs = [];
+    for (let index in uploadedImages) {
+        if (uploadedImages.hasOwnProperty(index)) {
+            const formData = new FormData();
+            formData.append('index', index);
+            formData.append('imageFile', uploadedImages[index]);
+            imageDTOs.push({ index: index, imageFile: uploadedImages[index] });
+        }
+    }
+    return imageDTOs;
+}
+
+
+// Submit form và xử lý upload ảnh
+$('#addRoomForm').on('submit', function (e) {
+    e.preventDefault();
+
+    // Kiểm tra dữ liệu trước khi submit
+    const roomTypeId = $('#RoomTypeId').val();
+    const serviceIds = $('#Services').val();
+
+    if (!roomTypeId || !serviceIds.length) {{
+        Swal.fire('Error', 'Please select a room type and at least one service.', 'error');
+        return;
+    }
+
+    const formData = new FormData(this);
+
+    // Thu thập dữ liệu ảnh
+    const imageDTOs = collectImageDTOs();
+    imageDTOs.forEach(dto => {
+        formData.append('Images', dto.imageFile);
+        formData.append('ImageIndexes', dto.index);
+    });
+
+    // AJAX request to submit form
+    $.ajax({
+        url: '/Manager/AddNewRoom',  // Đường dẫn tới trang xử lý
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            Swal.fire('Success', 'Room added successfully!', 'success');
+        },
+        error: function () {
+            Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+        }
+    });
+});
