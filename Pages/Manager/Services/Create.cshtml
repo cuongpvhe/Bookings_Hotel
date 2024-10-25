@@ -1,0 +1,89 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Services.CreateModel
+@{
+    ViewData["Title"] = "Add Service";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<div class="d-flex justify-content-center">
+    <div class="card p-4" style="width: 700px;">
+        <h2 class="text-center">Create Service</h2>
+        @if (!ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@modelError.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form method="post">
+            <div class="form-group mb-3">
+                <label asp-for="service.ServiceName" class="form-label">Service Name <span class="text-danger">*</span></label>
+                <input type="text" asp-for="service.ServiceName" class="form-control" required />
+                <span asp-validation-for="service.ServiceName" class="text-danger"></span>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="service.CreatedDate" class="form-label">Created Date</label>
+                        <input type="date" asp-for="service.CreatedDate" class="form-control bg-opacity-10" disabled />
+                        <input type="hidden" asp-for="service.CreatedDate" />
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label asp-for="service.UpdateDate" class="form-label">Update Date</label>
+                        <input type="date" asp-for="service.UpdateDate" class="form-control bg-opacity-10" disabled />
+                        <input type="hidden" asp-for="service.UpdateDate" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="service.Price" class="form-label">Price <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" asp-for="service.Price" class="form-control" step="0.01" min="0" required />
+                </div>
+                <span asp-validation-for="service.Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="service.Description" class="form-label">Description</label>
+                <textarea asp-for="service.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="service.Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="service.Status" class="form-label">Status</label>
+                <select asp-for="service.Status" class="form-select">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <span asp-validation-for="service.Status" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    Create Service
+                </button>
+                <a asp-page="./List" class="btn btn-secondary px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Format price input
+        document.querySelector('input[type="number"]').addEventListener('input', function (e) {
+            if (this.value < 0) this.value = 0;
+        });
+    </script>
+}
+

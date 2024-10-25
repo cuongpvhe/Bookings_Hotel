@@ -1,0 +1,52 @@
+﻿@page "{id:int}"
+@model Bookings_Hotel.Pages.Manager.Services.EditModel
+@{
+    ViewData["Title"] = "Edit Service";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<div class="d-flex justify-content-center">
+    <div class="card p-4" style="width: 700px;">
+        <h2 class="text-center">Edit Service</h2>
+        <form method="post">
+            <input type="hidden" asp-for="service.ServiceId" />
+            <div class="form-group mb-3">
+                <label asp-for="service.ServiceName" class="form-label">Service Name:</label>
+                <input type="text" asp-for="service.ServiceName" class="form-control" />
+                <span asp-validation-for="service.ServiceName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.CreatedDate" class="form-label">Created Date:</label>
+                <input type="date" asp-for="service.CreatedDate" class="form-control bg-opacity-10" disabled />
+                <input type="hidden" asp-for="service.CreatedDate" />
+                <span asp-validation-for="service.CreatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.UpdateDate" class="form-label">Update Date:</label>
+                <input type="date" asp-for="service.UpdateDate" class="form-control bg-opacity-10" disabled />
+                <span asp-validation-for="service.UpdateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Price" class="form-label">Price:</label>
+                <input type="number" asp-for="service.Price" class="form-control" step="0.01" />
+                <span asp-validation-for="service.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Description" class="form-label">Description:</label>
+                <textarea asp-for="service.Description" class="form-control"></textarea>
+                <span asp-validation-for="service.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Status" class="form-label">Status:</label>
+                <select asp-for="service.Status" class="form-select">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <span asp-validation-for="service.Status" class="text-danger"></span>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a asp-page="./List" class="btn btn-secondary">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
