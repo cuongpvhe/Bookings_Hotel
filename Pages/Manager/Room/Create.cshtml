@@ -110,7 +110,7 @@
             </div>
 
         <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary px-4 rounded-pill" onclick="submitRoomForm()">Save</button>
+                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitRoomFormAjax()">Save</button>
         </div>
     </div>
 </form>
@@ -178,6 +178,7 @@
         </div>
     </div>
 </div>
+@Html.AntiForgeryToken()
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>

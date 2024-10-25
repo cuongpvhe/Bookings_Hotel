@@ -206,52 +206,68 @@ function collectImageDTOs() {
     }
     return imageDTOs;
 }
+function submitRoomFormAjax() {
+    const formData = new FormData();
 
+    // Thu thập dữ liệu từ form
+    formData.append("RoomNumber", document.getElementById("RoomNumber").value);
+    formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
+    formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
+    formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
+    formData.append("Price", document.getElementById("Price").value);
+    formData.append("RoomTypeId", document.getElementById("RoomTypeId").value);
+    formData.append("Description", document.getElementById("Description").value);
 
-async function submitRoomForm() {
-    // Tạo FormData để chứa tất cả dữ liệu form
-    const formData = new FormData(document.getElementById('addRoomForm'));
+    // Thu thập danh sách dịch vụ từ Select2
+    const selectedServices = $('#Services').val(); // Lấy danh sách dịch vụ đã chọn
+    if (selectedServices) {
+        selectedServices.forEach((serviceId, index) => {
+            formData.append(`ServiceIds[${index}]`, serviceId);
+        });
+        console.log("Selected Services: ", selectedServices);
+    }
 
-    // Lấy các ảnh từ hàm collectImageDTOs
+    // Thu thập các ảnh từ collectImageDTOs
     const imageDTOs = collectImageDTOs();
-    imageDTOs.forEach(imageDTO => {
-        formData.append('Images', imageDTO.imageFile); // Thêm ảnh vào formData
-        formData.append('ImageIndexes', imageDTO.index); // Thêm index của ảnh
+    imageDTOs.forEach((imageDTO, index) => {
+        formData.append(`Images[${index}][index]`, imageDTO.index);
+        formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
     });
 
-    try {
-        // Gửi dữ liệu qua Ajax
-        const response = await fetch('@Url.Page("/Manager/Room/Create")', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
+    // AJAX request
+    $.ajax({
+        url: '/Manager/Room/Create?handler=Post', // URL tới phương thức xử lý
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        headers: {
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        },
+        beforeSend: function () {
             Swal.fire({
-                title: 'Success!',
-                text: 'Room has been added successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '/Manager/Room/List'; // Redirect sau khi thành công
+                title: 'Processing',
+                text: 'Saving room details...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: result.errorMessage || 'An error occurred while saving the room.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
+        },
+        success: function (response) {
+            if (response.success) {
+                Swal.fire("Success", "Room information saved successfully!", "success")
+                    .then(() => window.location.href = '/Manager/Room/List'); // Redirect to rooms list
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire("Error", "There was an error saving the room information.", "error");
+            console.log(xhr.responseText);
         }
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
+    });
 }
+
+
+
+
