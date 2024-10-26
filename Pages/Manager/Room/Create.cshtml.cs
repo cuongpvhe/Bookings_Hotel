@@ -58,6 +58,8 @@ namespace Bookings_Hotel.Pages.Manager
 
             // Lưu danh sách dịch vụ cho phòng vào bảng RoomService
             var serviceIds = Request.Form["ServiceIds"].ToList();
+
+
             foreach (var serviceId in serviceIds)
                 {
                     var roomService = new Models.RoomService

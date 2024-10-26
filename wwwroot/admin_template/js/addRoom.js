@@ -206,68 +206,198 @@ function collectImageDTOs() {
     }
     return imageDTOs;
 }
-function submitRoomFormAjax() {
-    const formData = new FormData();
+async function submitRoomFormAjax() {
+    const form = $('#addRoomForm');
 
-    // Thu thập dữ liệu từ form
-    formData.append("RoomNumber", document.getElementById("RoomNumber").value);
-    formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
-    formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
-    formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
-    formData.append("Price", document.getElementById("Price").value);
-    formData.append("RoomTypeId", document.getElementById("RoomTypeId").value);
-    formData.append("Description", document.getElementById("Description").value);
-
-    // Thu thập danh sách dịch vụ từ Select2
-    const selectedServices = $('#Services').val(); // Lấy danh sách dịch vụ đã chọn
-    if (selectedServices) {
-        selectedServices.forEach((serviceId, index) => {
-            formData.append(`ServiceIds[${index}]`, serviceId);
-        });
-        console.log("Selected Services: ", selectedServices);
+    // Kiểm tra tính hợp lệ của form
+    if (!validateRoomForm()) {
+        return; // Dừng lại nếu form không hợp lệ
     }
 
-    // Thu thập các ảnh từ collectImageDTOs
-    const imageDTOs = collectImageDTOs();
-    imageDTOs.forEach((imageDTO, index) => {
-        formData.append(`Images[${index}][index]`, imageDTO.index);
-        formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
-    });
+    const roomNumber = document.getElementById("RoomNumber").value;
 
-    // AJAX request
-    $.ajax({
-        url: '/Manager/Room/Create?handler=Post', // URL tới phương thức xử lý
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        headers: {
-            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-        },
-        beforeSend: function () {
-            Swal.fire({
-                title: 'Processing',
-                text: 'Saving room details...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
+    try {
+        const exists = await checkRoomNumberExists(roomNumber); // Kiểm tra số phòng
+
+        if (exists) {
+            showRoomNumberError();
+        } else {
+            const formData = new FormData();
+
+            // Thu thập dữ liệu từ form
+            formData.append("RoomNumber", document.getElementById("RoomNumber").value);
+            formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
+            formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
+            formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
+            formData.append("Price", document.getElementById("Price").value);
+            formData.append("RoomTypeId", document.getElementById("RoomTypeId").value);
+            formData.append("Description", document.getElementById("Description").value);
+
+            // Thu thập danh sách dịch vụ từ Select2
+            const selectedServices = $('#Services').val(); // Lấy danh sách dịch vụ đã chọn
+            if (selectedServices) {
+                selectedServices.forEach(serviceId => {
+                    formData.append("ServiceIds", serviceId); // Đẩy từng ID vào với cùng tên "ServiceIds"
+                });
+                console.log("Selected Services: ", selectedServices);
+            }
+
+            // Thu thập các ảnh từ collectImageDTOs
+            const imageDTOs = collectImageDTOs();
+            imageDTOs.forEach((imageDTO, index) => {
+                formData.append(`Images[${index}][index]`, imageDTO.index);
+                formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
             });
-        },
-        success: function (response) {
-            if (response.success) {
-                Swal.fire("Success", "Room information saved successfully!", "success")
-                    .then(() => window.location.href = '/Manager/Room/List'); // Redirect to rooms list
+
+            // AJAX request
+            $.ajax({
+                url: '/Manager/Room/Create?handler=Post', // URL tới phương thức xử lý
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Processing',
+                        text: 'Saving room details...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success", "Room information saved successfully!", "success")
+                            .then(() => window.location.href = '/Manager/Room/List'); // Redirect to rooms list
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire("Error", "There was an error saving the room information.", "error");
+                    console.log(xhr.responseText);
+                }
+
+            });
+        }
+    } catch (error) {
+        console.log("Error ", error);
+    }
+}
+
+function validateRoomForm() {
+    // Thiết lập validate cho form
+    $('#addRoomForm').validate({
+        rules: {
+            RoomNumber: {
+                required: true,
+                maxlength: 8,
+                digits: true
+            },
+            NumberOfBeds: {
+                required: true,
+                min: 1,
+            },
+            NumberOfAdults: {
+                required: true,
+                min: 1,
+            },
+            NumberOfChildren: {
+                required: true,
+
+            },
+            Price: {
+                required: true,
+                min: 1
+            },
+            RoomTypeId: {
+                required: true
+            },
+            ServiceIds: {
+                required: true
+            },
+            Description: {
+                maxlength: 500
             }
         },
-        error: function (xhr, status, error) {
-            Swal.fire("Error", "There was an error saving the room information.", "error");
-            console.log(xhr.responseText);
+        messages: {
+            RoomNumber: {
+                required: "Please enter the room number.",
+                maxlength: "Room number cannot exceed 8 digits.",
+                digits: "Room number must be a valid number."
+            },
+            NumberOfBeds: {
+                required: "Please enter the number of beds.",
+                min: "Must have at least 1 bed.",
+            },
+            NumberOfAdults: {
+                required: "Please enter the number of adults.",
+                min: "Must allow at least 1 adult.",
+            },
+            NumberOfChildren: {
+                required: "Please enter the number of children.",
+            },
+            Price: {
+                required: "Please enter the room price.",
+                min: "Price must be at least 1."
+            },
+            RoomTypeId: {
+                required: "Please select a room type."
+            },
+            ServiceIds: {
+                required: "Please select at least one service."
+            },
+            Description: {
+                maxlength: "Description cannot exceed 500 characters."
+            }
+        },
+        errorPlacement: function (error, element) {
+            error.addClass("text-danger");
+            if (element.prop("tagName") === "SELECT") {
+                error.insertAfter(element.next('.select2-container'));
+            } else {
+                error.insertAfter(element);
+            }
         }
     });
+
+    // Trả về kết quả hợp lệ của form
+    return $('#addRoomForm').valid();
 }
 
 
+// Hàm kiểm tra số phòng đã tồn tại qua AJAX
+function checkRoomNumberExists(roomNumber) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/Manager/AddNewRoom?handler=CheckRoomNumber', // URL tới phương thức kiểm tra
+            type: 'POST',
+            data: { roomNumber: roomNumber },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                resolve(response.exists); // Trả về kết quả tồn tại của số phòng qua Promise
+            },
+            error: function () {
+                Swal.fire("Error", "The room number is existed.", "error");
+                reject();
+            }
+        });
+    });
+}
 
+// Hàm hiển thị lỗi nếu số phòng đã tồn tại
+function showRoomNumberError() {
+    const roomNumberField = $("#RoomNumber");
+    roomNumberField.addClass("is-invalid"); // Đánh dấu trường là không hợp lệ
 
+    // Kiểm tra xem đã có thông báo lỗi chưa, nếu chưa thì thêm vào
+    if (!$("#RoomNumber-error").length) {
+        $("<span id='RoomNumber-error' class='text-danger'>This room number already exists.</span>")
+            .insertAfter(roomNumberField);
+    }
+}
