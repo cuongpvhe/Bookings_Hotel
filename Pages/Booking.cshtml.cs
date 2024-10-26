@@ -25,7 +25,7 @@ namespace Bookings_Hotel.Pages
 
         
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+/*        public async Task<IActionResult> OnGetAsync(int? id)
         {
             //Get parameter
             if (id == null)
@@ -150,7 +150,7 @@ namespace Bookings_Hotel.Pages
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
-                TotalMoney = totalMoney,
+                TotalMoney = totalMoney,Ư
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 AccountId = int.Parse(accountId), 
@@ -199,6 +199,6 @@ namespace Bookings_Hotel.Pages
             }
 
             return new string(stringChars);
-        }
+        }*/
     }
 }

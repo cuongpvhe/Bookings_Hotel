@@ -26,8 +26,28 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
         {
             if (_context.TypeRooms != null)
             {
-                TypeRooms = await _context.TypeRooms.ToListAsync();
+                TypeRooms = await _context.TypeRooms.Where(tr => tr.Deleted == false).ToListAsync();
             }
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var typeRoom = await _context.TypeRooms.FindAsync(id);
+
+            if (typeRoom == null)
+            {
+                return NotFound();
+            }
+
+            typeRoom.Deleted = true;
+            await _context.SaveChangesAsync();
+
+
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Delete Success"
+            });
         }
     }
 }

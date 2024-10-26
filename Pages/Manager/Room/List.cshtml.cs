@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bookings_Hotel.Models;
-using Microsoft.AspNetCore.Mvc; // Đảm bảo bạn đã thêm namespace của mô hình
+using Microsoft.AspNetCore.Mvc;
+using Bookings_Hotel.Util; // Đảm bảo bạn đã thêm namespace của mô hình
 
 namespace Bookings_Hotel.Pages.Manager
 {
@@ -46,7 +47,6 @@ namespace Bookings_Hotel.Pages.Manager
                 return NotFound();
             }
 
-            // Cập nhật trạng thái phòng thành "Deleted"
             room.RoomStatus = "Deleted";
             await _context.SaveChangesAsync();
 
@@ -55,6 +55,46 @@ namespace Bookings_Hotel.Pages.Manager
             {
                 success = true,
                 message = "Delete Success"
+            });
+        }
+
+        public async Task<IActionResult> OnPostActiveAsync(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+
+            room.RoomStatus = RoomStatus.ACTIVE;
+            await _context.SaveChangesAsync();
+
+
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Active Success"
+            });
+        }
+
+        public async Task<IActionResult> OnPostDeactiveAsync(int id)
+        {
+            var room = await _context.Rooms.FindAsync(id);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+
+            room.RoomStatus = RoomStatus.INACTIVE;
+            await _context.SaveChangesAsync();
+
+
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Deactive Success"
             });
         }
 

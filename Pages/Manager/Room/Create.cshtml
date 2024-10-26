@@ -68,10 +68,10 @@
             <div class="mb-3">
                 <label for="RoomTypeId" class="form-label">Loại phòng <span class="text-danger">*</span></label>
                 <select class="form-select" id="RoomTypeId" name="RoomTypeId" required>
-  @*                   @foreach (var type in Model.RoomTypes)
+                    @foreach (var type in Model.RoomTypes)
                     {
                         <option value="@type.TypeId">@type.TypeName</option>
-                    } *@
+                    }
                 </select>
             </div>
 
