@@ -40,7 +40,7 @@ namespace Bookings_Hotel.Pages
             }
 
 
-            /*roomDTOGet = new RoomDTO(
+           /* roomDTOGet = new RoomDTO(
                 room.RoomId,
                 room.RoomNumber,
                 room.NumberOfChild,

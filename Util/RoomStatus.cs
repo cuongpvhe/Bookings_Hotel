@@ -4,5 +4,6 @@
     {
         public static readonly String ACTIVE = "Active";
         public static readonly String INACTIVE = "Inactive";
+        public static readonly String DELETED = "Deleted";
     }
 }
