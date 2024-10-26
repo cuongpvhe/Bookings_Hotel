@@ -13,7 +13,7 @@ namespace Bookings_Hotel.Pages.Manager
         private readonly Cloudinary _cloudinary;
 
         public List<TypeRoom> RoomTypes { get; set; }
-        public List<Service> Services { get; set; }
+        public List<Models.Service> Services { get; set; }
 
         public AddNewRoomModel(HotelBookingSystemContext context, Cloudinary cloudinary)
         {
@@ -99,6 +99,12 @@ namespace Bookings_Hotel.Pages.Manager
             await _context.SaveChangesAsync();
 
             return new JsonResult(new { success = true });
+        }
+
+        public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
+        {
+            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
+            return new JsonResult(new { exists = roomExists });
         }
     }
 

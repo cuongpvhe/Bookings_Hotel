@@ -373,7 +373,7 @@ function validateRoomForm() {
 function checkRoomNumberExists(roomNumber) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: '/Manager/AddNewRoom?handler=CheckRoomNumber', // URL tới phương thức kiểm tra
+            url: '/Manager/Room/Create?handler=CheckRoomNumber', // URL tới phương thức kiểm tra
             type: 'POST',
             data: { roomNumber: roomNumber },
             headers: {
