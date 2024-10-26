@@ -226,29 +226,29 @@ async function submitRoomFormAjax() {
 
             // Thu thập dữ liệu từ form
             formData.append("RoomNumber", document.getElementById("RoomNumber").value);
-            formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
+/*            formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
             formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
             formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
-            formData.append("Price", document.getElementById("Price").value);
+            formData.append("Price", document.getElementById("Price").value);*/
             formData.append("RoomTypeId", document.getElementById("RoomTypeId").value);
             formData.append("Description", document.getElementById("Description").value);
 
             // Thu thập danh sách dịch vụ từ Select2
-            const selectedServices = $('#Services').val(); // Lấy danh sách dịch vụ đã chọn
+/*            const selectedServices = $('#Services').val(); 
             if (selectedServices) {
                 selectedServices.forEach(serviceId => {
-                    formData.append("ServiceIds", serviceId); // Đẩy từng ID vào với cùng tên "ServiceIds"
+                    formData.append("ServiceIds", serviceId); 
                 });
                 console.log("Selected Services: ", selectedServices);
-            }
+            }*/
 
             // Thu thập các ảnh từ collectImageDTOs
-            const imageDTOs = collectImageDTOs();
+/*            const imageDTOs = collectImageDTOs();
             imageDTOs.forEach((imageDTO, index) => {
                 formData.append(`Images[${index}][index]`, imageDTO.index);
                 formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
             });
-
+*/
             // AJAX request
             $.ajax({
                 url: '/Manager/Room/Create?handler=Post', // URL tới phương thức xử lý
