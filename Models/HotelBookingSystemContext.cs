@@ -34,7 +34,7 @@ namespace Bookings_Hotel.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server=QMN\\SQLEXPRESS;database=HotelBookingSystem;uid=sa;pwd=1");
+                optionsBuilder.UseSqlServer("Server=(local);database=HotelBookingSystem;uid=sa;pwd=1;TrustServerCertificate=true");
             }
         }
 
@@ -44,7 +44,7 @@ namespace Bookings_Hotel.Models
             {
                 entity.ToTable("Account");
 
-                entity.HasIndex(e => e.Email, "UQ__Account__A9D10534B63FC53F")
+                entity.HasIndex(e => e.Email, "UQ__Account__A9D105341C6CA42F")
                     .IsUnique();
 
                 entity.Property(e => e.AccountId).HasColumnName("Account_ID");
@@ -78,13 +78,13 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Accounts)
                     .HasForeignKey(d => d.RoleId)
-                    .HasConstraintName("FK__Account__ROLE_ID__5165187F");
+                    .HasConstraintName("FK__Account__Status__3D5E1FD2");
             });
 
             modelBuilder.Entity<Feedback>(entity =>
             {
                 entity.HasKey(e => e.ReviewId)
-                    .HasName("PK__Feedback__F85DA7EB3EBFD574");
+                    .HasName("PK__Review__F85DA7EB94DA1FCE");
 
                 entity.ToTable("Feedback");
 
@@ -105,7 +105,7 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Feedbacks)
                     .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK__Feedback__Accoun__52593CB8");
+                    .HasConstraintName("FK__Review__Account___59063A47");
 
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.Feedbacks)
@@ -115,13 +115,13 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Room)
                     .WithMany(p => p.Feedbacks)
                     .HasForeignKey(d => d.RoomId)
-                    .HasConstraintName("FK__Feedback__Room_I__5441852A");
+                    .HasConstraintName("FK__Review__Room_ID__571DF1D5");
             });
 
             modelBuilder.Entity<FeedbackImage>(entity =>
             {
                 entity.HasKey(e => e.ReviewImageId)
-                    .HasName("PK__Feedback__E961B89C2A957D13");
+                    .HasName("PK__Review_I__E961B89C263F08E6");
 
                 entity.ToTable("Feedback_Image");
 
@@ -134,7 +134,7 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Review)
                     .WithMany(p => p.FeedbackImages)
                     .HasForeignKey(d => d.ReviewId)
-                    .HasConstraintName("FK__Feedback___Revie__5535A963");
+                    .HasConstraintName("FK__Review_Im__Revie__5BE2A6F2");
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -172,7 +172,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => e.OdId)
-                    .HasName("PK__Order_De__3D0CE88369CC352B");
+                    .HasName("PK__Order_De__3D0CE883C26C1D02");
 
                 entity.ToTable("Order_Details");
 
@@ -237,7 +237,7 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Type)
                     .WithMany(p => p.Rooms)
                     .HasForeignKey(d => d.TypeId)
-                    .HasConstraintName("FK__Room__Type_ID__59063A47");
+                    .HasConstraintName("FK__Room__Type_ID__46E78A0C");
             });
 
             modelBuilder.Entity<Service>(entity =>
@@ -276,13 +276,13 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.ServiceImages)
                     .HasForeignKey(d => d.ServiceId)
-                    .HasConstraintName("FK__Service_I__Servi__59FA5E80");
+                    .HasConstraintName("FK__Service_I__Servi__4222D4EF");
             });
 
             modelBuilder.Entity<TypeRoom>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__Type_Roo__FE90DDFE0E4BFCE3");
+                    .HasName("PK__Type_Roo__FE90DDFE49672B5C");
 
                 entity.ToTable("Type_Room");
 
@@ -322,7 +322,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoomService>(entity =>
             {
                 entity.HasKey(e => e.TypeServiceId)
-                    .HasName("PK__Type_Roo__B519086528394547");
+                    .HasName("PK__Room_Ser__D8ABE2A85A332165");
 
                 entity.ToTable("Type_Room_Service");
 
@@ -335,7 +335,7 @@ namespace Bookings_Hotel.Models
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.TypeRoomServices)
                     .HasForeignKey(d => d.ServiceId)
-                    .HasConstraintName("FK__Type_Room__Servi__5BE2A6F2");
+                    .HasConstraintName("FK__Room_Serv__Servi__4D94879B");
 
                 entity.HasOne(d => d.Type)
                     .WithMany(p => p.TypeRoomServices)
