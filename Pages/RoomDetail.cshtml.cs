@@ -40,7 +40,7 @@ namespace Bookings_Hotel.Pages
             }
 
 
-            roomDTOGet = new RoomDTO(
+            /*roomDTOGet = new RoomDTO(
                 room.RoomId,
                 room.RoomNumber,
                 room.NumberOfChild,
@@ -49,7 +49,7 @@ namespace Bookings_Hotel.Pages
                 room.Price,
                 room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
                 room.Description
-            );
+            );*/
 
 
 
