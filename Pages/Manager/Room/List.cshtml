@@ -1,0 +1,195 @@
+﻿
+@page
+@model Bookings_Hotel.Pages.Manager.RoomsModel
+@{
+    ViewData["Title"] = "Rooms List";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/room.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+</head>
+
+<div class="main-header d-flex justify-content-between">
+    <div>
+        <span class="mb-0 fs-3 fw-bold">List Rooms</span>
+    </div>
+
+    <div>
+            <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Add</a>
+    </div>
+</div>
+
+<div class="search-bar d-flex justify-content-start">
+    <div class="me-2">
+        <select class="form-select" aria-label="Default select example">
+            <option value="1">All Status</option>
+            <option value="2">Booked</option>
+            <option value="3">Available</option>
+        </select>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
+        <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="table m-0">
+        <thead>
+            <tr>
+                @foreach (var header in Model.TableHeaders)
+                {
+                    <th scope="col" class="bg-table-head">@header</th>
+                }
+                @* <th scope="col" class="bg-table-head">Description</th>  *@
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.RoomsList.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    @*    <td>@Model.RoomsList[i].RoomId</td> *@
+                    <td>@Model.RoomsList[i].RoomNumber</td>
+                    <td>@Model.RoomsList[i].RoomType</td>
+                    <td>@Model.RoomsList[i].Price</td>
+                    <td>@Model.RoomsList[i].Capacity</td>
+                    @*  <td>@Model.RoomsList[i].Description</td>  *@
+                    <td>
+                        @if (Model.RoomsList[i].Status == "Active")
+                        {
+                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Inactive</span>
+                        }
+                    </td>
+
+
+                    <td class="action-column">
+                        <div class="dropdown dropstart">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-more-2-fill"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
+                                <li>
+                                    <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+<div class="pagination-container ">
+    <div class="me-2">
+        <select class="form-select" aria-label="Default select example">
+            <option value="1">10</option>
+            <option value="2">20</option>
+            <option value="3">30</option>
+        </select>
+    </div>
+
+    <div class="">
+        <nav aria-label="...">
+            <ul class="pagination m-0">
+                <li class="page-item disabled">
+                    <a class="page-link">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link " href="#">1</a></li>
+                <li class="page-item " aria-current="page">
+                    <a class="page-link text-dark" href="#">2</a>
+                </li>
+                <li class="page-item "><a class="page-link text-dark" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link text-dark" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmDelete(roomId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to delete this room?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
+                deleteRoom(roomId);
+            }
+        });
+    }
+
+
+    function deleteRoom(roomId) {
+        $.ajax({
+            url: '/Manager/Room/List?handler=Delete',
+            type: 'POST',
+            data: {
+                id: roomId
+            },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            beforeSend: function () {
+                Swal.fire({
+                    title: 'Processing',
+                    text: 'Please wait while we checking...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function (response) {
+                // On success, redirect to the payment page
+                if (response.success) { 
+                    window.location.reload();
+                }
+                
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'There was an error processing your checking!'
+                });
+
+                var errorMessage = xhr.responseText; // Log the server error message
+                console.log(errorMessage);
+            }
+        });
+    }
+
+
+
+
+
+</script>
