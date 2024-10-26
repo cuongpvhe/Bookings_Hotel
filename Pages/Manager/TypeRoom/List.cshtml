@@ -1,8 +1,8 @@
-﻿
-@page
-@model Bookings_Hotel.Pages.Manager.RoomsModel
+﻿@page
+@model Bookings_Hotel.Pages.Manager.TypeRoom.TypeRoomModel
+
 @{
-    ViewData["Title"] = "Rooms List";
+    ViewData["Title"] = "Type Room List";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
@@ -18,7 +18,7 @@
     </div>
 
     <div>
-            <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Add</a>
+        <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Add</a>
     </div>
 </div>
 
@@ -49,25 +49,15 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.RoomsList.Count; i++)
+            @for (int i = 0; i < Model.TypeRooms.Count; i++)
             {
                 <tr>
                     <td>@(i + 1)</td>
-                    @*    <td>@Model.RoomsList[i].RoomId</td> *@
-                    <td>@Model.RoomsList[i].RoomNumber</td>
-                    <td>@Model.RoomsList[i].RoomType</td>
-                     <td>@Model.RoomsList[i].Description</td> 
-                    <td>
-                        @if (Model.RoomsList[i].Status == "Active")
-                        {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Active</span>
-                        }
-                        else
-                        {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Inactive</span>
-                        }
-                    </td>
-
+                    <td>@Model.TypeRooms[i].TypeName</td>
+                    <td>@Model.TypeRooms[i].NumberOfBed</td>
+                    <td>@Model.TypeRooms[i].NumberOfAdult</td>
+                    <td>@Model.TypeRooms[i].NumberOfChild</td>
+                    <td>@Model.TypeRooms[i].Price</td>
 
                     <td class="action-column">
                         <div class="dropdown dropstart">
@@ -75,9 +65,9 @@
                                 <i class="ri-more-2-fill"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
+                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
                                 <li>
-                                    <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
+                                    <a class="dropdown-item" onclick="">
                                         <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete
                                     </a>
                                 </li>
@@ -167,10 +157,10 @@
             },
             success: function (response) {
                 // On success, redirect to the payment page
-                if (response.success) { 
+                if (response.success) {
                     window.location.reload();
                 }
-                
+
             },
             error: function (xhr, status, error) {
                 // Handle error response
@@ -190,4 +180,4 @@
 
 
 
-</script>
+</script></table>

@@ -19,7 +19,7 @@ namespace Bookings_Hotel.Pages.Manager
         [BindProperty]
         public List<RoomViewModel> RoomsList { get; set; }
         public List<string> TableHeaders { get; set; } = 
-            new List<string> { "#", "Room Number", "Room Type", "Price", "Capacity", "Status", "Actions" };
+            new List<string> { "#", "Room Number", "Status", "Description", "Actions" };
 
         public async Task OnGetAsync()
         {
@@ -31,8 +31,6 @@ namespace Bookings_Hotel.Pages.Manager
                RoomId = r.RoomId,
                RoomNumber = r.RoomNumber,
                RoomType = r.Type != null ? r.Type.TypeName : "N/A",
-               Price = r.Price,
-               Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
                Status = r.RoomStatus,
                Description = r.Description
            })
@@ -67,8 +65,6 @@ namespace Bookings_Hotel.Pages.Manager
         public int RoomId { get; set; }
         public int RoomNumber { get; set; }
         public string RoomType { get; set; }
-        public decimal Price { get; set; }
-        public string Capacity { get; set; }
         public string Status { get; set; }
         public string Description { get; set; }
     }

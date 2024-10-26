@@ -13,8 +13,8 @@ namespace Bookings_Hotel.Pages.Manager
         private readonly HotelBookingSystemContext _context;
         private readonly Cloudinary _cloudinary;
 
-        public List<TypeRoom> RoomTypes { get; set; }
-        public List<Models.Service> Services { get; set; }
+/*        public List<TypeRoom> RoomTypes { get; set; }
+*/        public List<Models.Service> Services { get; set; }
 
         public AddNewRoomModel(HotelBookingSystemContext context, Cloudinary cloudinary)
         {
@@ -24,8 +24,8 @@ namespace Bookings_Hotel.Pages.Manager
 
         public async Task<IActionResult> OnGetAsync()
         {
-            RoomTypes = await _context.TypeRooms.ToListAsync();
-            Services = await _context.Services.ToListAsync();
+/*            RoomTypes = await _context.TypeRooms.ToListAsync();
+*/            
             return Page();
         }
 

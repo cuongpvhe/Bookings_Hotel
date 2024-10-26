@@ -43,7 +43,7 @@ namespace Bookings_Hotel.Pages
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
         public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
+/*        public async Task<IActionResult> OnGetAsync()
         {
             Services = await _context.Services.ToListAsync();
             TypeRooms = await _context.TypeRooms.ToListAsync();
@@ -97,7 +97,7 @@ namespace Bookings_Hotel.Pages
             }
 
             return Page();
-        }
+        }*/
 
     }
 }
