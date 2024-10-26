@@ -1,0 +1,61 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.TypeRoom.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>TypeRoom</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TypeRoom.TypeId" />
+            <div class="form-group">
+                <label asp-for="TypeRoom.TypeName" class="control-label"></label>
+                <input asp-for="TypeRoom.TypeName" class="form-control" />
+                <span asp-validation-for="TypeRoom.TypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeRoom.NumberOfChild" class="control-label"></label>
+                <input asp-for="TypeRoom.NumberOfChild" class="form-control" />
+                <span asp-validation-for="TypeRoom.NumberOfChild" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeRoom.NumberOfAdult" class="control-label"></label>
+                <input asp-for="TypeRoom.NumberOfAdult" class="form-control" />
+                <span asp-validation-for="TypeRoom.NumberOfAdult" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeRoom.NumberOfBed" class="control-label"></label>
+                <input asp-for="TypeRoom.NumberOfBed" class="form-control" />
+                <span asp-validation-for="TypeRoom.NumberOfBed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeRoom.Description" class="control-label"></label>
+                <input asp-for="TypeRoom.Description" class="form-control" />
+                <span asp-validation-for="TypeRoom.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeRoom.Price" class="control-label"></label>
+                <input asp-for="TypeRoom.Price" class="form-control" />
+                <span asp-validation-for="TypeRoom.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

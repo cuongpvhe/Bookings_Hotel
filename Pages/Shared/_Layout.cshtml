@@ -85,11 +85,11 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a asp-page="/Index" class="nav-item nav-link">Home</a>
-                                <a asp-page="AboutUs" class="nav-item nav-link">About</a>
-                                <a asp-page="Services" class="nav-item nav-link">Services</a>
-                                <a asp-page="/Room" class="nav-item nav-link">Rooms</a>
-                                <a asp-page="Contact" class="nav-item nav-link">Contact</a>
+                                <a asp-page="/Index" class="nav-item nav-link">Trang chủ</a>
+                                <a asp-page="AboutUs" class="nav-item nav-link">Về chúng tôi</a>
+                                <a asp-page="Services" class="nav-item nav-link">Dịch vụ</a>
+                                <a asp-page="/Room" class="nav-item nav-link">Phòng</a>
+                                <a asp-page="Contact" class="nav-item nav-link">Liên hệ</a>
                             </div>
 
 
@@ -131,17 +131,17 @@
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                             <li>
                                                 <!-- Using accountId directly from claims -->
-                                                <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Profile</a>
+                                                <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Tài khoản</a>
                                             </li>
                                             <li>
                                                 <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Order history</button>
+                                                    <button type="submit" class="dropdown-item">Lịch sử đặt phòng</button>
                                                 </form>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <form method="post" asp-page="/Home/LogOut">
-                                                    <button type="submit" class="dropdown-item">Log Out</button>
+                                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
                                                 </form>
                                             </li>
 
@@ -152,10 +152,10 @@
                                 {
                                     <!-- Display Register and Login buttons if not logged in -->
                                     <li class="nav-item">
-                                        <a class="nav-link" asp-page="/Home/Register">Register</a>
+                                        <a class="nav-link" asp-page="/Home/Register">Đăng ký</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" asp-page="/Home/Login">Login</a>
+                                        <a class="nav-link" asp-page="/Home/Login">Đăng nhập</a>
                                     </li>
                                 }
                             </ul>
@@ -185,9 +185,7 @@
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
                                     <h6 class="section-title text-white text-uppercase mb-3 animated slideInDown">Luxury Living</h6>
-                                    <h1 class="display-3 text-white mb-4 animated slideInDown">Discover A Brand Luxurious Hotel</h1>
-                                    <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our Rooms</a>
-                                    <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Book A Room</a>
+                                    <h1 class="display-3 text-white mb-4 animated slideInDown">Khám phá khách sạn sang trọng</h1>
                                 </div>
                             </div>
                         </div>
@@ -196,9 +194,7 @@
                             <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                                 <div class="p-3" style="max-width: 700px;">
                                     <h6 class="section-title text-white text-uppercase mb-3 animated slideInDown">Luxury Living</h6>
-                                    <h1 class="display-3 text-white mb-4 animated slideInDown">Discover A Brand Luxurious Hotel</h1>
-                                    <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our Rooms</a>
-                                    <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Book A Room</a>
+                                    <h1 class="display-3 text-white mb-4 animated slideInDown">Khám phá khách sạn sang trọng</h1>
                                 </div>
                             </div>
                         </div>
@@ -228,8 +224,8 @@
                         <div class="bg-white rounded text-center p-5">
                             <h4 class="mb-4">Subscribe Our <span class="text-primary text-uppercase">Newsletter</span></h4>
                             <div class="position-relative mx-auto" style="max-width: 400px;">
-                                <input class="form-control w-100 py-3 ps-4 pe-5" type="text" placeholder="Enter your email">
-                                <button type="button" class="btn btn-primary py-2 px-3 position-absolute top-0 end-0 mt-2 me-2">Submit</button>
+                                <input class="form-control w-100 py-3 ps-4 pe-5" type="text" placeholder="Nhập email của bạn">
+                                <button type="button" class="btn btn-primary py-2 px-3 position-absolute top-0 end-0 mt-2 me-2">Gửi</button>
                             </div>
                         </div>
                     </div>

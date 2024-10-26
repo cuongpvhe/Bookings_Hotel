@@ -25,7 +25,7 @@ namespace Bookings_Hotel.Pages
 
         
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+/*        public async Task<IActionResult> OnGetAsync(int? id)
         {
             //Get parameter
             if (id == null)
@@ -52,19 +52,24 @@ namespace Bookings_Hotel.Pages
 
             if (room == null)
             {
-                return NotFound();
+                return NotFound("Not found room");
             }
 
+            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
+            if (typeRoom == null)
+            {
+                return NotFound("Not found type room");
+            }
 
-            roomDTOGet = new RoomDTO(
-                room.RoomId,
-                room.RoomNumber,
-                room.NumberOfChild,
-                room.NumberOfAdult,
-                room.NumberOfBed,
-                room.Price,
-                room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
-            );
+            roomDTOGet = new RoomDTO { 
+                RoomId = room.RoomId,
+                RoomNumber = room.RoomNumber,
+                NumberOfChild = typeRoom.NumberOfChild,
+                NumberOfAdult = typeRoom.NumberOfAdult,
+                NumberOfBed = typeRoom.NumberOfBed,
+                Price = typeRoom.Price,
+                PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+            };
 
 
 
@@ -100,7 +105,12 @@ namespace Bookings_Hotel.Pages
             {
                 return BadRequest("Room not found");
             }
-
+            //Get Type
+            var type = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
+            if (type == null)
+            {
+                return BadRequest("Room not found");
+            }
             //Convert Date
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
@@ -134,13 +144,13 @@ namespace Bookings_Hotel.Pages
             {
                 throw new ArgumentException("Check-out date must be later than check-in date.");
             }
-            decimal totalMoney = room.Price* numberOfNights;
+            decimal totalMoney = type.Price* numberOfNights;
 
             //Create Order
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
-                TotalMoney = totalMoney,
+                TotalMoney = totalMoney,Ư
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 AccountId = int.Parse(accountId), 
@@ -189,6 +199,6 @@ namespace Bookings_Hotel.Pages
             }
 
             return new string(stringChars);
-        }
+        }*/
     }
 }

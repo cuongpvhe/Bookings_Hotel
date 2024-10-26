@@ -16,7 +16,7 @@
         public string? PriceString { get; set; }
 
         public RoomDTO() { }
-        public RoomDTO(int roomId, int roomNumber, int? numberOfChild, int? numberOfAdult, int? numberOfBed, decimal price, string priceString)
+        public RoomDTO(int roomId, int roomNumber, int? numberOfChild, int? numberOfAdult, int? numberOfBed, decimal? price, string priceString)
         {
             RoomId = roomId;
             RoomNumber = roomNumber;
@@ -26,7 +26,7 @@
             Price = price;
             PriceString = priceString;
         }
-        public RoomDTO(int roomId, int roomNumber, int? numberOfChild, int? numberOfAdult, int? numberOfBed, decimal price, string priceString, string? description)
+        public RoomDTO(int roomId, int roomNumber, int? numberOfChild, int? numberOfAdult, int? numberOfBed, decimal? price, string priceString, string? description)
         {
             RoomId = roomId;
             RoomNumber = roomNumber;
