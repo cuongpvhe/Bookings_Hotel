@@ -7,13 +7,13 @@
 
 @section Styles {
     <head>
-        <link href="~/admin_template/css/add-room.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     </head>
 }
 <div class="card p-4">
-    <h2 class="text-center">Create Service</h2>
+    <h2 class="text-center">Thêm dịch vụ mới</h2>
     @if (!ModelState.IsValid)
     {
         <div class="alert alert-danger">
@@ -26,7 +26,7 @@
         </div>
     }
 
-    <form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addTypeRoomForm" enctype="multipart/form-data">
+    <form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addServiceForm" enctype="multipart/form-data">
         <div class="col m-0 p-0">
             <div class="carousel-container">
                 <div>
@@ -62,7 +62,7 @@
 
         <div class="card p-4 col m-0 p-0">
             <div class="form-group mb-3">
-                <label asp-for="service.ServiceName" class="form-label">Service Name <span class="text-danger">*</span></label>
+                <label asp-for="service.ServiceName" class="form-label">Tên dịch vụ<span class="text-danger">*</span></label>
                 <input type="text" asp-for="service.ServiceName" class="form-control" required />
                 <span asp-validation-for="service.ServiceName" class="text-danger"></span>
             </div>
@@ -70,14 +70,14 @@
             <div class="row mb-3">
                 <div class="col">
                     <div class="form-group">
-                        <label asp-for="service.CreatedDate" class="form-label">Created Date</label>
+                        <label asp-for="service.CreatedDate" class="form-label">Ngày tạo</label>
                         <input type="date" asp-for="service.CreatedDate" class="form-control bg-opacity-10" disabled />
                         <input type="hidden" asp-for="service.CreatedDate" />
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label asp-for="service.UpdateDate" class="form-label">Update Date</label>
+                        <label asp-for="service.UpdateDate" class="form-label">Ngày cập nhật</label>
                         <input type="date" asp-for="service.UpdateDate" class="form-control bg-opacity-10" disabled />
                         <input type="hidden" asp-for="service.UpdateDate" />
                     </div>
@@ -85,7 +85,7 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="service.Price" class="form-label">Price <span class="text-danger">*</span></label>
+                <label asp-for="service.Price" class="form-label">Giá <span class="text-danger">*</span></label>
                 <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input type="number" asp-for="service.Price" class="form-control" step="0.01" min="0" required />
@@ -94,29 +94,92 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="service.Description" class="form-label">Description</label>
+                <label asp-for="service.Description" class="form-label">Mô tả</label>
                 <textarea asp-for="service.Description" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="service.Description" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-4">
-                <label asp-for="service.Status" class="form-label">Status</label>
+                <label asp-for="service.Status" class="form-label">Trạng thái</label>
                 <select asp-for="service.Status" class="form-select">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Active">Hoạt động</option>
+                    <option value="Inactive">Không hoạt động</option>
                 </select>
                 <span asp-validation-for="service.Status" class="text-danger"></span>
             </div>
 
             <div class="d-flex justify-content-center gap-2">
                 <button type="submit" class="btn btn-primary px-4">
-                    Create Service
+                    Thêm dịch vụ
                 </button>
-                <a asp-page="./List" class="btn btn-secondary px-4">Cancel</a>
+                <a asp-page="./List" class="btn btn-secondary px-4">Trở lại</a>
             </div>
         </div>
     </form>
 </div>
+
+
+<div aria-hidden="true" aria-labelledby="cropImageModalLabel" class="modal fade" id="cropImageModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title" id="cropImageModalLabel">Chỉnh sửa ảnh</h5>
+            </div>
+            <div class="modal-body d-flex">
+                <div class="model-sidebar d-flex flex-column justify-content-between p-2">
+                    <div class="d-flex flex-column btns-container">
+                        <div>
+                            <button class="btn  mb-2 me-2 btn-edit-img" id="rotateLeft">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                            <span class="btn-name">Xoay trái</span>
+                        </div>
+                        <div>
+                            <button class="btn  mb-2 me-2 btn-edit-img" id="rotateRight">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                            <span class="btn-name">Xoay phải</span>
+                        </div>
+
+                        <div>
+                            <button class="btn  mb-2 me-2 btn-edit-img" id="scaleX">
+                                <i class="bi bi-arrows-expand-vertical"></i>
+
+                            </button>
+                            <span class="btn-name">Lật ngang</span>
+                        </div>
+                        <div>
+                            <button class="btn  mb-2 me-2 btn-edit-img" id="scaleY">
+                                <i class="bi bi-arrows-expand"></i>
+
+                            </button>
+                            <span class="btn-name">Lật dọc</span>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 pe-1">
+                            <button class="btn btn-primary w-100" id="cropImageButton" type="button">
+                                Lưu
+                            </button>
+                        </div>
+                        <div class="col-6 ps-1">
+                            <button class="btn  w-100 cancel-btn" data-bs-dismiss="modal" type="button">
+                                Hủy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="img-container">
+                    <img class="img-fluid" id="imageToCrop" src="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -126,52 +189,6 @@
             if (this.value < 0) this.value = 0;
         });
 
-        let imageCounter = 0;
-        function addImage(event) {
-            const files = event.target.files;
-            const carouselInner = document.getElementById('carousel-inner');
-
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const newDiv = document.createElement('div');
-                    newDiv.className = (imageCounter === 0 ? "carousel-item active" : "carousel-item");
-                    newDiv.innerHTML = `<img src="${e.target.result}" class="d-block w-100" alt="Service Image">`;
-                    carouselInner.appendChild(newDiv);
-                    imageCounter++;
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        }
-
-        function deleteLastImage() {
-            const carouselInner = document.getElementById('carousel-inner');
-            if (carouselInner.lastChild) {
-                carouselInner.removeChild(carouselInner.lastChild);
-                imageCounter--;
-            }
-        }
-
-
-        function addImage(event) {
-            const files = event.target.files;
-            const carouselInner = document.getElementById('carousel-inner');
-
-            for (let i = 0; i < files.length; i++) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const newDiv = document.createElement('div');
-                    newDiv.className = (imageCounter === 0 ? "carousel-item active" : "carousel-item");
-                    newDiv.innerHTML = `<img src="${e.target.result}" class="d-block w-100" alt="Service Image">`;
-                    carouselInner.appendChild(newDiv);
-                    imageCounter++;
-
-                    // Add image URL to hidden input
-                    document.getElementById('imageUrls').value += e.target.result + ",";
-                };
-                reader.readAsDataURL(files[i]);
-            }
-        }
 
     </script>
 
@@ -192,7 +209,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="~/admin_template/js/addtyperoom.js"></script>
+    <script src="~/admin_template/js/addservice.js"></script>
+
     <script>
         $(document).ready(function () {
             $('.js-example-basic-multiple').select2();

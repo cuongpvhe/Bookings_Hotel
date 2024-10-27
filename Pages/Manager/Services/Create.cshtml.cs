@@ -46,11 +46,10 @@ namespace Bookings_Hotel.Pages.Manager.Services
                 _context.Services.Add(service);
                 await _context.SaveChangesAsync();
 
-                var images = Request.Form.Files;
                 // Save images to cloud storage
-                for (int i = 0; i < ImageUrls.Count; i++)
+                var files = Request.Form.Files;
+                foreach (var file in files)
                 {
-                    var file = images[i];
                     var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
                     {
                         File = new FileDescription(file.FileName, file.OpenReadStream()),

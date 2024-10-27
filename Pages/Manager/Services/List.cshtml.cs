@@ -78,6 +78,13 @@ namespace Bookings_Hotel.Pages.Manager.Services
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var ser = await _context.Services.FindAsync(id);
+            var serviceImage = _context.ServiceImages.Where(x => x.ServiceId == id);
+
+            foreach (var image in serviceImage)
+            {
+                _context.ServiceImages.Remove(image);
+            }
+
             if (ser == null)
             {
                 return NotFound();
