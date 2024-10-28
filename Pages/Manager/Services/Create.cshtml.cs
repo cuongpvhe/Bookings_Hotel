@@ -1,8 +1,10 @@
 using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bookings_Hotel.Pages.Manager.Services
 {
@@ -27,7 +29,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
         {
             service.CreatedDate = DateTime.Now;
             service.UpdateDate = DateTime.Now;
-            service.Status = "Active";
+            service.Status = ServiceStatus.ACTIVE;
             return Page();
         }
 
@@ -42,6 +44,17 @@ namespace Bookings_Hotel.Pages.Manager.Services
 
             try
             {
+                var serviceExists = await _context.Services
+                    .AnyAsync(s => s.ServiceName.ToLower() == service.ServiceName.ToLower());
+                if (serviceExists)
+                {
+                    return new JsonResult(new
+                    {
+                        error = true,
+                        message = "Edit error!"
+                    });
+                }
+
                 // Save service to database
                 _context.Services.Add(service);
                 await _context.SaveChangesAsync();

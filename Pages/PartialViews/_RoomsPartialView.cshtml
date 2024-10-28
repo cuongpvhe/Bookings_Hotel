@@ -1,5 +1,5 @@
-﻿@model List<Bookings_Hotel.Models.TypeRoom>
-
+﻿@using Bookings_Hotel.Util
+@model List<Bookings_Hotel.Models.TypeRoom>
 
 <div class="row g-4">
     @foreach (var typeRoom in Model)
@@ -47,7 +47,7 @@
                     </div>
                     <div class="d-flex mb-3">
                         <small class="border-end me-3 pe-3">
-                            <i class="fa fa-bed text-primary me-2"></i>@typeRoom.NumberOfBed <br /> Giường
+                            <i class="fa fa-bed text-primary me-2"></i>@typeRoom.NumberOfBed <br/> Giường
                         </small>
                         <small class="border-end me-3 pe-3">
                             <i class="fa fa-user text-primary me-2"></i>@typeRoom.NumberOfAdult <br/>Người lớn
@@ -65,9 +65,12 @@
                             <div class="d-flex flex-wrap">
                                 @foreach (var service in typeRoom.TypeRoomServices.Select(ts => ts.Service).Take(3))
                                 {
-                                    <span class="badge bg-light text-dark me-2 mb-2">
-                                        <i class="fa fa-check text-primary me-1"></i>@service.ServiceName
-                                    </span>
+                                    if (service.Status == ServiceStatus.ACTIVE)
+                                    {
+                                        <span class="badge bg-light text-dark me-2 mb-2">
+                                            <i class="fa fa-check text-primary me-1"></i>@service.ServiceName
+                                        </span>
+                                    }
                                 }
                             </div>
                         </div>

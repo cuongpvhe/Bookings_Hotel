@@ -1,4 +1,5 @@
 using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
                 return NotFound();
             }
 
-            ser.Status = ser.Status == "Active" ? "Inactive" : "Active";
+            ser.Status = ser.Status == ServiceStatus.ACTIVE ? ServiceStatus.INACTIVE : ServiceStatus.ACTIVE;
             await _context.SaveChangesAsync();
 
             return RedirectToPage();

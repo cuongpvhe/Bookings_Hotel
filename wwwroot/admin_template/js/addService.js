@@ -147,7 +147,6 @@ document.getElementById('addServiceForm').addEventListener('submit', async funct
             method: 'POST',
             body: formData
         });
-
         if (response.ok) {
             Swal.fire({
                 title: 'Success!',
