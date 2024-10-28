@@ -20,7 +20,7 @@ namespace Bookings_Hotel.Pages
 
         [BindProperty(SupportsGet = true)]
         [ValidateNever]
-        public RoomDTO roomDTOGet { get; set; }
+        public TypeRoomDTO roomDTOGet { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync(int? id)

@@ -25,6 +25,9 @@ namespace Bookings_Hotel.Pages.Home
         [BindProperty]
         public string Password { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string ReturnUrl { get; set; } // Lưu đường dẫn trở lại
+
         public async Task<IActionResult> OnPostAsync()
         {
            
@@ -53,19 +56,26 @@ namespace Bookings_Hotel.Pages.Home
                 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-             
-                if (account.RoleId == 2) 
+                if (!string.IsNullOrEmpty(ReturnUrl))
                 {
-                    return RedirectToPage("/Index");
+                    return LocalRedirect(ReturnUrl); // Trở lại URL ban đầu nếu có
                 }
-                else if (account.RoleId == 1)
+                else
                 {
-                    return RedirectToPage("/Admin/Managers");
+                    if (account.RoleId == 2)
+                    {
+                        return RedirectToPage("/Index");
+                    }
+                    else if (account.RoleId == 1)
+                    {
+                        return RedirectToPage("/Admin/Managers");
+                    }
+                    else if (account.RoleId == 3)
+                    {
+                        return RedirectToPage("/Manager/IndexStaff");
+                    }
                 }
-                else if (account.RoleId == 3) 
-                {
-                    return RedirectToPage("/Manager/IndexStaff");
-                }
+
             }
 
             

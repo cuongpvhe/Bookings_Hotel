@@ -21,11 +21,11 @@ namespace Bookings_Hotel.Pages
 
         [BindProperty(SupportsGet = true)]
         [ValidateNever]
-        public RoomDTO roomDTOGet { get; set; }
+        public TypeRoomDTO typeRoomDTOGet { get; set; }
 
         
 
-/*        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
             //Get parameter
             if (id == null)
@@ -38,37 +38,43 @@ namespace Bookings_Hotel.Pages
 
             if (string.IsNullOrEmpty(accountId))
             {
-                return Redirect("/Login");
+                return RedirectToPage("/Home/Login", new { returnUrl = "/Booking?id=" + id });
             }
 
             var account = await _context.Accounts.FindAsync(int.Parse(accountId));
             if (account == null)
             {
-                return Redirect("/Login");
+                return RedirectToPage("/Home/Login", new { returnUrl = "/Booking?id=" + id });
             }
 
             //Process
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomId == id);
+            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
 
-            if (room == null)
-            {
-                return NotFound("Not found room");
-            }
-
-            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
             if (typeRoom == null)
             {
-                return NotFound("Not found type room");
+                return NotFound("Not Found ID");
             }
 
-            roomDTOGet = new RoomDTO { 
-                RoomId = room.RoomId,
-                RoomNumber = room.RoomNumber,
+            //Get Service
+            var lstServiceName = _context.TypeRoomServices
+                    .Where(trs => trs.TypeId == typeRoom.TypeId)
+                    .Join(_context.Services,
+                        trs => trs.ServiceId,
+                        s => s.ServiceId,
+                        (trs, s) => s.ServiceName) 
+            .ToList();
+
+
+            typeRoomDTOGet = new TypeRoomDTO {
+                TypeId = typeRoom.TypeId,
+                TypeName = typeRoom.TypeName,
                 NumberOfChild = typeRoom.NumberOfChild,
                 NumberOfAdult = typeRoom.NumberOfAdult,
                 NumberOfBed = typeRoom.NumberOfBed,
                 Price = typeRoom.Price,
-                PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                PriceVATString = (typeRoom.Price * 1.1m).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstService = lstServiceName
             };
 
 
@@ -77,7 +83,7 @@ namespace Bookings_Hotel.Pages
         }
 
         
-        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int RoomId)
+        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int TypeId,int Quantity)
         {
             // Checklogin
             var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
@@ -99,18 +105,6 @@ namespace Bookings_Hotel.Pages
                 return BadRequest(ModelState); 
             }
 
-            //Get Room
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
-            if (room == null)
-            {
-                return BadRequest("Room not found");
-            }
-            //Get Type
-            var type = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
-            if (type == null)
-            {
-                return BadRequest("Room not found");
-            }
             //Convert Date
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
@@ -122,19 +116,33 @@ namespace Bookings_Hotel.Pages
                 return BadRequest("Invalid Check-Out Date format.");
             }
 
-            //Check if the room is booked 
-            var conflictingOrderDetails = _context.OrderDetails
-                .Where(od => od.RoomId == room.RoomId &&
-                             ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) || // Checkin mới trùng với khoảng thời gian đã đặt
-                              (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) || // Checkout mới trùng với khoảng thời gian đã đặt
-                              (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))) // Khoảng thời gian mới bao phủ toàn bộ thời gian đã đặt
-                .ToList();
-            if (conflictingOrderDetails.Any())
+            //Get Type by TypeID(from header request)
+            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == TypeId);
+            if (typeRoom == null)
+            {
+                return BadRequest("Room not found");
+            }
+
+            //Get {quantity} Valid Room
+            var lstRoom = this.getValidLstRoom(typeRoom,checkinDate,checkoutDate,Quantity);
+
+            if (!lstRoom.Any())
             {
                 return new JsonResult(new
                 {
                     success = false,
-                    message = "The room is already booked for the selected dates."
+                    message = "Tất Cả Các Phòng Đã Được Thuê. Vui Lòng Chọn Ngày Khác",
+                    data = lstRoom.Count
+                });
+            }
+
+            if (lstRoom.Count < Quantity)
+            {
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Không Đủ Số Lượng Phòng, Số Lượng Phòng Còn Lại Là: " + lstRoom.Count,
+                    data = lstRoom.Count
                 });
             }
 
@@ -144,13 +152,13 @@ namespace Bookings_Hotel.Pages
             {
                 throw new ArgumentException("Check-out date must be later than check-in date.");
             }
-            decimal totalMoney = type.Price* numberOfNights;
+            decimal totalMoney = typeRoom.Price * numberOfNights * Quantity * 1.1m; //1.1 VAT
 
             //Create Order
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
-                TotalMoney = totalMoney,Ư
+                TotalMoney = totalMoney,
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 AccountId = int.Parse(accountId), 
@@ -160,20 +168,22 @@ namespace Bookings_Hotel.Pages
 
             // Add Order to the context
             _context.Orders.Add(newOrder);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
 
             // Create the OrderDetails and link it to the order
-            var orderDetails = new OrderDetail
+            foreach (var room in lstRoom)
             {
-                RoomId = roomDTOGet.RoomId,
-                CheckIn = checkinDate,
-                CheckOut = checkoutDate,
-                OrderId = newOrder.OrderId, 
-            };
-
-            // Add OrderDetail to the context
-            _context.OrderDetails.Add(orderDetails);
-
+                var orderDetails = new OrderDetail
+                {
+                    RoomId = room.RoomId,
+                    CheckIn = checkinDate,
+                    CheckOut = checkoutDate,
+                    OrderId = newOrder.OrderId,
+                };
+                // Add OrderDetail to the context
+                _context.OrderDetails.Add(orderDetails);
+            }
+            
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
@@ -186,6 +196,21 @@ namespace Bookings_Hotel.Pages
             });
         }
 
+        public List<Room> getValidLstRoom(TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate,int quantity)
+        {
+            //Get Valid Room By TypeID
+            return _context.Rooms
+                .Where(r => r.TypeId == typeRoom.TypeId)
+                .Where(r => r.RoomStatus.Equals("Available"))
+                .Where(room => !_context.OrderDetails.Any(
+                    od => od.RoomId == room.RoomId &&
+                   ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) ||
+                    (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) ||
+                    (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))))
+                .OrderBy(room => room.RoomNumber)
+                .Take(quantity)
+                .ToList();
+        }
 
         public static string GenerateRandomPaymentCode()
         {
@@ -199,6 +224,6 @@ namespace Bookings_Hotel.Pages
             }
 
             return new string(stringChars);
-        }*/
+        }
     }
 }

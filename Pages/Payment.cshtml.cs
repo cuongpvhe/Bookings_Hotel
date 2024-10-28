@@ -51,9 +51,9 @@ namespace Bookings_Hotel.Pages
             
             //Process
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == oid && o.AccountId == Int64.Parse(accountId));
-
+            
             //Check is order is payed
-            if (order.OrderStatus.Equals(OrderStatus.WAITING_CONFIRM))
+            if (order == null || order.OrderStatus.Equals(OrderStatus.WAITING_CONFIRM))
             {
                 return NotFound();
             }
