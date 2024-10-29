@@ -1,0 +1,92 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Room.UpdateModel
+@{
+    ViewData["Title"] = "Update room";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<div class="main-header d-flex justify-content-start">
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Update room</span>
+    </div>
+</div>
+
+
+<form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="updateRoomForm" enctype="multipart/form-data">
+
+
+    <div class="col m-0 p-0">
+        <div class="row">
+
+            <div class="mb-3">
+                <label for="RoomNumber" class="form-label">Số Phòng<span class="text-danger">*</span></label>
+                <input type="hidden" id="OriginalRoomNumber" value="@Model.Room.RoomNumber" />
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" value="@Model.Room.RoomNumber" placeholder="Enter room number" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="RoomTypeId" class="form-label">Loại phòng <span class="text-danger">*</span></label>
+                <select class="form-select" id="RoomTypeId" name="RoomTypeId" required>
+                 @foreach (var type in Model.RoomTypes)
+                    {
+                        var selected = type.TypeId == Model.Room.TypeId ? "selected" : "";
+                        <option value="@type.TypeId" selected >@type.TypeName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="RoomStatus" class="form-label">Trạng thái phòng <span class="text-danger">*</span></label>
+                <select class="form-select" id="RoomStatus" name="RoomStatus" required>
+                   @{
+                        var availableSelected = Model.Room.RoomStatus == "Active" ? "selected" : "";
+                        var occupiedSelected = Model.Room.RoomStatus == "Inactive" ? "selected" : "";
+                    }
+                    <option value="Active" availableSelected>Active</option>
+                    <option value="Inactive" occupiedSelected>Inactive</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="Description" class="form-label">Mô tả</label>
+                <textarea class="form-control" id="Description" name="Description" rows="5">@Model.Room.Description</textarea>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitRoomFormAjax()">Save</button>
+            </div>
+        </div>
+</form>
+
+@Html.AntiForgeryToken()
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="~/admin_template/js/updateRoom.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.js-example-basic-multiple').select2();
+    });
+</script>
