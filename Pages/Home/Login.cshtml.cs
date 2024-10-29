@@ -69,7 +69,7 @@ namespace Bookings_Hotel.Pages.Home
             }
 
             
-            ModelState.AddModelError("Error_Login", "Invalid username or password.");
+            ModelState.AddModelError("Error_Login", "Tài khoản hoặc mật khẩu không chính xác.");
             return Page();
 
         }

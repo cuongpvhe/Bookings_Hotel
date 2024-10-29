@@ -1,0 +1,125 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Bookings.BookingViewsModel
+@{
+    ViewData["Title"] = "Manage Bookings";
+}
+
+<h2>Manage Bookings</h2>
+
+<!-- Dropdown chọn tầng -->
+<div class="mb-3">
+    <label for="floorSelect">Select Floor:</label>
+ <select id="floorSelect" class="form-control" onchange="this.form.submit()">
+    <option value="">-- Select Floor --</option>
+    @foreach (var floor in Model.Floors)
+    {
+        var isSelected = floor == Model.SelectedFloor ? "selected" : "";
+        <option value="@floor" @isSelected>@floor</option>
+    }
+</select>
+
+
+
+</div>
+
+<!-- Hiển thị danh sách phòng dạng ô vuông -->
+<div id="roomsContainer" class="d-flex flex-wrap">
+    @foreach (var room in Model.Rooms)
+    {
+        <div class="room-box" onclick="showBookingCalendar(@room.RoomId)">
+            Room @room.RoomNumber
+        </div>
+    }
+</div>
+
+<!-- Hiển thị lịch booking -->
+<div id="calendarContainer" style="display:none;">
+    <h3>Booking Calendar</h3>
+    <label for="monthSelect">Select Month:</label>
+    <select id="monthSelect" class="form-control" onchange="loadBookingCalendar()">
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option value="@i">@i</option>
+        }
+    </select>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="calendarTable">
+        </tbody>
+    </table>
+</div>
+
+<!-- Hiển thị thông tin chi tiết booking -->
+<div id="bookingDetailsContainer" style="display:none;">
+    <h4>Booking Details</h4>
+    <p><strong>Customer:</strong> <span id="customerName"></span></p>
+    <p><strong>Total Money:</strong> <span id="totalMoney"></span></p>
+    <p><strong>People Count:</strong> <span id="peopleCount"></span></p>
+    <p><strong>Check-In:</strong> <span id="checkIn"></span></p>
+    <p><strong>Check-Out:</strong> <span id="checkOut"></span></p>
+</div>
+
+@section Scripts {
+    <script>
+        function loadRoomsByFloor() {
+            let floor = document.getElementById("floorSelect").value;
+            if (floor) {
+                window.location.href = `?SelectedFloor=${floor}`;
+            }
+        }
+
+        function showBookingCalendar(roomId) {
+            document.getElementById("calendarContainer").style.display = "block";
+            loadBookingCalendar(roomId);
+        }
+
+        function loadBookingCalendar(roomId) {
+            let month = document.getElementById("monthSelect").value;
+            let year = new Date().getFullYear();
+
+            fetch(`/Manager/Bookings/Index?handler=RoomBookings&roomId=${roomId}&month=${month}&year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    let table = document.getElementById("calendarTable");
+                    table.innerHTML = "";
+
+                    data.forEach(booking => {
+                        let row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${new Date(booking.CheckIn).getDate()}</td>
+                            <td><span class="badge badge-danger">Booked</span></td>
+                        `;
+                        row.onclick = () => showBookingDetails(booking);
+                        table.appendChild(row);
+                    });
+                });
+        }
+
+        function showBookingDetails(booking) {
+            document.getElementById("bookingDetailsContainer").style.display = "block";
+            document.getElementById("customerName").textContent = booking.CustomerName;
+            document.getElementById("totalMoney").textContent = booking.TotalMoney;
+            document.getElementById("peopleCount").textContent = booking.PeopleCount;
+            document.getElementById("checkIn").textContent = new Date(booking.CheckIn).toLocaleDateString();
+            document.getElementById("checkOut").textContent = new Date(booking.CheckOut).toLocaleDateString();
+        }
+    </script>
+    <style>
+        .room-box {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+    </style>
+}

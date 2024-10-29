@@ -7,8 +7,8 @@ namespace Bookings_Hotel.Models
     {
         public Service()
         {
-            RoomServices = new HashSet<RoomService>();
             ServiceImages = new HashSet<ServiceImage>();
+            TypeRoomServices = new HashSet<TypeRoomService>();
         }
 
         public int ServiceId { get; set; }
@@ -17,8 +17,9 @@ namespace Bookings_Hotel.Models
         public DateTime? UpdateDate { get; set; }
         public decimal? Price { get; set; }
         public string? Description { get; set; }
+        public string? Status { get; set; }
 
-        public virtual ICollection<RoomService> RoomServices { get; set; }
         public virtual ICollection<ServiceImage> ServiceImages { get; set; }
+        public virtual ICollection<TypeRoomService> TypeRoomServices { get; set; }
     }
 }

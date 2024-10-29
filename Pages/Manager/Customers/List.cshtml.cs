@@ -65,7 +65,7 @@ namespace Bookings_Hotel.Pages.Manager.Customers
             var account = await _context.Accounts.FindAsync(id);
             if (account != null)
             {
-                account.Status = account.Status == "Active" ? "Inactive" : "Active";
+                account.Status = account.Status == "Active" ? "Không hoạt động" : "Hoạt động";
                 await _context.SaveChangesAsync();
             }
             return RedirectToPage("List");

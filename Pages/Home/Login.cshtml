@@ -11,28 +11,28 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header text-center">
-                    <h4>Welcome Back</h4>
+                    <h4>Đăng nhập</h4>
                 </div>
                 <div class="card-body">
                     
                     <form method="post">
                         <div asp-validation-summary="All" class="text-danger"></div>
                         <div class="mb-3">
-                            <label asp-for="Username" class="form-label">Username</label>
+                            <label asp-for="Username" class="form-label">Tài khoản</label>
                             <input asp-for="Username" class="form-control" />
                             <span asp-validation-for="Username" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label">Password</label>
+                            <label asp-for="Password" class="form-label">Mật khẩu</label>
                             <input asp-for="Password" type="password" class="form-control" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
                     </form>
                 </div>
                 <div class="card-footer text-center">
-                    <a asp-page="/Home/ForgotPassword">Forgot Password?</a> |
-                    <a asp-page="/Home/Register">Don't have an account? Register</a>
+                    <a asp-page="/Home/ForgotPassword">Quên mật khẩu?</a> |
+                    <a asp-page="/Home/Register">Chưa có tài khoản? Đăng ký</a>
                 </div>
             </div>
         </div>

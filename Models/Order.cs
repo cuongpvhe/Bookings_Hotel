@@ -7,8 +7,8 @@ namespace Bookings_Hotel.Models
     {
         public Order()
         {
+            Feedbacks = new HashSet<Feedback>();
             OrderDetails = new HashSet<OrderDetail>();
-            Reviews = new HashSet<Review>();
         }
 
         public int OrderId { get; set; }
@@ -21,7 +21,7 @@ namespace Bookings_Hotel.Models
         public string? PaymentCode { get; set; }
 
         public virtual Account? Account { get; set; }
+        public virtual ICollection<Feedback> Feedbacks { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

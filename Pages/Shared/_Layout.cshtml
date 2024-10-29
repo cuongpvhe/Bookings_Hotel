@@ -85,11 +85,11 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a asp-page="/Index" class="nav-item nav-link">Home</a>
-                                <a asp-page="AboutUs" class="nav-item nav-link">About</a>
-                                <a asp-page="Services" class="nav-item nav-link">Services</a>
-                                <a asp-page="/Room" class="nav-item nav-link">Rooms</a>
-                                <a asp-page="Contact" class="nav-item nav-link">Contact</a>
+                                <a asp-page="/Index" class="nav-item nav-link">Trang chủ</a>
+                               
+                                <a asp-page="Services" class="nav-item nav-link">Dịch vụ</a>
+                                <a asp-page="/Room" class="nav-item nav-link">Phòng</a>
+                                
                             </div>
 
 
@@ -131,17 +131,17 @@
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                             <li>
                                                 <!-- Using accountId directly from claims -->
-                                                <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Profile</a>
+                                                <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Thông tin</a>
                                             </li>
                                             <li>
                                                 <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Order history</button>
+                                                    <button type="submit" class="dropdown-item">Đơn hàng đã đặt</button>
                                                 </form>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
                                                 <form method="post" asp-page="/Home/LogOut">
-                                                    <button type="submit" class="dropdown-item">Log Out</button>
+                                                    <button type="submit" class="dropdown-item">Đăng xuất</button>
                                                 </form>
                                             </li>
 
@@ -152,10 +152,10 @@
                                 {
                                     <!-- Display Register and Login buttons if not logged in -->
                                     <li class="nav-item">
-                                        <a class="nav-link" asp-page="/Home/Register">Register</a>
+                                        <a class="nav-link" asp-page="/Home/Register">Đăng ký</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" asp-page="/Home/Login">Login</a>
+                                        <a class="nav-link" asp-page="/Home/Login">Đăng nhập</a>
                                     </li>
                                 }
                             </ul>
