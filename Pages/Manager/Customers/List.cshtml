@@ -56,12 +56,12 @@
                     </form>
                 </td>
                 <td>
-                    <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Chỉnh sửa</a>
-    
+                    <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Edit</a>
                     <form method="post" asp-page-handler="Delete" style="display:inline-block; margin-left: 10px;">
                         <input type="hidden" name="id" value="@customer.AccountId" />
-                        <button type="submit" onclick="return confirmDelete()" class="btn btn-danger">Xóa</button>
+                        <button type="button" onclick="confirmDelete(this)" class="btn btn-danger">Delete</button> 
                     </form>
+
                 </td>
 
 
@@ -87,12 +87,16 @@
             console.log("User cancelled the action."); 
         }
     }
-   function confirmDelete(accountId) {
-    if (confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
-        const form = document.querySelector(`input[value='${accountId}']`).closest('form');
-        form.submit(); 
-    } else {
-        console.log("User cancelled the delete action.");
+    function confirmDelete(button) {
+        const form = button.closest('form'); // Lấy form chứa nút delete
+        if (confirm("Bạn có chắc chắn muốn xóa tài khoản này không?")) {
+            form.submit(); // Gửi form nếu người dùng nhấn OK
+        } else {
+            console.log("User cancelled the delete action.");
+            return false; // Ngăn chặn việc gửi form khi nhấn Cancel
+        }
     }
-}
+
+
+
 </script>
