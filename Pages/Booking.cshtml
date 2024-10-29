@@ -124,22 +124,21 @@
                                     <small class="text-center text-primary">*Lưu ý: Giờ Nhận Phòng Là 14:00 và Giờ Trả Phòng Là 12:00</small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="NumberOfAdult" name="NumberOfAdult" placeholder="Số Lượng Người Lớn" value="@Model.typeRoomDTOGet.NumberOfAdult" />
                                     <label for="NumberOfAdult">Số Lượng Người Lớn</label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="NumberOfChild" name="NumberOfChild" placeholder="Số Lượng Trẻ Em" value="@Model.typeRoomDTOGet.NumberOfChild" />
                                     <label for="NumberOfChild">Số Lượng Trẻ Em</label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-floating">
-                                    <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Số Lượng Phòng" value="1"/>
-                                    <label for="quantity">Số Lượng Phòng</label>
+                            <div class="col-12">
+                                <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary">*Lưu ý: Trẻ em sẽ được tính với những em bé từ 6 tuổi trở xuống</small>
                                 </div>
                             </div>
                             <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
@@ -328,7 +327,7 @@
                     CheckInDate: $('#checkin').val(),
                     CheckOutDate: $('#checkout').val(),
                     SpecialRequest: $('#message').val() || '',
-                    Quantity: $('#quantity').val()
+                    Quantity: 1
                 };
 
                 if (!data.CheckInDate || !data.CheckOutDate) {

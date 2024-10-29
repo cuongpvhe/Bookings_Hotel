@@ -68,8 +68,8 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <h6 class="section-title text-start text-primary text-uppercase">Room Information</h6>
-                <h1 class="mb-4">Chào Mừng Đến Với Phòng <span class="text-primary text-uppercase">@Model.typeRoomDTOGet.TypeName</span></h1>
+                <h6 class="section-title text-start text-primary text-uppercase">Thông Tin Phòng</h6>
+                <h1 class="mb-4">Phòng <span class="text-primary text-uppercase">@Model.typeRoomDTOGet.TypeName</span></h1>
                 <p class="mb-4">@Model.typeRoomDTOGet.Description</p>
                 <div class="row g-3 pb-4">
                     <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
@@ -77,7 +77,7 @@
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
                                 <h2 class="mb-1">@Model.typeRoomDTOGet.PriceString VNĐ</h2>
-                                <p class="mb-0">Price Per Night</p>
+                                <p class="mb-0">Mỗi Đêm</p>
                             </div>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-bed fa-2x text-primary mb-2"></i>
                                 <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfBed</h2>
-                                <p class="mb-0">Bed</p>
+                                <p class="mb-0">Giường</p>
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-male fa-2x text-primary mb-2"></i>
                                 <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfAdult</h2>
-                                <p class="mb-0">Adult</p>
+                                <p class="mb-0">Người Lớn</p>
                             </div>
                         </div>
                     </div>
@@ -104,12 +104,28 @@
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-child fa-2x text-primary mb-2"></i>
                                 <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfChild</h2>
-                                <p class="mb-0">Child</p>
+                                <p class="mb-0">Trẻ Em</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-primary py-3 px-5 mt-2" asp-page="Booking" asp-route-id="@Model.typeRoomDTOGet.TypeId">Book Now</a>
+                <div class="row g-3 pb-4">
+                    <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Dịch Vụ Tặng Kèm</h6>
+                    </div>
+                    @foreach (var serviceName in Model.typeRoomDTOGet.LstService)
+                    {
+                        <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="border rounded p-1">
+                                <div class="border rounded text-center p-4">
+                                    <i class="fa fa-star fa-2x text-primary mb-2"></i>
+                                    <p class="mb-1">@serviceName</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <a class="btn btn-primary py-3 px-5 mt-2" asp-page="Booking" asp-route-id="@Model.typeRoomDTOGet.TypeId">Đặt Phòng Ngay</a>
             </div>
         </div>
     </div>
