@@ -17,7 +17,7 @@ namespace Bookings_Hotel.Pages
 
         public void OnGet()
         {
-            Rooms = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).Take(10).ToList();
+            //Rooms = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).Take(10).ToList();
         }
     }
 }

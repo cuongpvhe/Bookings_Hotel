@@ -21,44 +21,44 @@ namespace Bookings_Hotel.Pages.Manager
         public List<string> TableHeaders { get; set; } = 
             new List<string> { "#", "Room Number", "Room Type", "Price", "Capacity", "Status", "Actions" };
 
-        public async Task OnGetAsync()
-        {
-            RoomsList = await _context.Rooms
-           .Include(r => r.Type) 
-           .Where(r => r.RoomStatus != "Deleted") 
-           .Select(r => new RoomViewModel
-           {
-               RoomId = r.RoomId,
-               RoomNumber = r.RoomNumber,
-               RoomType = r.Type != null ? r.Type.TypeName : "N/A",
-               Price = r.Price,
-               Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
-               Status = r.RoomStatus,
-               Description = r.Description
-           })
-           .ToListAsync();
-        }
+    //    public async Task OnGetAsync()
+    //    {
+    //        RoomsList = await _context.Rooms
+    //       .Include(r => r.Type) 
+    //       .Where(r => r.RoomStatus != "Deleted") 
+    //       .Select(r => new RoomViewModel
+    //       {
+    //           RoomId = r.RoomId,
+    //           RoomNumber = r.RoomNumber,
+    //           RoomType = r.Type != null ? r.Type.TypeName : "N/A",
+    //           Price = r.Price,
+    //           Capacity = r.NumberOfBed.HasValue && r.NumberOfAdult.HasValue && r.NumberOfChild.HasValue ? $"{r.NumberOfBed} Beds, {r.NumberOfAdult} Adults, {r.NumberOfChild} Children" : "N/A",
+    //           Status = r.RoomStatus,
+    //           Description = r.Description
+    //       })
+    //       .ToListAsync();
+    //    }
 
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
-        {
-            var room = await _context.Rooms.FindAsync(id);
+    //    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    //    {
+    //        var room = await _context.Rooms.FindAsync(id);
 
-            if (room == null)
-            {
-                return NotFound();
-            }
+    //        if (room == null)
+    //        {
+    //            return NotFound();
+    //        }
 
-            // Cập nhật trạng thái phòng thành "Deleted"
-            room.RoomStatus = "Deleted";
-            await _context.SaveChangesAsync();
+    //        // Cập nhật trạng thái phòng thành "Deleted"
+    //        room.RoomStatus = "Deleted";
+    //        await _context.SaveChangesAsync();
 
 
-            return new JsonResult(new
-            {
-                success = true,
-                message = "Delete Success"
-            });
-        }
+    //        return new JsonResult(new
+    //        {
+    //            success = true,
+    //            message = "Delete Success"
+    //        });
+    //    }
 
     }
 

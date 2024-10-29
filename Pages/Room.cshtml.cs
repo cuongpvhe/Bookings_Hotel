@@ -43,61 +43,61 @@ namespace Bookings_Hotel.Pages
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
         public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
 
-        public async Task<IActionResult> OnGetAsync()
-        {
-            Services = await _context.Services.ToListAsync();
-            TypeRooms = await _context.TypeRooms.ToListAsync();
+        //public async Task<IActionResult> OnGetAsync()
+        //{
+        //    Services = await _context.Services.ToListAsync();
+        //    TypeRooms = await _context.TypeRooms.ToListAsync();
 
-            var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
+        //    var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
 
-            // Filter price
-            if (PriceMin.HasValue)
-            {
-                query = query.Where(x => x.Price >= PriceMin.Value);
-            }
-            if (PriceMax.HasValue)
-            {
-                query = query.Where(x => x.Price <= PriceMax.Value);
-            }
+        //    // Filter price
+        //    if (PriceMin.HasValue)
+        //    {
+        //        query = query.Where(x => x.Price >= PriceMin.Value);
+        //    }
+        //    if (PriceMax.HasValue)
+        //    {
+        //        query = query.Where(x => x.Price <= PriceMax.Value);
+        //    }
 
-            // Filter services
-            if (SelectedServices != null && SelectedServices.Count > 0)
-            {
-                query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
-            }
+        //    // Filter services
+        //    if (SelectedServices != null && SelectedServices.Count > 0)
+        //    {
+        //        query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
+        //    }
 
-            // Filter typeRooms
-            if (SelectedTypeRooms != null && SelectedTypeRooms.Count > 0)
-            {
-                query = query.Where(room => room.Type != null && SelectedTypeRooms.Contains(room.Type.TypeName));
-            }
+        //    // Filter typeRooms
+        //    if (SelectedTypeRooms != null && SelectedTypeRooms.Count > 0)
+        //    {
+        //        query = query.Where(room => room.Type != null && SelectedTypeRooms.Contains(room.Type.TypeName));
+        //    }
 
-            // Sort price
-            switch (SortPrice)
-            {
-                case 1:
-                    query = query.OrderBy(x => x.Price);
-                    break;
-                case 2:
-                    query = query.OrderByDescending(x => x.Price);
-                    break;
-                default:
-                    SortPrice = 3;
-                    break;
-            }
+        //    // Sort price
+        //    switch (SortPrice)
+        //    {
+        //        case 1:
+        //            query = query.OrderBy(x => x.Price);
+        //            break;
+        //        case 2:
+        //            query = query.OrderByDescending(x => x.Price);
+        //            break;
+        //        default:
+        //            SortPrice = 3;
+        //            break;
+        //    }
 
-            var totalRooms = await query.CountAsync();
-            TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
+        //    var totalRooms = await query.CountAsync();
+        //    TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
 
-            Rooms = Pagination.GetCurrentPageData(query.ToList(), CurrentPage, ItemsPerPage).ToList();
+        //    Rooms = Pagination.GetCurrentPageData(query.ToList(), CurrentPage, ItemsPerPage).ToList();
 
-            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Partial("PartialViews/_RoomsPartialView", Rooms);
-            }
+        //    if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+        //    {
+        //        return Partial("PartialViews/_RoomsPartialView", Rooms);
+        //    }
 
-            return Page();
-        }
+        //    return Page();
+        //}
 
     }
 }

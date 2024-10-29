@@ -1,13 +1,11 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Bookings_Hotel.Models;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Bookings_Hotel.Pages.Manager.Bookings
+namespace Bookings_Hotel.Pages.Manager.Booking
 {
     public class BookingViewsModel : PageModel
     {
@@ -18,40 +16,70 @@ namespace Bookings_Hotel.Pages.Manager.Bookings
             _context = context;
         }
 
-        [BindProperty(SupportsGet = true)]
-        public int SelectedFloor { get; set; }
+        public IList<SelectListItem> Floors { get; set; } = new List<SelectListItem>();
+        public int? SelectedFloor { get; set; }
 
-        public List<int> Floors { get; set; }
-        public List<Room> Rooms { get; set; }
-        public List<OrderDetail> RoomBookings { get; set; }
-
-        public async Task OnGetAsync()
+        public void OnGet()
         {
-            // Lấy danh sách các tầng
-            Floors = await _context.Rooms
-                .Where(r => r.Floor.HasValue)
-                .Select(r => r.Floor.Value)
-                .Distinct()
-                .OrderBy(f => f)
-                .ToListAsync();
-
-            // Lấy danh sách các phòng thuộc tầng đã chọn
-            Rooms = await _context.Rooms
-                .Where(r => r.Floor == SelectedFloor)
-                .ToListAsync();
+            // Lấy danh sách tầng từ database
+            Floors = _context.Rooms.Select(r => new SelectListItem
+            {
+                Value = r.Floor.ToString(),
+                Text = $"Tầng {r.Floor}"
+            }).Distinct().ToList();
         }
 
-        public async Task<JsonResult> OnGetRoomBookingsAsync(int roomId, int month, int year)
+        // API để lấy danh sách phòng theo tầng
+        public JsonResult OnGetGetRoomsByFloor(int floorId)
         {
-            // Lấy các booking cho phòng và tháng, năm đã chọn
-            var bookings = await _context.OrderDetails
-                .Where(od => od.RoomId == roomId &&
-                             od.CheckIn.Month == month &&
-                             od.CheckIn.Year == year)
-                .Include(od => od.Order) // Bao gồm thông tin của Order để lấy Account
-                .ToListAsync();
+            var rooms = _context.Rooms
+                .Where(r => r.Floor == floorId)
+                .Select(r => new
+                {
+                    roomId = r.RoomId,
+                    roomNumber = r.RoomNumber
+                })
+                .ToList();
 
-            return new JsonResult(bookings);
+            return new JsonResult(rooms);
         }
+        // API để lấy trạng thái booking
+        public JsonResult OnGetGetBookingStatus(int roomId)
+        {
+            // Lấy danh sách các đơn hàng đã Confirmed
+            var confirmedOrders = _context.Orders
+                .Where(o => o.OrderStatus == "Confirmed")
+                .Select(o => new
+                {
+                    OrderId = o.OrderId,
+                    OrderDetails = o.OrderDetails
+                        .Where(od => od.RoomId == roomId)
+                        .Select(od => new
+                        {
+                            CheckIn = od.CheckIn,
+                            CheckOut = od.CheckOut
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            // Lấy danh sách ngày từ hôm nay đến 30 ngày tới
+            var today = DateTime.Today;
+            var futureDates = Enumerable.Range(0, 30)
+                .Select(offset => today.AddDays(offset))
+                .ToList();
+
+            // Tạo danh sách trạng thái cho từng ngày
+            var statusList = futureDates.Select(date => new
+            {
+                Date = date,
+                IsBooked = confirmedOrders.Any(o =>
+                    o.OrderDetails.Any(od =>
+                        date >= od.CheckIn && date <= od.CheckOut))
+            }).ToList();
+
+            return new JsonResult(statusList);
+        }
+
     }
 }

@@ -25,170 +25,170 @@ namespace Bookings_Hotel.Pages
 
         
 
-        public async Task<IActionResult> OnGetAsync(int? id)
-        {
-            //Get parameter
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> OnGetAsync(int? id)
+        //{
+        //    //Get parameter
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            //Checklogin
-            var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
+        //    //Checklogin
+        //    var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
 
-            if (string.IsNullOrEmpty(accountId))
-            {
-                return Redirect("/Login");
-            }
+        //    if (string.IsNullOrEmpty(accountId))
+        //    {
+        //        return Redirect("/Login");
+        //    }
 
-            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
-            if (account == null)
-            {
-                return Redirect("/Login");
-            }
+        //    var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+        //    if (account == null)
+        //    {
+        //        return Redirect("/Login");
+        //    }
 
-            //Process
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomId == id);
+        //    //Process
+        //    var room = _context.Rooms.FirstOrDefault(r => r.RoomId == id);
 
-            if (room == null)
-            {
-                return NotFound();
-            }
-
-
-            roomDTOGet = new RoomDTO(
-                room.RoomId,
-                room.RoomNumber,
-                room.NumberOfChild,
-                room.NumberOfAdult,
-                room.NumberOfBed,
-                room.Price,
-                room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
-            );
+        //    if (room == null)
+        //    {
+        //        return NotFound();
+        //    }
 
 
+        //    roomDTOGet = new RoomDTO(
+        //        room.RoomId,
+        //        room.RoomNumber,
+        //        room.NumberOfChild,
+        //        room.NumberOfAdult,
+        //        room.NumberOfBed,
+        //        room.Price,
+        //        room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+        //    );
 
-            return Page();
-        }
+
+
+        //    return Page();
+        //}
 
         
-        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int RoomId)
-        {
-            // Checklogin
-            var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
+        //public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int RoomId)
+        //{
+        //    // Checklogin
+        //    var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
 
-            if (string.IsNullOrEmpty(accountId))
-            {
-                return Unauthorized();
-            }
+        //    if (string.IsNullOrEmpty(accountId))
+        //    {
+        //        return Unauthorized();
+        //    }
 
-            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
-            if (account == null)
-            {
-                return Unauthorized();
-            }
+        //    var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+        //    if (account == null)
+        //    {
+        //        return Unauthorized();
+        //    }
 
-            // Validate input
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); 
-            }
+        //    // Validate input
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState); 
+        //    }
 
-            //Get Room
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
-            if (room == null)
-            {
-                return BadRequest("Room not found");
-            }
+        //    //Get Room
+        //    var room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
+        //    if (room == null)
+        //    {
+        //        return BadRequest("Room not found");
+        //    }
 
-            //Convert Date
-            if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
-            {
-                return BadRequest("Invalid Check-In Date format.");
-            }
+        //    //Convert Date
+        //    if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
+        //    {
+        //        return BadRequest("Invalid Check-In Date format.");
+        //    }
 
-            if (!DateTime.TryParse(CheckOutDate, out DateTime checkoutDate))
-            {
-                return BadRequest("Invalid Check-Out Date format.");
-            }
+        //    if (!DateTime.TryParse(CheckOutDate, out DateTime checkoutDate))
+        //    {
+        //        return BadRequest("Invalid Check-Out Date format.");
+        //    }
 
-            //Check if the room is booked 
-            var conflictingOrderDetails = _context.OrderDetails
-                .Where(od => od.RoomId == room.RoomId &&
-                             ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) || // Checkin mới trùng với khoảng thời gian đã đặt
-                              (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) || // Checkout mới trùng với khoảng thời gian đã đặt
-                              (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))) // Khoảng thời gian mới bao phủ toàn bộ thời gian đã đặt
-                .ToList();
-            if (conflictingOrderDetails.Any())
-            {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "The room is already booked for the selected dates."
-                });
-            }
+        //    //Check if the room is booked 
+        //    var conflictingOrderDetails = _context.OrderDetails
+        //        .Where(od => od.RoomId == room.RoomId &&
+        //                     ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) || // Checkin mới trùng với khoảng thời gian đã đặt
+        //                      (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) || // Checkout mới trùng với khoảng thời gian đã đặt
+        //                      (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))) // Khoảng thời gian mới bao phủ toàn bộ thời gian đã đặt
+        //        .ToList();
+        //    if (conflictingOrderDetails.Any())
+        //    {
+        //        return new JsonResult(new
+        //        {
+        //            success = false,
+        //            message = "The room is already booked for the selected dates."
+        //        });
+        //    }
 
-            //Caculate Total Money
-            var numberOfNights = (checkoutDate - checkinDate).Days;
-            if (numberOfNights <= 0)
-            {
-                throw new ArgumentException("Check-out date must be later than check-in date.");
-            }
-            decimal totalMoney = room.Price* numberOfNights;
+        //    //Caculate Total Money
+        //    var numberOfNights = (checkoutDate - checkinDate).Days;
+        //    if (numberOfNights <= 0)
+        //    {
+        //        throw new ArgumentException("Check-out date must be later than check-in date.");
+        //    }
+        //    decimal totalMoney = room.Price* numberOfNights;
 
-            //Create Order
-            var newOrder = new Order
-            {
-                OrderDate = DateTime.Now,
-                TotalMoney = totalMoney,
-                Discount = 0,
-                OrderStatus = OrderStatus.WAITING_PAYMENT,
-                AccountId = int.Parse(accountId), 
-                Note = SpecialRequest,
-                PaymentCode = GenerateRandomPaymentCode()
-            };
+        //    //Create Order
+        //    var newOrder = new Order
+        //    {
+        //        OrderDate = DateTime.Now,
+        //        TotalMoney = totalMoney,
+        //        Discount = 0,
+        //        OrderStatus = OrderStatus.WAITING_PAYMENT,
+        //        AccountId = int.Parse(accountId), 
+        //        Note = SpecialRequest,
+        //        PaymentCode = GenerateRandomPaymentCode()
+        //    };
 
-            // Add Order to the context
-            _context.Orders.Add(newOrder);
-            await _context.SaveChangesAsync(); 
+        //    // Add Order to the context
+        //    _context.Orders.Add(newOrder);
+        //    await _context.SaveChangesAsync(); 
 
-            // Create the OrderDetails and link it to the order
-            var orderDetails = new OrderDetail
-            {
-                RoomId = roomDTOGet.RoomId,
-                CheckIn = checkinDate,
-                CheckOut = checkoutDate,
-                OrderId = newOrder.OrderId, 
-            };
+        //    // Create the OrderDetails and link it to the order
+        //    var orderDetails = new OrderDetail
+        //    {
+        //        RoomId = roomDTOGet.RoomId,
+        //        CheckIn = checkinDate,
+        //        CheckOut = checkoutDate,
+        //        OrderId = newOrder.OrderId, 
+        //    };
 
-            // Add OrderDetail to the context
-            _context.OrderDetails.Add(orderDetails);
+        //    // Add OrderDetail to the context
+        //    _context.OrderDetails.Add(orderDetails);
 
-            // Save the changes to the database
-            await _context.SaveChangesAsync();
+        //    // Save the changes to the database
+        //    await _context.SaveChangesAsync();
 
-            // Trả về kết quả
-            return new JsonResult(new
-            {
-                success = true,
-                message = "Received successfully!",
-                data = newOrder.OrderId
-            });
-        }
+        //    // Trả về kết quả
+        //    return new JsonResult(new
+        //    {
+        //        success = true,
+        //        message = "Received successfully!",
+        //        data = newOrder.OrderId
+        //    });
+        //}
 
 
-        public static string GenerateRandomPaymentCode()
-        {
-            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            Random random = new Random();
-            char[] stringChars = new char[8];
+        //public static string GenerateRandomPaymentCode()
+        //{
+        //    const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        //    Random random = new Random();
+        //    char[] stringChars = new char[8];
 
-            for (int i = 0; i < 8; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        stringChars[i] = chars[random.Next(chars.Length)];
+        //    }
 
-            return new string(stringChars);
-        }
+        //    return new string(stringChars);
+        //}
     }
 }

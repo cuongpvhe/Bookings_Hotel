@@ -1,125 +1,131 @@
 ﻿@page
-@model Bookings_Hotel.Pages.Manager.Bookings.BookingViewsModel
+@model Bookings_Hotel.Pages.Manager.Booking.BookingViewsModel
 @{
-    ViewData["Title"] = "Manage Bookings";
+    ViewData["Title"] = "Quản lý Booking";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
-<h2>Manage Bookings</h2>
+<h1>Quản lý Booking</h1>
 
-<!-- Dropdown chọn tầng -->
-<div class="mb-3">
-    <label for="floorSelect">Select Floor:</label>
- <select id="floorSelect" class="form-control" onchange="this.form.submit()">
-    <option value="">-- Select Floor --</option>
-    @foreach (var floor in Model.Floors)
-    {
-        var isSelected = floor == Model.SelectedFloor ? "selected" : "";
-        <option value="@floor" @isSelected>@floor</option>
-    }
-</select>
-
-
-
+<div>
+    <label for="floorSelect">Chọn Tầng:</label>
+    <select id="floorSelect" asp-for="SelectedFloor" asp-items="Model.Floors" onchange="loadRooms()">
+        <option value="">-- Chọn Tầng --</option>
+    </select>
 </div>
 
-<!-- Hiển thị danh sách phòng dạng ô vuông -->
-<div id="roomsContainer" class="d-flex flex-wrap">
-    @foreach (var room in Model.Rooms)
-    {
-        <div class="room-box" onclick="showBookingCalendar(@room.RoomId)">
-            Room @room.RoomNumber
-        </div>
-    }
+<div id="roomsContainer" style="margin-top: 20px;">
+    <label for="roomSelect">Chọn Phòng:</label>
+    <select id="roomSelect" onchange="showBookingStatus(this.value)">
+        <option value="">-- Chọn Phòng --</option>
+    </select>
 </div>
 
-<!-- Hiển thị lịch booking -->
-<div id="calendarContainer" style="display:none;">
-    <h3>Booking Calendar</h3>
-    <label for="monthSelect">Select Month:</label>
-    <select id="monthSelect" class="form-control" onchange="loadBookingCalendar()">
-        @for (int i = 1; i <= 12; i++)
+<div style="margin-top: 20px;">
+    <label for="monthSelect">Chọn Tháng:</label>
+    <select id="monthSelect" onchange="showBookingStatus($('#roomSelect').val())">
+        @for (int month = 1; month <= 12; month++)
         {
-            <option value="@i">@i</option>
+            <option value="@month">@month</option>
         }
     </select>
-    <table class="table mt-3">
-        <thead>
-            <tr>
-                <th>Day</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="calendarTable">
-        </tbody>
-    </table>
+
+    <label for="yearSelect">Chọn Năm:</label>
+    <select id="yearSelect" onchange="showBookingStatus($('#roomSelect').val())">
+        @for (int year = DateTime.Now.Year - 1; year <= DateTime.Now.Year + 1; year++)
+        {
+            <option value="@year">@year</option>
+        }
+    </select>
 </div>
 
-<!-- Hiển thị thông tin chi tiết booking -->
-<div id="bookingDetailsContainer" style="display:none;">
-    <h4>Booking Details</h4>
-    <p><strong>Customer:</strong> <span id="customerName"></span></p>
-    <p><strong>Total Money:</strong> <span id="totalMoney"></span></p>
-    <p><strong>People Count:</strong> <span id="peopleCount"></span></p>
-    <p><strong>Check-In:</strong> <span id="checkIn"></span></p>
-    <p><strong>Check-Out:</strong> <span id="checkOut"></span></p>
-</div>
+<div id="bookingStatusGrid" style="margin-top: 20px; display: none;"></div>
 
 @section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        function loadRoomsByFloor() {
-            let floor = document.getElementById("floorSelect").value;
-            if (floor) {
-                window.location.href = `?SelectedFloor=${floor}`;
+        function loadRooms() {
+            const floorId = $('#floorSelect').val();
+            $('#roomSelect').empty();
+            $('#roomSelect').append('<option value="">-- Chọn Phòng --</option>');
+
+            if (floorId) {
+                $.ajax({
+                    url: '@Url.Page("BookingViews", "GetRoomsByFloor")',
+                    type: 'GET',
+                    data: { floorId: floorId },
+                    success: function (data) {
+                        $.each(data, function (index, room) {
+                            $('#roomSelect').append('<option value="' + room.roomId + '">' + room.roomNumber + '</option>');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Đã xảy ra lỗi khi lấy dữ liệu: ' + error);
+                    }
+                });
             }
         }
 
-        function showBookingCalendar(roomId) {
-            document.getElementById("calendarContainer").style.display = "block";
-            loadBookingCalendar(roomId);
-        }
+        function showBookingStatus(roomId) {
+            const selectedMonth = $('#monthSelect').val();
+            const selectedYear = $('#yearSelect').val();
 
-        function loadBookingCalendar(roomId) {
-            let month = document.getElementById("monthSelect").value;
-            let year = new Date().getFullYear();
+            if (!roomId) {
+                $('#bookingStatusGrid').hide();
+                return;
+            }
 
-            fetch(`/Manager/Bookings/Index?handler=RoomBookings&roomId=${roomId}&month=${month}&year=${year}`)
-                .then(response => response.json())
-                .then(data => {
-                    let table = document.getElementById("calendarTable");
-                    table.innerHTML = "";
+            $.ajax({
+                url: '@Url.Page("BookingViews", "GetBookingStatus")',
+                type: 'GET',
+                data: { roomId: roomId, month: selectedMonth, year: selectedYear },
+                success: function (data) {
+                    const bookingGrid = $('#bookingStatusGrid');
+                    bookingGrid.empty();
+                    bookingGrid.append('<h4>Lịch Booking - Tháng ' + selectedMonth + ' Năm ' + selectedYear + '</h4><div id="calendar"></div>');
 
-                    data.forEach(booking => {
-                        let row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${new Date(booking.CheckIn).getDate()}</td>
-                            <td><span class="badge badge-danger">Booked</span></td>
-                        `;
-                        row.onclick = () => showBookingDetails(booking);
-                        table.appendChild(row);
+                    // Tạo đối tượng để đánh dấu ngày đã được booked
+                    const bookingDays = {};
+                    $.each(data, function (index, status) {
+                        const checkInDate = new Date(status.checkIn);
+                        const checkOutDate = new Date(status.checkOut);
+
+                        // Lặp qua các ngày từ check-in đến check-out (bao gồm cả ngày check-out)
+                        for (let d = new Date(checkInDate); d <= checkOutDate; d.setDate(d.getDate() + 1)) {
+                            const dateStr = d.toLocaleDateString(); // Định dạng ngày
+                            bookingDays[dateStr] = true; // Đánh dấu ngày đã được booked
+                        }
                     });
-                });
-        }
 
-        function showBookingDetails(booking) {
-            document.getElementById("bookingDetailsContainer").style.display = "block";
-            document.getElementById("customerName").textContent = booking.CustomerName;
-            document.getElementById("totalMoney").textContent = booking.TotalMoney;
-            document.getElementById("peopleCount").textContent = booking.PeopleCount;
-            document.getElementById("checkIn").textContent = new Date(booking.CheckIn).toLocaleDateString();
-            document.getElementById("checkOut").textContent = new Date(booking.CheckOut).toLocaleDateString();
+                    // Tạo lịch
+                    const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate(); // Lấy số ngày trong tháng
+                    let calendarHTML = '<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">';
+                    calendarHTML += '<thead><tr>';
+
+                    // Hiển thị tiêu đề cho các ngày trong tháng
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        calendarHTML += `<th>${i}</th>`;
+                    }
+
+                    calendarHTML += '</tr></thead><tbody><tr>';
+
+                    // Hiển thị trạng thái cho từng ngày
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        let date = new Date(selectedYear, selectedMonth - 1, i); // tháng bắt đầu từ 0
+                        let dateStr = date.toLocaleDateString();
+                        let status = bookingDays[dateStr] ? 'Đã Booked' : 'Còn Trống';
+                        let bgColor = bookingDays[dateStr] ? '#ffcccc' : '#ccffcc'; // Màu nền cho ngày đã booked và còn trống
+                        calendarHTML += `<td style="background-color: ${bgColor}; padding: 10px;">${status}</td>`;
+                    }
+
+                    calendarHTML += '</tr></tbody></table>';
+                    bookingGrid.find('#calendar').html(calendarHTML);
+                    bookingGrid.show();
+                },
+                error: function (xhr, status, error) {
+                    alert('Đã xảy ra lỗi khi lấy dữ liệu: ' + error);
+                }
+            });
         }
     </script>
-    <style>
-        .room-box {
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
-    </style>
 }
