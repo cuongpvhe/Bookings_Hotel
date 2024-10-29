@@ -53,7 +53,7 @@ namespace Bookings_Hotel.Pages
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == oid && o.AccountId == Int64.Parse(accountId));
             
             //Check is order is payed
-            if (order == null || order.OrderStatus.Equals(OrderStatus.WAITING_CONFIRM))
+            if (order == null || order.OrderStatus.Equals(OrderStatus.SUCCESS))
             {
                 return NotFound();
             }
@@ -115,7 +115,7 @@ namespace Bookings_Hotel.Pages
 
             if (isPaymented)
             {
-                order.OrderStatus = OrderStatus.WAITING_CONFIRM;
+                order.OrderStatus = OrderStatus.SUCCESS;
 
                 // Save the changes to the database
                 _context.Orders.Update(order);

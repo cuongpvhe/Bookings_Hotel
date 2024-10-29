@@ -20,7 +20,7 @@ namespace Bookings_Hotel.Pages
 
         [BindProperty(SupportsGet = true)]
         [ValidateNever]
-        public TypeRoomDTO roomDTOGet { get; set; }
+        public TypeRoomDTO typeRoomDTOGet { get; set; }
 
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -32,24 +32,35 @@ namespace Bookings_Hotel.Pages
             }
 
             //Process
-            var room = _context.Rooms.FirstOrDefault(r => r.RoomId == id);
+            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
 
-            if (room == null)
+            if (typeRoom == null)
             {
-                return NotFound();
+                return NotFound("Not Found ID");
             }
 
+            //Get Service
+            var lstServiceName = _context.TypeRoomServices
+                    .Where(trs => trs.TypeId == typeRoom.TypeId)
+                    .Join(_context.Services,
+                        trs => trs.ServiceId,
+                        s => s.ServiceId,
+                        (trs, s) => s.ServiceName)
+            .ToList();
 
-           /* roomDTOGet = new RoomDTO(
-                room.RoomId,
-                room.RoomNumber,
-                room.NumberOfChild,
-                room.NumberOfAdult,
-                room.NumberOfBed,
-                room.Price,
-                room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
-                room.Description
-            );*/
+
+            typeRoomDTOGet = new TypeRoomDTO
+            {
+                TypeId = typeRoom.TypeId,
+                TypeName = typeRoom.TypeName,
+                Description = typeRoom.Description,
+                NumberOfChild = typeRoom.NumberOfChild,
+                NumberOfAdult = typeRoom.NumberOfAdult,
+                NumberOfBed = typeRoom.NumberOfBed,
+                Price = typeRoom.Price,
+                PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstService = lstServiceName
+            };
 
 
 

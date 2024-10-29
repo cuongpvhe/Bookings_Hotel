@@ -15,6 +15,6 @@
         public DateTime? UpdateDate { get; set; }
         public string? PriceString { get; set; }
         public string? PriceVATString { get; set; }
-        public List<String> LstService {  get; set; }
+        public List<String>? LstService {  get; set; }
     }
 }

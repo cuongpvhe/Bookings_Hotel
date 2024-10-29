@@ -16,7 +16,10 @@
                 <div class="card-body">
                     
                     <form method="post">
-                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="text-danger">
+                            <span asp-validation-for="Username"></span>
+                            <span asp-validation-for="Password"></span>
+                        </div>
                         <!-- Hidden field for ReturnUrl -->
                         <input type="hidden" asp-for="ReturnUrl" value="@Model.ReturnUrl" />
                         <div class="mb-3">
