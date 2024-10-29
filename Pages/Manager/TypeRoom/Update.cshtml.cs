@@ -89,8 +89,14 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             // Cập nhật thông tin cơ bản
             typeRoom.TypeName = Request.Form["TypeName"];
             typeRoom.NumberOfBed = int.Parse(Request.Form["NumberOfBeds"]);
+
             typeRoom.NumberOfAdult = int.Parse(Request.Form["NumberOfAdults"]);
+            typeRoom.MaximumExtraAdult = int.Parse(Request.Form["MaximumExtraAdult"]);
+            typeRoom.ExtraAdultFee = decimal.Parse(Request.Form["ExtraAdultFee"]);
+
             typeRoom.NumberOfChild = int.Parse(Request.Form["NumberOfChildren"]);
+            typeRoom.MaximumExtraChild = int.Parse(Request.Form["MaximumExtraChild"]);
+            typeRoom.ExtraChildFee = decimal.Parse(Request.Form["ExtraChildFee"]);
             typeRoom.Price = decimal.Parse(Request.Form["Price"]);
             typeRoom.Description = Request.Form["Description"];
 
@@ -121,21 +127,19 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
                     var existingImage = await _context.TypeRoomImages.FirstOrDefaultAsync(img => img.TypeRoomImageId == imageId);
                     if (existingImage != null)
                     {
-                        // Nếu có file mới được upload, thay thế ảnh cũ
+                        
                         if (file != null && file.Length > 0)
                         {
                             // Xóa ảnh cũ trên Cloudinary
                             var publicId = existingImage.ImageUrl.Split('/').Last().Split('.').First();
                             await _cloudinary.DestroyAsync(new DeletionParams(publicId));
 
-                            // Upload ảnh mới
                             var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
                             {
                                 File = new FileDescription(file.FileName, file.OpenReadStream()),
                                 Folder = "hotel_images"
                             });
 
-                            // Cập nhật URL mới cho ảnh
                             existingImage.ImageUrl = uploadResult.Url.ToString();
                             existingImage.ImageIndex = imageIndex;
                         }
@@ -165,7 +169,6 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
                 }
             }
 
-            // Lưu các thay đổi vào CSDL
             await _context.SaveChangesAsync();
 
             return new JsonResult(new { success = true });

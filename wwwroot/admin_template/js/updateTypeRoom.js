@@ -291,8 +291,15 @@ async function submitUpdateFormAjax() {
     formData.append("TypeId", typeId);
     formData.append("TypeName", document.getElementById("TypeName").value);
     formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
+
     formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
+    formData.append("MaximumExtraAdult", document.getElementById("MaximumExtraAdult").value);
+    formData.append("ExtraAdultFee", document.getElementById("ExtraAdultFee").value);
+
     formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
+    formData.append("MaximumExtraChild", document.getElementById("MaximumExtraChild").value);
+    formData.append("ExtraChildFee", document.getElementById("ExtraChildFee").value);
+
     formData.append("Price", document.getElementById("Price").value);
     formData.append("Description", document.getElementById("Description").value);
 
@@ -366,46 +373,74 @@ function validateTypeRoomForm() {
                 required: true,
                 min: 1,
             },
+            MaximumExtraAdult: {
+                required: true,
+                min: 0,
+            },
+            ExtraAdultFee: {
+                required: true,
+                min: 0,
+            },
             NumberOfChildren: {
                 required: true,
-
+                min: 0,
+            },
+            MaximumExtraChild: {
+                required: true,
+                min: 0,
+            },
+            ExtraChildFee: {
+                required: true,
+                min: 0,
             },
             Price: {
                 required: true,
-                min: 1
+                min: 0
             },
             ServiceIds: {
                 required: true
             },
-            Description: {
-                maxlength: 500
-            }
+
         },
         messages: {
             TypeName: {
-                required: "Please enter the type room name.",
+                required: "Hãy nhập tên loại phòng.",
             },
             NumberOfBeds: {
-                required: "Please enter the number of beds.",
-                min: "Must have at least 1 bed.",
+                required: "Hãy nhập số giường.",
+                min: "Số giường ít nhất phải phải là 1.",
             },
             NumberOfAdults: {
-                required: "Please enter the number of adults.",
-                min: "Must allow at least 1 adult.",
+                required: "Hãy nhập số người lớn.",
+                min: "Số người lớn ít nhất là 1.",
+            },
+            MaximumExtraAdult: {
+                required: "Hãy nhập số người lớn được phép thêm.",
+                min: "Số người lớn được phép thêm nhỏ nhất là 0.",
+            },
+            ExtraAdultFee: {
+                required: "Hãy nhập phụ phí thêm người lớn.",
+                min: "Phụ phí nhỏ nhất là 0.",
             },
             NumberOfChildren: {
-                required: "Please enter the number of children.",
+                required: "Hãy nhập số trẻ em.",
+                min: "Số trẻ ít nhất là 0.",
+            },
+            MaximumExtraChild: {
+                required: "Hãy nhập số trẻ em được phép thêm.",
+                min: "Số trẻ em được phép thêm nhỏ nhất là 0.",
+            },
+            ExtraChildFee: {
+                required: "Hãy nhập phụ phí thêm trẻ em.",
+                min: "Phụ phí nhỏ nhất là 0.",
             },
             Price: {
-                required: "Please enter the room price.",
-                min: "Price must be at least 1."
+                required: "Hãy nhập giá phòng.",
+                min: "Giá phòng nhỏ nhất là 0."
             },
             ServiceIds: {
-                required: "Please select at least one service."
+                required: "Hãy chọn ít nhất 1 dịch vụ."
             },
-            Description: {
-                maxlength: "Description cannot exceed 500 characters."
-            }
         },
         errorPlacement: function (error, element) {
             error.addClass("text-danger");
