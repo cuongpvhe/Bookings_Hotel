@@ -17,9 +17,11 @@ namespace Bookings_Hotel.Pages
     {
         private readonly HotelBookingSystemContext _context;
         private readonly UserManager<IdentityUser> _userManager;
-        public PaymentModel(HotelBookingSystemContext context)
+        private readonly EmailService _emailService;
+        public PaymentModel(HotelBookingSystemContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -92,6 +94,7 @@ namespace Bookings_Hotel.Pages
 
         public async Task<IActionResult> OnPostCheckPayment(int orderID)
         {
+
             // Kiểm tra trạng thái giao dịch của order
             var order = await _context.Orders.FindAsync(orderID);
             if (order == null)
@@ -120,6 +123,11 @@ namespace Bookings_Hotel.Pages
                 // Save the changes to the database
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
+                //Send Mail
+                var subject = "Thanh Toán thành công";
+                var content = $"Bạn đã đặt đơn hàng thành công";
+                await _emailService.SendEmailAsync("dangchhe176896@fpt.edu.vn", subject, content);
+
                 return new JsonResult(new
                 {
                     success = true,
