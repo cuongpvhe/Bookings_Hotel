@@ -1,0 +1,99 @@
+﻿@page "{id:int}"
+@model Bookings_Hotel.Pages.Manager.Services.EditModel
+@{
+    ViewData["Title"] = "Edit Service";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<div class="d-flex justify-content-center">
+    <div class="card p-4" style="width: 700px;">
+        <h2 class="text-center">Cập nhật dịch vụ</h2>
+        <form method="post" id="editServiceForm" enctype="multipart/form-data">
+            <input type="hidden" asp-for="service.ServiceId" />
+            <div class="form-group mb-3">
+                <label asp-for="service.ServiceName" class="form-label">Tên dịch vụ:</label>
+                <input type="text" asp-for="service.ServiceName" class="form-control" />
+                <span asp-validation-for="service.ServiceName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.CreatedDate" class="form-label">Ngày tạo:</label>
+                <input type="date" asp-for="service.CreatedDate" class="form-control bg-opacity-10" disabled />
+                <input type="hidden" asp-for="service.CreatedDate" />
+                <span asp-validation-for="service.CreatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.UpdateDate" class="form-label">Ngày cập nhật:</label>
+                <input type="date" asp-for="service.UpdateDate" class="form-control bg-opacity-10" disabled />
+                <span asp-validation-for="service.UpdateDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Price" class="form-label">Giá:</label>
+                <input type="number" asp-for="service.Price" class="form-control" step="0.01" />
+                <span asp-validation-for="service.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Description" class="form-label">Mô tả:</label>
+                <textarea asp-for="service.Description" class="form-control"></textarea>
+                <span asp-validation-for="service.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="service.Status" class="form-label">Trạng thái:</label>
+                <select asp-for="service.Status" class="form-select">
+                    <option value="Active">Hoạt động</option>
+                    <option value="Inactive">Không hoạt động</option>
+                </select>
+                <span asp-validation-for="service.Status" class="text-danger"></span>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a asp-page="./List" class="btn btn-secondary">Trở lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("editServiceForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Processing',
+                text: 'Chờ xử lý...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            this.submit();
+        });
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Cập nhật dịch vụ thành công',
+                    showConfirmButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Page("./List")';
+                    }
+                });
+            </text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Cập nhật dịch vụ thất bại!',
+                    showConfirmButton: true
+                });
+            </text>
+        }
+    </script>
+}

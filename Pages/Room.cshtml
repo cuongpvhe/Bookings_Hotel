@@ -7,8 +7,8 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
-            <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
+            <h6 class="section-title text-center text-primary text-uppercase">Khách sạn</h6>
+            <h1 class="mb-5">Khám phá <span class="text-primary text-uppercase"> khách sạn</span></h1>
         </div>
 
         <!-- Filter Start -->
@@ -16,7 +16,7 @@
             <div class="container">
                 <div class="bg-white shadow" style="padding: 35px;">
                     <div class="row align-items-center justify-content-center mb-2">
-                        <span class="text-primary text-uppercase fw-bold">Filter</span>
+                        <span class="text-primary text-uppercase fw-bold">Bộ lọc</span>
                     </div>
 
                     <form id="filterForm">
@@ -26,23 +26,23 @@
                                     <div class="col-md-2">
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="priceMin" name="PriceMin" value="@Model.PriceMin" placeholder="price">
-                                            <label for="priceMin">Price Min</label>
+                                            <label for="priceMin">Giá tối thiểu</label>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-floating">
                                             <input type="number" class="form-control" id="priceMax" name="PriceMax" value="@Model.PriceMax" placeholder="price">
-                                            <label for="priceMax">Price Max</label>
+                                            <label for="priceMax">Giá tối đa</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-floating">
                                             <select asp-for="SortPrice" class="form-select" id="sortPrice" name="SortPrice" aria-label="Floating label select example">
-                                                <option value="3">Common Variation</option>
-                                                <option value="1">Price Ascending</option>
-                                                <option value="2">Price Descending</option>
+                                                <option value="3">Phổ biến</option>
+                                                <option value="1">Sắp xếp theo giá tăng dần</option>
+                                                <option value="2">Sắp xếp theo giá giảm dần</option>
                                             </select>
-                                            <label for="sortOrder">Sort By Price</label>
+                                            <label for="sortOrder">Sắp xếp theo giá</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -50,7 +50,7 @@
                                             <button class="form-select text-start h-100 w-100" type="button"
                                                     id="dropdownMenuButton" data-bs-toggle="dropdown"
                                                     aria-expanded="false">
-                                                Services
+                                                Dịch vụ
                                             </button>
                                             <ul class="dropdown-menu w-100 p-2" aria-labelledby="dropdownMenuButton"
                                                 style="z-index: 1000;">
@@ -76,7 +76,7 @@
                                             <button class="form-select text-start h-100 w-100" type="button"
                                                     id="dropdownMenuButton" data-bs-toggle="dropdown"
                                                     aria-expanded="false">
-                                                Room Type
+                                                Loại phòng
                                             </button>
                                             <ul class="dropdown-menu w-100 p-2" aria-labelledby="dropdownMenuButton"
                                                 style="z-index: 1000;">
@@ -100,7 +100,7 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <button class="btn btn-primary w-100 h-100" type="submit">Apply</button>
+                                <button class="btn btn-primary w-100 h-100" type="submit">Lọc</button>
                             </div>
                         </div>
                     </form>
@@ -111,7 +111,7 @@
         <!-- Filter End -->
         <!-- List Room Start -->
         <div id="roomListContainer">
-            @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.Rooms)
+            @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.TypeRooms)
         </div>
         <!-- List Room End -->
         <!-- Pagination Start -->
@@ -289,6 +289,55 @@
             }
         });
 
+        $(document).ready(function () {
+            setupPriceValidation();
+        });
+
+        function setupPriceValidation() {
+            // Set up min and step attributes for price inputs
+            $('#priceMin, #priceMax').attr({
+                'min': '0',
+                'step': '0.01'
+            });
+
+            // Validate when either price input loses focus
+            $('#priceMin, #priceMax').on('change', function () {
+                validatePrices();
+            });
+
+            // Prevent non-numeric input
+            $('#priceMin, #priceMax').on('keypress', function (e) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57) && e.which != 46) {
+                    return false;
+                }
+            });
+        }
+
+        function validatePrices() {
+            const priceMin = parseFloat($('#priceMin').val());
+            const priceMax = parseFloat($('#priceMax').val());
+
+            // Validate priceMin
+            if (isNaN(priceMin) || priceMin < 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Giá không hợp lệ',
+                    text: 'Giá tối thiểu phải lớn hơn hoặc bằng 0!'
+                });
+                $('#priceMin').val(''); // Clear invalid input
+                return; // Exit the function if priceMin is invalid
+            }
+
+            // Validate priceMax
+            if (isNaN(priceMax) || priceMax < priceMin) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Giá không hợp lệ',
+                    text: 'Giá tối đa phải lớn hơn hoặc bằng giá tối thiểu!'
+                });
+                $('#priceMax').val(''); // Clear invalid input
+            }
+        }
 
     </script>
 }

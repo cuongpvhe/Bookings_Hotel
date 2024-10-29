@@ -10,12 +10,13 @@ namespace Bookings_Hotel.Pages
     {
 
         private readonly HotelBookingSystemContext _context;
+
         public RoomModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
 
-        //Attribute for filter
+        // Attributes for filtering
         [BindProperty(SupportsGet = true)]
         public decimal? PriceMin { get; set; }
 
@@ -25,79 +26,126 @@ namespace Bookings_Hotel.Pages
         [BindProperty(SupportsGet = true)]
         public int? SortPrice { get; set; }
 
-        //Pagination
+        // Pagination
         [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
 
         public int TotalPages { get; set; }
+        public const int ItemsPerPage = 10;
 
-        public const int ItemsPerPage = 20;
-
-        //List
+        // Lists
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedServices { get; set; } = new List<string>();
 
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedTypeRooms { get; set; } = new List<string>();
+
         public List<Room> Rooms { get; set; }
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
         public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
 
-/*        public async Task<IActionResult> OnGetAsync()
+        // New properties for search
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CheckIn { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CheckOut { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int? AdultCount { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public int? ChildCount { get; set; }
+
+        public async Task<IActionResult> OnGetAsync()
         {
             Services = await _context.Services.ToListAsync();
-            TypeRooms = await _context.TypeRooms.ToListAsync();
 
-            var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
+            TypeRooms = await _context.TypeRooms
+                .Include(tr => tr.Rooms)
+                    .ThenInclude(r => r.OrderDetails)
+                .Include(tr => tr.TypeRoomImages)
+                .Include(tr => tr.TypeRoomServices)
+                    .ThenInclude(ts => ts.Service)
+                        .ThenInclude(s => s.ServiceImages)
+                .ToListAsync();
 
-            // Filter price
+            // Filter by CheckIn and CheckOut dates
+            if (CheckIn.HasValue && CheckOut.HasValue)
+            {
+                foreach (var typeRoom in TypeRooms)
+                {
+                    typeRoom.Rooms = typeRoom.Rooms
+                        .Where(r => !r.OrderDetails.Any(od =>
+                            od.CheckIn < CheckOut.Value && od.CheckOut > CheckIn.Value &&
+                            (od.Order != null && od.Order.OrderStatus != "Cancelled")
+                        ))
+                        .ToList();
+                }
+            }
+
+            // Additional filters for each room
+            if (AdultCount.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.NumberOfAdult >= AdultCount.Value)
+                    .ToList();
+            }
+
+            if (ChildCount.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.NumberOfChild >= ChildCount.Value)
+                    .ToList();
+            }
+
             if (PriceMin.HasValue)
             {
-                query = query.Where(x => x.Price >= PriceMin.Value);
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.Price >= PriceMin.Value)
+                    .ToList();
             }
+
             if (PriceMax.HasValue)
             {
-                query = query.Where(x => x.Price <= PriceMax.Value);
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.Price <= PriceMax.Value)
+                    .ToList();
             }
 
-            // Filter services
-            if (SelectedServices != null && SelectedServices.Count > 0)
+
+            if (SelectedTypeRooms != null && SelectedTypeRooms.Any())
             {
-                query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
+                TypeRooms = TypeRooms
+                    .Where(tr => SelectedTypeRooms.Contains(tr.TypeName))
+                    .ToList();
             }
 
-            // Filter typeRooms
-            if (SelectedTypeRooms != null && SelectedTypeRooms.Count > 0)
+            if (SelectedServices != null && SelectedServices.Any())
             {
-                query = query.Where(room => room.Type != null && SelectedTypeRooms.Contains(room.Type.TypeName));
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.TypeRoomServices.Any(ts => SelectedServices.Contains(ts.Service.ServiceName)))
+                    .ToList();
             }
 
-            // Sort price
-            switch (SortPrice)
+            // Sort by price if applicable
+            TypeRooms = SortPrice switch
             {
-                case 1:
-                    query = query.OrderBy(x => x.Price);
-                    break;
-                case 2:
-                    query = query.OrderByDescending(x => x.Price);
-                    break;
-                default:
-                    SortPrice = 3;
-                    break;
-            }
+                1 => TypeRooms.OrderBy(tr => tr.Price).ToList(),
+                2 => TypeRooms.OrderByDescending(tr => tr.Price).ToList(),
+                _ => TypeRooms.OrderBy(tr => tr.TypeName).ToList()
+            };
 
-            var totalRooms = await query.CountAsync();
+            var totalRooms = TypeRooms.Count();
             TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
 
-            Rooms = Pagination.GetCurrentPageData(query.ToList(), CurrentPage, ItemsPerPage).ToList();
+            TypeRooms = Pagination.GetCurrentPageData(TypeRooms.ToList(), CurrentPage, ItemsPerPage).ToList();
 
-            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Partial("PartialViews/_RoomsPartialView", Rooms);
-            }
+            // Return partial view for AJAX requests
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Partial("PartialViews/_RoomsPartialView", TypeRooms);
 
             return Page();
-        }*/
-
+        }
     }
 }
