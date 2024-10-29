@@ -189,14 +189,14 @@
                     $('#checkin').val(checkinDateString);  // Đặt lại về ngày mặc định (ngày mai)
                 } else if (checkoutDate && new Date(checkoutDate) <= new Date(checkinDate)) {
                     // Kiểm tra nếu check-out nhỏ hơn hoặc bằng check-in
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Check-out Date',
-                        text: 'Check-out date must be later than check-in date!',
-                    });
+                    //Swal.fire({
+                    //    icon: 'error',
+                    //    title: 'Invalid Check-out Date',
+                    //    text: 'Check-out date must be later than check-in date!',
+                    //});
                     $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
                 }
-                caculatePrice();
+                calculatePrice();
             });
 
             // Hàm xử lý khi người dùng thay đổi giá trị checkout
@@ -213,22 +213,33 @@
                     });
                     $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
                 }
-                caculatePrice();
+                calculatePrice();
             });
         }
-        function caculatePrice(){
+        function calculatePrice() {
             const price = @Model.roomDTOGet.Price;
+
             const checkin = new Date($('#checkin').val());
-            checkin.setHours(0, 0, 0, 0);
+            checkin.setHours(0, 0, 0, 0); // Đặt giờ về 0
+
             const checkout = new Date($('#checkout').val());
-            checkout.setHours(0, 0, 0, 0);
+            checkout.setHours(0, 0, 0, 0); // Đặt giờ về 0
 
-            const differenceInDays = checkout.getDate() - checkin.getDate();
+            // Tính khoảng cách theo milliseconds
+            const differenceInTime = checkout.getTime() - checkin.getTime();
 
-            var totalMoney = price * differenceInDays;
+            // Chuyển đổi từ milliseconds sang số ngày
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
 
-            $('#total-money').text(totalMoney.toLocaleString('vi-VN'))
+            console.log(differenceInDays);
+            if (differenceInDays > 0) {
+                var totalMoney = price * differenceInDays;
+                $('#total-money').text(totalMoney.toLocaleString('vi-VN'));
+            } else {
+                $('#total-money').text('0'); // Tránh trường hợp tổng tiền âm
+            }
         }
+
         function validRoomDate(){
 
         }
@@ -270,7 +281,15 @@
                     },
                     success: function (response) {
                         // On success, redirect to the payment page
-                        window.location.href = '/Payment?oid=' + response.data;
+                        if (response.success) {
+                            window.location.href = '/Payment?oid=' + response.data;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Booking Fail',
+                                text: response.message
+                            });
+                        }
                     },
                     error: function (xhr, status, error) {
                         // Handle error response

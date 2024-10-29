@@ -1,6 +1,5 @@
-﻿
-@page
-@model Bookings_Hotel.Pages.Manager.RoomsModel
+﻿@page
+@model Bookings_Hotel.Pages.Manager.StaffsModel
 @{
     ViewData["Title"] = "Rooms List";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
@@ -12,11 +11,13 @@
 
 <div class="main-header d-flex justify-content-between">
     <div>
-        <span class="mb-0 fs-3 fw-bold">List Rooms</span>
+        <span class="mb-0 fs-3 fw-bold">List Staffs</span>
     </div>
 
     <div>
-        <button class="btn btn-primary rounded-pill px-4" type="button">Add</button>
+        <button class="btn btn-primary rounded-pill px-4" type="button">
+            <a class="page-link" asp-page="AddNewRoom">Add</a>
+        </button>
     </div>
 </div>
 
@@ -46,23 +47,25 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.RoomsList.Count; i++)
+            @for (int i = 0; i < Model.Staffs.Count; i++)
             {
                 <tr>
                     <td>@(i + 1)</td>
-                    <td>@Model.RoomsList[i].RoomId</td>
-                    <td>@Model.RoomsList[i].RoomNumber</td>
-                    <td>@Model.RoomsList[i].RoomType</td>
-                    <td>@Model.RoomsList[i].Price</td>
-                    <td>@Model.RoomsList[i].Capacity</td>
+                    <td>@Model.Staffs[i].Username</td>
+                    <td>@Model.Staffs[i].FullName</td>
+                    <td>@Model.Staffs[i].Gender</td>
+                    <td>@Model.Staffs[i].DOB</td>
+                    <td>@Model.Staffs[i].PhoneNumber</td>
+                    <td>@Model.Staffs[i].Address</td>
+
                     <td>
-                        @if (Model.RoomsList[i].Status == "Available")
+                        @if (@Model.Staffs[i].Status == "Active")
                         {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Available</span>
+                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Active</span>
                         }
                         else
                         {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Booked</span>
+                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Inactive</span>
                         }
                     </td>
                     <td class="action-column">
