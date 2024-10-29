@@ -136,17 +136,41 @@
                                     <label for="NumberOfChild">Số Lượng Trẻ Em</label>
                                 </div>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 d-none">
                                 <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
                                     <small class="text-center text-primary">*Lưu ý: Trẻ em sẽ được tính với những em bé từ 6 tuổi trở xuống</small>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary d-none" id="extra-adult-alert">*Lưu ý: Thêm Người Lớn Sẽ Tính Thêm <b>@Model.typeRoomDTOGet.ExtraAdultFeeString VNĐ/Người</b></small>
+                                </div>
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary d-none" id="extra-child-alert">*Lưu ý: Thêm Trẻ Em Sẽ Tính Thêm <b>@Model.typeRoomDTOGet.ExtraChildFeeString VNĐ/Người</b></small>
+                                </div>
+                            </div>
+                            <div class="text-center col-12">
+                                <h6 class="section-title text-center text-primary text-uppercase">Phụ Phí</h6>
+                            </div>
+                            <div class="col-12 d-none" id="surcharge-adult-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-adult-alert">* Thêm Người Lớn x <span id="surcharge-adult-quantity"></span> = <b><span id="surcharge-adult-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+                            <div class="col-12 d-none" id="surcharge-child-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-child-alert">* Thêm Trẻ Em x <span id="surcharge-child-quantity"></span> = <b><span id="surcharge-child-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Tổng Tiền</h6>
                             </div>
                             <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
                                 <div class="border rounded p-1">
                                     <div class="border rounded text-center p-4">
                                         <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
                                         <h2 class="mb-1"><span id="total-money">@Model.typeRoomDTOGet.PriceString</span> VNĐ</h2>
-                                        <p class="mb-0">Tổng Tiền</p>
+                                        <p class="mb-0">Tổng Tiền Phòng</p>
                                     </div>
                                 </div>
                             </div>
@@ -211,7 +235,7 @@
     <script>
         $(document).ready(function () {
             setDefaultDate();
-            validRoomDate();
+            validExtraNumber();
             submit();
         });
         function setDefaultDate(){
@@ -238,8 +262,8 @@
                 if (new Date(checkinDate) < new Date()) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Invalid Check-in Date',
-                        text: 'Check-in date cannot be earlier than today!',
+                        title: 'Ngày Nhận Phòng Không Hợp Lệ',
+                        text: 'Ngày Đặt Phòng Chỉ Có Thể Bắt Đầu Từ Ngày Hôm Nay!',
                     });
                     $('#checkin').val(checkinDateString);  // Đặt lại về ngày mặc định (ngày mai)
                 } else if (checkoutDate && new Date(checkoutDate) <= new Date(checkinDate)) {
@@ -256,23 +280,14 @@
                 // Kiểm tra nếu check-out nhỏ hơn hoặc bằng check-in
                 if (new Date(checkoutDate) <= new Date(checkinDate)) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid Check-out Date',
-                        text: 'Check-out date must be later than check-in date!',
+                        icon: 'warning',
+                        title: 'Ngày Trả Phòng Không Hợp Lệ',
+                        text: 'Ngày Trả Phòng Nên Sau Ngày Nhận Phòng!',
                     });
                     $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
                 }
                 calculatePrice();
             });
-
-            //Hàm Xử lí khi người dùng thay đổi giá trị Quantity
-            $('#quantity').on('blur', function () {
-                //Nếu người dùng nhập giá trị bé hơn 1 thì Set lại mặc định
-                if ($(this).val() <= 0) {
-                    $(this).val('1');
-                }
-                calculatePrice();
-            })
 
             //Hàm Xử lí khi người dùng thay đổi giá trị NumberOfAdult
             $('#NumberOfAdult').on('blur', function () {
@@ -291,9 +306,9 @@
         }
         function calculatePrice() {
             const price = @Model.typeRoomDTOGet.Price;
+            const extraAdultFee = @Model.typeRoomDTOGet.ExtraAdultFee;
+            const extraChildFee = @Model.typeRoomDTOGet.ExtraChildFee;
 
-            const quantity = $('#quantity').val();
-            console.log(quantity);
             const checkin = new Date($('#checkin').val());
             checkin.setHours(0, 0, 0, 0); // Đặt giờ về 0
 
@@ -306,10 +321,16 @@
             // Chuyển đổi từ milliseconds sang số ngày
             const differenceInDays = differenceInTime / (1000 * 3600 * 24);
 
+            //Tính số người thêm vào
+            let numberExtraAdult = parseInt($('#NumberOfAdult').val()) - @Model.typeRoomDTOGet.NumberOfAdult <0 ? 0 : parseInt($('#NumberOfAdult').val()) - @Model.typeRoomDTOGet.NumberOfAdult;
+            let numberExtraChild = parseInt($('#NumberOfChild').val()) - @Model.typeRoomDTOGet.NumberOfChild <0 ? 0 : parseInt($('#NumberOfChild').val()) - @Model.typeRoomDTOGet.NumberOfChild;
+
+            //Tính Tiền
             if (differenceInDays > 0) {
-                var totalMoney = price * differenceInDays * quantity; //VAT 10%
+                var totalMoney = price * differenceInDays + numberExtraAdult * extraAdultFee + numberExtraChild * extraChildFee;
                 $('#total-money').text(totalMoney.toLocaleString('vi-VN'));
-                var totalMoneyVAT = totalMoney * 1.1;
+
+                var totalMoneyVAT = totalMoney * 1.1;//VAT 10%
                 $('#total-money-vat').text(totalMoneyVAT.toLocaleString('vi-VN'));
             } else {
                 $('#total-money').text('0'); // Tránh trường hợp tổng tiền âm
@@ -317,8 +338,67 @@
             }
         }
 
-        function validRoomDate(){
+        function validExtraNumber(){
+            $('#NumberOfAdult').on('blur', function () {
+                let numberOfAdult = parseInt($(this).val());
 
+                if (isNaN(numberOfAdult) || numberOfAdult === undefined || $(this).val() === "") {
+                    $(this).val(0);
+                    numberOfAdult = 0;
+                }
+
+                let maximunAdult = @Model.typeRoomDTOGet.MaximumExtraAdult + @Model.typeRoomDTOGet.NumberOfAdult;// Tổng số lượng người tối đa
+                let numberOfExtraAdult = numberOfAdult - @Model.typeRoomDTOGet.NumberOfAdult;
+                if (numberOfExtraAdult > @Model.typeRoomDTOGet.MaximumExtraAdult) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Quá Số Lượng Người Lớn',
+                        text: 'Số Lượng Người Lớn Tối Đa Là: ' + maximunAdult
+                    });
+                    $(this).val(maximunAdult);
+                }
+
+                if (numberOfExtraAdult > 0) {
+                    $('#extra-adult-alert').removeClass('d-none')
+                    $('#surcharge-adult-alert').removeClass('d-none')
+                    $('#surcharge-adult-quantity').text(numberOfExtraAdult)
+                    $('#surcharge-adult-fee').text((numberOfExtraAdult * @Model.typeRoomDTOGet.ExtraAdultFee).toLocaleString('vi-VN'))
+                } else {
+                    $('#extra-adult-alert').addClass('d-none')
+                    $('#surcharge-adult-alert').addClass('d-none')
+                }
+
+                calculatePrice();
+            });
+
+            $('#NumberOfChild').on('blur', function () {
+                let numberOfChild = parseInt($(this).val());
+                if (isNaN(numberOfChild) || numberOfChild === undefined || $(this).val() === "") {
+                    $(this).val(0);
+                    numberOfChild = 0;
+                }
+
+                let maximunChild = @Model.typeRoomDTOGet.MaximumExtraChild + @Model.typeRoomDTOGet.NumberOfChild;// Tổng số lượng người tối đa
+                let numberOfExtraChild = numberOfChild - @Model.typeRoomDTOGet.NumberOfChild;
+                if (numberOfExtraChild > @Model.typeRoomDTOGet.MaximumExtraChild) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Quá Số Lượng Trẻ Em',
+                        text: 'Số Lượng Trẻ Em Tối Đa Là: ' + maximunChild
+                    });
+                    $(this).val(maximunChild);
+                }
+                if (numberOfExtraChild > 0) {
+                    $('#extra-child-alert').removeClass('d-none')
+                    $('#surcharge-child-alert').removeClass('d-none')
+                    $('#surcharge-child-quantity').text(numberOfExtraChild)
+                    $('#surcharge-child-fee').text((numberOfExtraChild * @Model.typeRoomDTOGet.ExtraChildFee).toLocaleString('vi-VN'))
+                } else {
+                    $('#extra-child-alert').addClass('d-none')
+                    $('#surcharge-child-alert').addClass('d-none')
+                }
+                calculatePrice();
+            });
         }
         function submit() {
             $('#submit-order-btn').on('click', function () {
@@ -327,18 +407,36 @@
                     CheckInDate: $('#checkin').val(),
                     CheckOutDate: $('#checkout').val(),
                     SpecialRequest: $('#message').val() || '',
-                    Quantity: 1
+                    NumberOfAdult: $('#NumberOfAdult').val(),
+                    NumberOfChild: $('#NumberOfChild').val(),
                 };
 
                 if (!data.CheckInDate || !data.CheckOutDate) {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Please select check-in and check-out dates!'
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Chọn Ngày Nhận Phòng Và Ngày Trả Phòng'
                     });
                     return;
                 }
 
+                if (!data.NumberOfAdult || parseInt(data.NumberOfAdult) === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Nhập Số Lượng Người Lớn'
+                    });
+                    return;
+                }
+
+                if (!data.NumberOfChild || parseInt(data.NumberOfChild) === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Nhập Số Lượng Trẻ Em'
+                    });
+                    return;
+                }
                 $.ajax({
                     url: '/Booking?handler=SubmitOrder',
                     type: 'POST',
@@ -348,8 +446,8 @@
                     },
                     beforeSend: function () {
                         Swal.fire({
-                            title: 'Processing your order',
-                            text: 'Please wait while we process your booking...',
+                            title: 'Đang Xử Lí',
+                            text: 'Vui Lòng Đợi Ít Phút...',
                             allowOutsideClick: false,  
                             showConfirmButton: false, 
                             willOpen: () => {
@@ -364,7 +462,7 @@
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Booking Fail',
+                                title: 'Đặt Phòng Thất Bại',
                                 text: response.message
                             });
                         }
@@ -376,8 +474,8 @@
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Error',
-                                text: 'There was an error processing your booking!'
+                                title: 'Đặt Phòng Thất Bại',
+                                text: 'Máy Chủ Đang Xảy Ra Lỗi. Vui Lòng Thử Lại Sau!'
                             });
                         }
 

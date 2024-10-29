@@ -18,7 +18,7 @@ namespace Bookings_Hotel.Models
         public int? NumberOfAdult { get; set; }
         public int? NumberOfBed { get; set; }
         public string? Description { get; set; }
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
         public bool? Deleted { get; set; }
         public int? MaximumExtraAdult { get; set; }
         public int? MaximumExtraChild { get; set; }

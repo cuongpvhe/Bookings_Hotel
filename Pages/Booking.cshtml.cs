@@ -74,7 +74,13 @@ namespace Bookings_Hotel.Pages
                 Price = typeRoom.Price,
                 PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
                 PriceVATString = (typeRoom.Price * 1.1m).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
-                LstService = lstServiceName
+                LstService = lstServiceName,
+                MaximumExtraAdult = typeRoom.MaximumExtraAdult,
+                MaximumExtraChild = typeRoom.MaximumExtraChild,
+                ExtraAdultFee = typeRoom.ExtraAdultFee,
+                ExtraChildFee = typeRoom.ExtraChildFee,
+                ExtraAdultFeeString = ((decimal)typeRoom.ExtraAdultFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                ExtraChildFeeString = ((decimal)typeRoom.ExtraChildFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
             };
 
 
@@ -83,7 +89,7 @@ namespace Bookings_Hotel.Pages
         }
 
         
-        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int TypeId,int Quantity)
+        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int TypeId,int NumberOfAdult, int NumberOfChild)
         {
             // Checklogin
             var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
@@ -124,7 +130,7 @@ namespace Bookings_Hotel.Pages
             }
 
             //Get {quantity} Valid Room
-            var lstRoom = this.getValidLstRoom(typeRoom,checkinDate,checkoutDate,Quantity);
+            var lstRoom = this.getValidLstRoom(typeRoom,checkinDate,checkoutDate);
 
             if (!lstRoom.Any())
             {
@@ -136,34 +142,34 @@ namespace Bookings_Hotel.Pages
                 });
             }
 
-            if (lstRoom.Count < Quantity)
-            {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "Không Đủ Số Lượng Phòng, Số Lượng Phòng Còn Lại Là: " + lstRoom.Count,
-                    data = lstRoom.Count
-                });
-            }
-
             //Caculate Total Money
+            var extraAdultNumber = NumberOfAdult - typeRoom.NumberOfAdult < 0 ? 0 : NumberOfAdult - typeRoom.NumberOfAdult;
+            var extraChildNumber = NumberOfChild - typeRoom.NumberOfChild < 0 ? 0 : NumberOfChild - typeRoom.NumberOfChild;
+
             var numberOfNights = (checkoutDate - checkinDate).Days;
             if (numberOfNights <= 0)
             {
                 throw new ArgumentException("Check-out date must be later than check-in date.");
             }
-            decimal totalMoney = typeRoom.Price * numberOfNights * Quantity * 1.1m; //1.1 VAT
+
+            decimal? totalMoney = (typeRoom.Price * numberOfNights + extraAdultNumber * typeRoom.ExtraAdultFee + extraChildNumber * typeRoom.ExtraChildFee) * 1.1m; //1.1 VAT
+            if(totalMoney == null)
+            {
+                throw new ArgumentException("Can't caculate Total Money.");
+            }
 
             //Create Order
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
-                TotalMoney = totalMoney,
+                TotalMoney = (decimal)totalMoney,
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 AccountId = int.Parse(accountId), 
                 Note = SpecialRequest,
-                PaymentCode = GenerateRandomPaymentCode()
+                PaymentCode = GenerateRandomPaymentCode(),
+                NumberExtraAdult = extraAdultNumber,
+                NumberExtraChild = extraChildNumber,
             };
 
             // Add Order to the context
@@ -196,7 +202,7 @@ namespace Bookings_Hotel.Pages
             });
         }
 
-        public List<Room> getValidLstRoom(TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate,int quantity)
+        public List<Room> getValidLstRoom(TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate)
         {
             //Get Valid Room By TypeID
             return _context.Rooms
@@ -208,7 +214,6 @@ namespace Bookings_Hotel.Pages
                     (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) ||
                     (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))))
                 .OrderBy(room => room.RoomNumber)
-                .Take(quantity)
                 .ToList();
         }
 
