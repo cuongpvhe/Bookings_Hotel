@@ -210,11 +210,16 @@
                             <img class="w-100" src="~/template/img/carousel-1.jpg" alt="Image">
                         </div> *@
                         
+                        @{
+                            bool isFirstImage = true; // Initialize a flag to track the first image
+                        }
+
                         @foreach (var imageUrl in Model.typeRoomDTOGet.LstImage)
                         {
-                            <div class="carousel-item active">
+                            <div class="carousel-item @(isFirstImage ? "active" : "")">
                                 <img class="w-100" src="@imageUrl" alt="Image">
                             </div>
+                            isFirstImage = false; // Set flag to false after the first iteration
                         }
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
