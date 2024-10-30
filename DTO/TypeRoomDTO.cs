@@ -23,5 +23,6 @@
         public string? ExtraChildFeeString { get; set; }
 
         public List<String>? LstService {  get; set; }
+        public List<String>? LstImage { get; set; }
     }
 }

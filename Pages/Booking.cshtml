@@ -206,12 +206,21 @@
             <div class="container-fluid p-0 my-4 wow fadeInUp">
                 <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                        <div class="carousel-item active">
+                        @* <div class="carousel-item">
                             <img class="w-100" src="~/template/img/carousel-1.jpg" alt="Image">
-                        </div>
-                        <div class="carousel-item">
-                            <img class="w-100" src="~/template/img/carousel-2.jpg" alt="Image">
-                        </div>
+                        </div> *@
+                        
+                        @{
+                            bool isFirstImage = true; // Initialize a flag to track the first image
+                        }
+
+                        @foreach (var imageUrl in Model.typeRoomDTOGet.LstImage)
+                        {
+                            <div class="carousel-item @(isFirstImage ? "active" : "")">
+                                <img class="w-100" src="@imageUrl" alt="Image">
+                            </div>
+                            isFirstImage = false; // Set flag to false after the first iteration
+                        }
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -356,6 +365,7 @@
                         text: 'Số Lượng Người Lớn Tối Đa Là: ' + maximunAdult
                     });
                     $(this).val(maximunAdult);
+                    numberOfExtraAdult = @Model.typeRoomDTOGet.MaximumExtraAdult;
                 }
 
                 if (numberOfExtraAdult > 0) {
@@ -387,6 +397,7 @@
                         text: 'Số Lượng Trẻ Em Tối Đa Là: ' + maximunChild
                     });
                     $(this).val(maximunChild);
+                    numberOfExtraChild = @Model.typeRoomDTOGet.MaximumExtraChild;
                 }
                 if (numberOfExtraChild > 0) {
                     $('#extra-child-alert').removeClass('d-none')

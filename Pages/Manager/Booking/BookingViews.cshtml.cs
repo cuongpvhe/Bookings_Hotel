@@ -1,4 +1,5 @@
 ﻿using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -61,7 +62,7 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             year ??= DateTime.Now.Year;
 
             var orders = _context.Orders
-                .Where(o => o.OrderStatus == "Confirmed")
+                .Where(o => o.OrderStatus == OrderStatus.SUCCESS)
                 .Select(o => o.OrderId)
                 .ToList();
 
