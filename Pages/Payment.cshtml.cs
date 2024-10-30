@@ -126,7 +126,7 @@ namespace Bookings_Hotel.Pages
                 //Send Mail
                 var subject = "Thanh Toán thành công";
                 var content = $"Bạn đã đặt đơn hàng thành công";
-                await _emailService.SendEmailAsync("dangchhe176896@fpt.edu.vn", subject, content);
+                _emailService.SendEmailAsync(order.Account.Email, subject, content);
 
                 return new JsonResult(new
                 {

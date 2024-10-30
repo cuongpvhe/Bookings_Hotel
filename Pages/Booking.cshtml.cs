@@ -64,6 +64,12 @@ namespace Bookings_Hotel.Pages
                         (trs, s) => s.ServiceName) 
             .ToList();
 
+            //Get Image
+            var lstImage = _context.TypeRoomImages
+                .Where(tri => tri.TypeId == typeRoom.TypeId)
+                .OrderBy(tri => tri.ImageIndex)
+                .Select(tri => tri.ImageUrl)
+                .ToList();
 
             typeRoomDTOGet = new TypeRoomDTO {
                 TypeId = typeRoom.TypeId,
@@ -81,6 +87,7 @@ namespace Bookings_Hotel.Pages
                 ExtraChildFee = typeRoom.ExtraChildFee,
                 ExtraAdultFeeString = ((decimal)typeRoom.ExtraAdultFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
                 ExtraChildFeeString = ((decimal)typeRoom.ExtraChildFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstImage = lstImage,
             };
 
 
@@ -177,19 +184,17 @@ namespace Bookings_Hotel.Pages
             await _context.SaveChangesAsync();
 
             // Create the OrderDetails and link it to the order
-            foreach (var room in lstRoom)
+            var orderDetails = new OrderDetail
             {
-                var orderDetails = new OrderDetail
-                {
-                    RoomId = room.RoomId,
-                    CheckIn = checkinDate,
-                    CheckOut = checkoutDate,
-                    OrderId = newOrder.OrderId,
-                };
-                // Add OrderDetail to the context
-                _context.OrderDetails.Add(orderDetails);
-            }
-            
+                RoomId = lstRoom.First().RoomId,
+                CheckIn = checkinDate,
+                CheckOut = checkoutDate,
+                OrderId = newOrder.OrderId,
+            };
+            // Add OrderDetail to the context
+            _context.OrderDetails.Add(orderDetails);
+
+
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
@@ -207,7 +212,7 @@ namespace Bookings_Hotel.Pages
             //Get Valid Room By TypeID
             return _context.Rooms
                 .Where(r => r.TypeId == typeRoom.TypeId)
-                .Where(r => r.RoomStatus.Equals("Available"))
+                .Where(r => r.RoomStatus.Equals(RoomStatus.ACTIVE))
                 .Where(room => !_context.OrderDetails.Any(
                     od => od.RoomId == room.RoomId &&
                    ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) ||

@@ -48,6 +48,12 @@ namespace Bookings_Hotel.Pages
                         (trs, s) => s.ServiceName)
             .ToList();
 
+            //Get Image
+            var lstImage = _context.TypeRoomImages
+                .Where(tri => tri.TypeId == typeRoom.TypeId)
+                .OrderBy(tri => tri.ImageIndex)
+                .Select(tri => tri.ImageUrl)
+                .ToList();
 
             typeRoomDTOGet = new TypeRoomDTO
             {
@@ -59,7 +65,8 @@ namespace Bookings_Hotel.Pages
                 NumberOfBed = typeRoom.NumberOfBed,
                 Price = typeRoom.Price,
                 PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
-                LstService = lstServiceName
+                LstService = lstServiceName,
+                LstImage = lstImage,
             };
 
 
