@@ -14,20 +14,20 @@
 
 <div class="main-header d-flex justify-content-between">
     <div>
-        <span class="mb-0 fs-3 fw-bold">List Rooms</span>
+        <span class="mb-0 fs-3 fw-bold">Danh sách phòng</span>
     </div>
 
     <div>
-            <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Add</a>
+            <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Tạo phòng mới</a>
     </div>
 </div>
 
 <div class="search-bar d-flex justify-content-start">
     <div class="me-2">
         <select class="form-select" aria-label="Default select example">
-            <option value="1">All Status</option>
-            <option value="2">Booked</option>
-            <option value="3">Available</option>
+            <option value="">Tất cả trạng thái</option>
+            <option value="Active">Hoạt động</option>
+            <option value="Inactive">Không hoạt động</option>
         </select>
     </div>
 
@@ -60,11 +60,11 @@
                     <td>
                         @if (Model.RoomsList[i].Status == "Active")
                         {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Active</span>
+                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Hoạt động</span>
                         }
                         else
                         {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Inactive</span>
+                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Không hoạt động</span>
                         }
                     </td>
 
@@ -75,10 +75,10 @@
                                 <i class="ri-more-2-fill"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
+                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
                                 <li>
                                     <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
                                     </a>
                                 </li>
                             </ul>

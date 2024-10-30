@@ -292,6 +292,18 @@ namespace Bookings_Hotel.Models
 
                 entity.Property(e => e.TypeId).HasColumnName("Type_ID");
 
+                entity.Property(e => e.ExtraAdultFee)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("Extra_Adult_Fee");
+
+                entity.Property(e => e.ExtraChildFee)
+                    .HasColumnType("decimal(18, 2)")
+                    .HasColumnName("Extra_Child_Fee");
+
+                entity.Property(e => e.MaximumExtraAdult).HasColumnName("Maximum_Extra_Adult");
+
+                entity.Property(e => e.MaximumExtraChild).HasColumnName("Maximum_Extra_Child");
+
                 entity.Property(e => e.NumberOfAdult).HasColumnName("Number_Of_Adult");
 
                 entity.Property(e => e.NumberOfBed).HasColumnName("Number_Of_Bed");

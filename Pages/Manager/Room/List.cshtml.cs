@@ -20,7 +20,7 @@ namespace Bookings_Hotel.Pages.Manager
         [BindProperty]
         public List<RoomViewModel> RoomsList { get; set; }
         public List<string> TableHeaders { get; set; } = 
-            new List<string> { "#", "Room Number", "Status", "Description", "Actions" };
+            new List<string> { "#", "Số phòng", "Loại phòng", "Mô tả", "Trạng thái" , "Thao tác" };
 
         public async Task OnGetAsync()
         {

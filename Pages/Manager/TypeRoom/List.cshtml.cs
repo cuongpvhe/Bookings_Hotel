@@ -20,7 +20,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
         public IList<Models.TypeRoom> TypeRooms { get;set; } = default!;
         public List<string> TableHeaders { get; set; } =
-        new List<string> { "#", "Type Name", "Number Of Bed", "Number Of Adult", "Number Of Child", "Price", "Action" };
+        new List<string> { "#", "Tên loại phòng", "Số giường", "Số người lớn", "Số trẻ em", "Giá", "Thao tác" };
 
         public async Task OnGetAsync()
         {
