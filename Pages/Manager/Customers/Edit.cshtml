@@ -14,7 +14,7 @@
             <input type="hidden" asp-for="Account.RoleId" />
 
             <div class="form-group mb-3">
-                <label asp-for="Account.UseName" class="form-label">Username:</label>
+                <label asp-for="Account.UseName" class="form-label">Tài khoản:</label>
                 <input type="text" asp-for="Account.UseName" class="form-control" readonly />
                 <span asp-validation-for="Account.UseName" class="text-danger"></span>
             </div>
@@ -31,25 +31,25 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.FullName" class="form-label">Full Name:</label>
+                <label asp-for="Account.FullName" class="form-label">Họ và tên:</label>
                 <input type="text" asp-for="Account.FullName" class="form-control" />
                 <span asp-validation-for="Account.FullName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Dob" class="form-label">Date of Birth:</label>
+                <label asp-for="Account.Dob" class="form-label">Ngày sinh:</label>
                 <input type="date" asp-for="Account.Dob" class="form-control" />
                 <span asp-validation-for="Account.Dob" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Phonenumber" class="form-label">Phone Number:</label>
+                <label asp-for="Account.Phonenumber" class="form-label">Số điện thoại:</label>
                 <input type="text" asp-for="Account.Phonenumber" class="form-control" />
                 <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Gender" class="form-label">Gender:</label>
+                <label asp-for="Account.Gender" class="form-label">Giới tính:</label>
                 <select asp-for="Account.Gender" class="form-select">
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -59,14 +59,14 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Address" class="form-label">Address:</label>
+                <label asp-for="Account.Address" class="form-label">Địa chỉ:</label>
                 <input type="text" asp-for="Account.Address" class="form-control" />
                 <span asp-validation-for="Account.Address" class="text-danger"></span>
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a asp-page="./List" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary">Lưu thay đôi</button>
+                <a asp-page="./List" class="btn btn-secondary">Trở về</a>
             </div>
         </form>
     </div>

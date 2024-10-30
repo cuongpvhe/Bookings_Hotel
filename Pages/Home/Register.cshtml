@@ -5,13 +5,13 @@
     Layout = "~/Pages/Shared/Layout_Login.cshtml";
 }
 
-<h2 class="text-center">Register</h2>
+<h2 class="text-center">Đăng ký</h2>
 
 <div class="container">
     <form method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="row mb-3 align-items-center">
-            <label asp-for="Account.FullName" class="col-form-label col-sm-3 col-md-4"></label>
+            <label asp-for="Account.FullName" class="col-form-label col-sm-3 col-md-4">Họ và tên</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="Account.FullName" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="Account.FullName" class="text-danger"></span>
@@ -19,7 +19,7 @@
         </div>
 
         <div class="row mb-3 align-items-center">
-            <label asp-for="Account.Email" class="col-form-label col-sm-3 col-md-4"></label>
+            <label asp-for="Account.Email" class="col-form-label col-sm-3 col-md-4">Email</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="Account.Email" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="Account.Email" class="text-danger"></span>
@@ -27,7 +27,7 @@
         </div>
 
         <div class="row mb-3 align-items-center">
-            <label asp-for="Account.Phonenumber" class="col-form-label col-sm-3 col-md-4"></label>
+            <label asp-for="Account.Phonenumber" class="col-form-label col-sm-3 col-md-4">Số điện thoại</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="Account.Phonenumber" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="row mb-3 align-items-center">
-            <label asp-for="Account.UseName" class="col-form-label col-sm-3 col-md-4"></label>
+            <label asp-for="Account.UseName" class="col-form-label col-sm-3 col-md-4">Tài khoản</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="Account.UseName" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="Account.UseName" class="text-danger"></span>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="row mb-3 align-items-center">
-            <label asp-for="Account.Password" class="col-form-label col-sm-3 col-md-4"></label>
+            <label asp-for="Account.Password" class="col-form-label col-sm-3 col-md-4">Mật khẩu</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="Account.Password" type="password" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="Account.Password" class="text-danger"></span>
@@ -51,7 +51,7 @@
         </div>
 
         <div class="row mb-3 align-items-center">
-            <label asp-for="ConfirmPassword" class="col-form-label col-sm-3 col-md-4" style="white-space: nowrap; width: 150px;"></label>
+            <label asp-for="ConfirmPassword" class="col-form-label col-sm-3 col-md-4" style="white-space: nowrap; width: 150px;">Nhập lại mật khẩu</label>
             <div class="col-sm-9 col-md-8">
                 <input asp-for="ConfirmPassword" type="password" class="form-control" style="width: 100%; max-width: 250px;" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
@@ -59,7 +59,7 @@
         </div>
 
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Đăng ký</button>
         </div>
     </form>
 </div>

@@ -64,7 +64,7 @@ namespace Bookings_Hotel.Pages
 
 
 
-            return Page();
+return Page();
 
 
         }

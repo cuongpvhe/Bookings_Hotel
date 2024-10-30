@@ -23,7 +23,7 @@ namespace Bookings_Hotel.Pages
         [ValidateNever]
         public TypeRoomDTO typeRoomDTOGet { get; set; }
 
-        
+
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -88,7 +88,7 @@ namespace Bookings_Hotel.Pages
             return Page();
         }
 
-        
+
         public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int TypeId,int NumberOfAdult, int NumberOfChild)
         {
             // Checklogin
@@ -108,7 +108,7 @@ namespace Bookings_Hotel.Pages
             // Validate input
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); 
+                return BadRequest(ModelState);
             }
 
             //Convert Date

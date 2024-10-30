@@ -14,11 +14,11 @@
 
 <div class="main-header d-flex justify-content-between">
     <div>
-        <span class="mb-0 fs-3 fw-bold">Type Room List</span>
+        <span class="mb-0 fs-3 fw-bold">Danh sách các loại phòng</span>
     </div>
 
     <div>
-        <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Add</a>
+        <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Thêm loại phòng</a>
     </div>
 </div>
 
@@ -32,7 +32,7 @@
     </div> *@
 
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
+        <input class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search">
         <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
     </div>
 </div>
@@ -65,10 +65,10 @@
                                 <i class="ri-more-2-fill"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="/Manager/Room/Update" asp-route-roomId="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Update</a></li>
+                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
                                 <li>
                                     <a class="dropdown-item" onclick="confirmDelete(@Model.TypeRooms[i].TypeId)">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
                                     </a>
                                 </li>
                             </ul>

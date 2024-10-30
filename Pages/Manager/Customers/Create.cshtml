@@ -7,11 +7,11 @@
 
 <div class="d-flex justify-content-center">
     <div class="card p-4" style="width: 700px;">
-        <h2 class="text-center">Create Customer</h2>
+        <h2 class="text-center">Thêm người dùng</h2>
 
         <form method="post">
             <div class="form-group mb-3">
-                <label asp-for="Account.FullName"></label>
+                <label asp-for="Account.FullName">Họ và tên</label>
                 <input asp-for="Account.FullName" class="form-control" />
                 <span asp-validation-for="Account.FullName" class="text-danger"></span>
             </div>
@@ -23,31 +23,31 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.UseName"></label>
+                <label asp-for="Account.UseName">Tài khoản</label>
                 <input asp-for="Account.UseName" class="form-control" />
                 <span asp-validation-for="Account.UseName" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Password"></label>
+                <label asp-for="Account.Password">Mật khẩu</label>
                 <input asp-for="Account.Password" type="password" class="form-control" />
                 <span asp-validation-for="Account.Password" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Phonenumber"></label>
+                <label asp-for="Account.Phonenumber">Số điện thoại</label>
                 <input asp-for="Account.Phonenumber" class="form-control" />
                 <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Address"></label>
+                <label asp-for="Account.Address">Địa chỉ</label>
                 <input asp-for="Account.Address" class="form-control" />
                 <span asp-validation-for="Account.Address" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Account.Gender" class="form-label">Gender:</label>
+                <label asp-for="Account.Gender" class="form-label">Giới tính:</label>
                 <select asp-for="Account.Gender" class="form-select">
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -57,8 +57,8 @@
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a asp-page="./List" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary">Tạo</button>
+                <a asp-page="./List" class="btn btn-secondary">Trở về</a>
             </div>
         </form>
     </div>

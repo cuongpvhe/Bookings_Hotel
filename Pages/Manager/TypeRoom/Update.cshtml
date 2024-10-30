@@ -1,11 +1,9 @@
 ﻿@page
-@model Bookings_Hotel.Pages.Manager.TypeRoom.CreateModel
-
+@model Bookings_Hotel.Pages.Manager.TypeRoom.UpdateModel
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Update";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
-
 
 <head>
     <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
@@ -13,15 +11,15 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
- <div class="main-header d-flex justify-content-start">
+<div class="main-header d-flex justify-content-start">
 
-         <div>
-            <span class="mb-0 fs-3 fw-bold">Tạo loại phòng mới</span>
-         </div>
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Cập nhật thông tin loại phòng</span>
+    </div>
 </div>
 
 
-<form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addTypeRoomForm" enctype="multipart/form-data">
+<form class="form-container mt-3 p-3 row row-cols-xl-2 row-cols-lg-1 mx-0" method="post" id="updateTypeRoomForm" enctype="multipart/form-data">
     <div class="col m-0 p-0">
         <div class="carousel-container">
             <div>
@@ -29,101 +27,85 @@
                     <div class="carousel-inner" id="carousel-inner">
                         <!-- Images will be added here dynamically -->
                     </div>
-                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample"
-                        type="button">
+                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample" type="button">
                         <span aria-hidden="true" class="carousel-control-prev-icon"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample"
-                        type="button">
+                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample" type="button">
                         <span aria-hidden="true" class="carousel-control-next-icon"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
                 </div>
-
                 <div class="mt-2 mb-5 d-flex btn-carousel">
-                    <button class="btn btn-primary me-2" type="button"
-                        onclick="document.getElementById('imageInput').click()">Thêm ảnh mới</button>
+                    <button class="btn btn-primary me-2" type="button" onclick="document.getElementById('imageInput').click()">Thêm ảnh mới</button>
                     <button class="btn btn-secondary" type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
                 </div>
             </div>
         </div>
-
         <div class="me-2">
-            <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;"
-                type="file">
-
+            <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;" type="file">
             <div class="thumbnail-container"></div>
         </div>
     </div>
 
     <div class="col m-0 p-0">
         <div class="row">
-
-
             <div class="mb-3">
-                <label for="RoomNumber" class="form-label">Tên loại phòng<span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="TypeName" name="TypeName" placeholder="Nhập tên loại phòng" required />
+                <label for="TypeName" class="form-label">Tên loại phòng <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="TypeName" name="TypeName" value="@Model.TypeRoom.TypeName" required />
             </div>
-
             <div class="mb-3">
                 <label for="NumberOfBeds" class="form-label">Số giường <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfBeds" name="NumberOfBeds" placeholder="Nhập số giường" required />
+                <input type="number" class="form-control" id="NumberOfBeds" name="NumberOfBeds" value="@Model.TypeRoom.NumberOfBed" required />
             </div>
-
-  
             <div class="mb-3">
                 <label for="NumberOfAdults" class="form-label">Số người lớn <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfAdults" name="NumberOfAdults" placeholder="Nhập số người lớn" required />
+                <input type="number" class="form-control" id="NumberOfAdults" name="NumberOfAdults" value="@Model.TypeRoom.NumberOfAdult" required />
             </div>
-
             <div class="mb-3">
                 <label for="NumberOfAdults" class="form-label">Số người lớn được phép thêm <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="MaximumExtraAdult" name="MaximumExtraAdult" placeholder="Nhập số người lớn được phép thêm" required />
+                <input type="number" class="form-control" id="MaximumExtraAdult" name="MaximumExtraAdult" value="@Model.TypeRoom.MaximumExtraAdult" placeholder="Nhập số người lớn được phép thêm" required />
             </div>
 
             <div class="mb-3">
                 <label for="NumberOfAdults" class="form-label">Phụ phí thêm người lớn <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="ExtraAdultFee" name="ExtraAdultFee" placeholder="Nhập phụ phí thêm người lớn " required />
+                <input type="number" class="form-control" id="ExtraAdultFee" name="ExtraAdultFee" value="@Model.TypeRoom.ExtraAdultFee" placeholder="Nhập phụ phí thêm người lớn " required />
             </div>
-
             <div class="mb-3">
                 <label for="NumberOfChildren" class="form-label">Số trẻ em <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfChildren" name="NumberOfChildren" placeholder="Nhập số trẻ em" required />
+                <input type="number" class="form-control" id="NumberOfChildren" name="NumberOfChildren" value="@Model.TypeRoom.NumberOfChild" required />
             </div>
 
             <div class="mb-3">
                 <label for="NumberOfChildren" class="form-label">Số trẻ em được phép thêm <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="MaximumExtraChild" name="MaximumExtraChild" placeholder="Nhập số trẻ em được phép thêm " required />
+                <input type="number" class="form-control" id="MaximumExtraChild" name="MaximumExtraChild" value="@Model.TypeRoom.MaximumExtraChild" placeholder="Nhập số trẻ em được phép thêm " required />
             </div>
 
             <div class="mb-3">
                 <label for="NumberOfChildren" class="form-label">Phụ phí thêm trẻ em <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="ExtraChildFee" name="ExtraChildFee" placeholder="Nhập phụ phí thêm trẻ em " required />
+                <input type="number" class="form-control" id="ExtraChildFee" name="ExtraChildFee" value="@Model.TypeRoom.ExtraChildFee" placeholder="Nhập phụ phí thêm trẻ em " required />
             </div>
 
             <div class="mb-3">
-                <label for="Price" class="form-label">Giá phòng <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="Price" name="Price" placeholder="Nhập giá phòng" required />
+                <label for="Price" class="form-label">Giá <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="Price" name="Price" value="@Model.TypeRoom.Price" required />
             </div>
-
             <div class="mb-3">
                 <label for="Services" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
                 <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple" required>
-                    @foreach (var service in Model.Services)
+                    @foreach (var service in Model.SelectedServices)
                     {
-                        <option value="@service.ServiceId">@service.ServiceName</option>
+                        <option value="@service.Value" selected="@service.Selected">@service.Text</option>
                     }
                 </select>
             </div>
-
             <div class="mb-3">
                 <label for="Description" class="form-label">Mô tả</label>
-                <textarea class="form-control" id="Description" name="Description" rows="5"></textarea>
+                <textarea class="form-control" id="Description" name="Description" rows="5">@Model.TypeRoom.Description</textarea>
             </div>
-
-        <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitFormAjax()">Lưu</button>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitUpdateFormAjax()">Lưu</button>
+            </div>
         </div>
     </div>
 </form>
@@ -210,10 +192,18 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="~/admin_template/js/addTypeRoom.js"></script>
+<script src="~/admin_template/js/updateTypeRoom.js"></script>
 
 <script>
     $(document).ready(function () {
         $('.js-example-basic-multiple').select2();
-    });
+
+        // Load images if updating an existing Type Room
+    @if (Model.IsUpdate)
+    {
+        <text>
+                loadImagesForUpdate(@Html.Raw(Json.Serialize(Model.ImageDTOs)));
+        </text>
+    }
+        });
 </script>

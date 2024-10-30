@@ -5,27 +5,27 @@
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
-<h2>Customer List</h2>
+<h2>Danh sách người dùng</h2>
 <div class="mb-3">
-    <a asp-page="Create" class="btn btn-success">Create New Customer</a>
+    <a asp-page="Create" class="btn btn-success">Tạo mới người dùng</a>
 </div>
 <form method="get" class="mb-3">
     <div class="input-group">
         <input type="text" name="searchString" class="form-control" placeholder="Search" value="@Model.SearchString" />
-        <button class="btn btn-primary" type="submit">Search</button>
+        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
     </div>
 </form>
 <table class="table">
     <thead>
         <tr>
-            <th>Full Name</th>
+            <th>Họ và tên</th>
             <th>Email</th>
-            <th>Phone Number</th>
-            <th>Dob</th>
-            <th>Gender</th>
-            <th>Address</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Số điện thoại</th>
+            <th>Ngày sinh</th>
+            <th>Giớ tính</th>
+            <th>Địa chỉ</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>

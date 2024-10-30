@@ -50,7 +50,7 @@ namespace Bookings_Hotel.Pages.Manager
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 
-         
+
 
             return new JsonResult(new { success = true });
         }

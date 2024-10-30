@@ -9,6 +9,7 @@ using Bookings_Hotel.Models;
 using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient.Server;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
@@ -34,24 +35,23 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Lấy dữ liệu từ form
-            var typeName = Request.Form["TypeName"].ToString();
-            var numberOfBeds = int.Parse(Request.Form["NumberOfBeds"]);
-            var numberOfAdults = int.Parse(Request.Form["NumberOfAdults"]);
-            var numberOfChildren = int.Parse(Request.Form["NumberOfChildren"]);
-            var price = decimal.Parse(Request.Form["Price"]);
-            var description = Request.Form["Description"].ToString();
-
+         
             // Lưu thông tin phòng vào bảng Room
             var typeRoom = new Models.TypeRoom
             {
-                TypeName = typeName,
-                NumberOfBed = numberOfBeds,
-                NumberOfAdult = numberOfAdults,
-                NumberOfChild = numberOfChildren,
-                Price = price,
+                TypeName = Request.Form["TypeName"].ToString(),
+                NumberOfBed = int.Parse(Request.Form["NumberOfBeds"]),
+
+                NumberOfAdult = int.Parse(Request.Form["NumberOfAdults"]),
+                MaximumExtraAdult = int.Parse(Request.Form["MaximumExtraAdult"]),
+                ExtraAdultFee = decimal.Parse(Request.Form["ExtraAdultFee"]),
+
+                NumberOfChild = int.Parse(Request.Form["NumberOfChildren"]),
+                MaximumExtraChild = int.Parse(Request.Form["MaximumExtraChild"]),
+                ExtraChildFee = decimal.Parse(Request.Form["ExtraChildFee"]),
+                Price = decimal.Parse(Request.Form["Price"]),
                 Deleted = false,
-                Description = description,
+                Description = Request.Form["Description"].ToString(),
 
             };
             _context.TypeRooms.Add(typeRoom);
