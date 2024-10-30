@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bookings_Hotel.Pages.Manager.Booking
 {
@@ -16,70 +17,91 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             _context = context;
         }
 
-        public IList<SelectListItem> Floors { get; set; } = new List<SelectListItem>();
-        public int? SelectedFloor { get; set; }
+        public List<SelectListItem> Floors { get; set; }
+        public int SelectedFloor { get; set; }
 
+       
         public void OnGet()
         {
-            // Lấy danh sách tầng từ database
-            Floors = _context.Rooms.Select(r => new SelectListItem
-            {
-                Value = r.Floor.ToString(),
-                Text = $"Tầng {r.Floor}"
-            }).Distinct().ToList();
+            Floors = _context.Rooms
+                .Select(r => r.Floor)
+                .Distinct()
+                .OrderBy(floorId => floorId)
+                .Select(floorId => new SelectListItem
+                {
+                    Value = floorId.ToString(),
+                    Text = "Tầng " + floorId
+                }).ToList();
         }
 
-        // API để lấy danh sách phòng theo tầng
-        public JsonResult OnGetGetRoomsByFloor(int floorId)
+
+        public JsonResult OnGetGetRoomsByFloor(int? floorId)
         {
+            if (floorId == null)
+            {
+                return new JsonResult(new List<object>());
+            }
+
             var rooms = _context.Rooms
-                .Where(r => r.Floor == floorId)
+                .Where(r => r.Floor == floorId.Value)
                 .Select(r => new
                 {
                     roomId = r.RoomId,
                     roomNumber = r.RoomNumber
-                })
-                .ToList();
+                }).ToList();
 
             return new JsonResult(rooms);
         }
-        // API để lấy trạng thái booking
-        public JsonResult OnGetGetBookingStatus(int roomId)
+
+
+        public JsonResult OnGetGetBookingStatus(int roomId, int? month = null, int? year = null)
         {
-            // Lấy danh sách các đơn hàng đã Confirmed
-            var confirmedOrders = _context.Orders
+            // Set current month and year if not provided
+            month ??= DateTime.Now.Month;
+            year ??= DateTime.Now.Year;
+
+            var orders = _context.Orders
                 .Where(o => o.OrderStatus == "Confirmed")
-                .Select(o => new
+                .Select(o => o.OrderId)
+                .ToList();
+
+            var bookedDates = _context.OrderDetails
+                .Where(od => od.RoomId == roomId &&
+                             orders.Contains(od.OrderId ?? 0) &&
+                             ((od.CheckIn.Year == year && od.CheckIn.Month <= month && od.CheckOut.Month >= month && od.CheckOut.Year == year) ||
+                              (od.CheckIn.Year == year && od.CheckIn.Month == month) ||
+                              (od.CheckOut.Year == year && od.CheckOut.Month == month)))
+                .Select(od => new
                 {
-                    OrderId = o.OrderId,
-                    OrderDetails = o.OrderDetails
-                        .Where(od => od.RoomId == roomId)
-                        .Select(od => new
-                        {
-                            CheckIn = od.CheckIn,
-                            CheckOut = od.CheckOut
-                        })
-                        .ToList()
+                    CheckIn = od.CheckIn,
+                    CheckOut = od.CheckOut,
+                    OrderId = od.OrderId
                 })
                 .ToList();
 
-            // Lấy danh sách ngày từ hôm nay đến 30 ngày tới
-            var today = DateTime.Today;
-            var futureDates = Enumerable.Range(0, 30)
-                .Select(offset => today.AddDays(offset))
-                .ToList();
-
-            // Tạo danh sách trạng thái cho từng ngày
-            var statusList = futureDates.Select(date => new
-            {
-                Date = date,
-                IsBooked = confirmedOrders.Any(o =>
-                    o.OrderDetails.Any(od =>
-                        date >= od.CheckIn && date <= od.CheckOut))
-            }).ToList();
-
-            return new JsonResult(statusList);
+            return new JsonResult(bookedDates);
         }
+
+        public JsonResult OnGetGetBookingDetails(int orderId)
+        {
+            var bookingDetail = _context.OrderDetails
+                .Where(od => od.OrderId == orderId)
+                .Select(od => new
+                {
+                    RoomNumber = od.Room.RoomNumber,
+                    RoomType = od.Room.Type.TypeName,
+                    OrderId = od.OrderId,
+                    UserId = od.Order.AccountId,
+                    UserName = od.Order.Account.FullName,
+                    CheckIn = od.CheckIn,
+                    CheckOut = od.CheckOut,
+                    TotalAmount = od.Order.TotalMoney
+                })
+                .FirstOrDefault();
+
+            return new JsonResult(bookingDetail);
+        }
+
 
     }
 }
