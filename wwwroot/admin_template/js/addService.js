@@ -189,9 +189,9 @@ function validateServiceForm() {
             'service.Description': {
                 maxlength: 500
             },
-            'service.Status': {
+/*            'service.Status': {
                 required: true
-            }
+            }*/
         },
         messages: {
             'service.ServiceName': {
@@ -207,9 +207,9 @@ function validateServiceForm() {
             'service.Description': {
                 maxlength: "Mô tả không quá 500 ký tự."
             },
-            'service.Status': {
+/*            'service.Status': {
                 required: "Vui lòng chọn trạng thái."
-            }
+            }*/
         },
         errorElement: 'span',
         errorPlacement: function (error, element) {

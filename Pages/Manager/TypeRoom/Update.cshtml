@@ -19,7 +19,7 @@
 </div>
 
 
-<form class="form-container mt-3 p-3 row row-cols-xl-2 row-cols-lg-1 mx-0" method="post" id="updateTypeRoomForm" enctype="multipart/form-data">
+<form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="updateTypeRoomForm" enctype="multipart/form-data">
     <div class="col m-0 p-0">
         <div class="carousel-container">
             <div>
@@ -50,56 +50,56 @@
 
     <div class="col m-0 p-0">
         <div class="row">
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="TypeName" class="form-label">Tên loại phòng <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" id="TypeName" name="TypeName" value="@Model.TypeRoom.TypeName" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfBeds" class="form-label">Số giường <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="NumberOfBeds" name="NumberOfBeds" value="@Model.TypeRoom.NumberOfBed" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfAdults" class="form-label">Số người lớn <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="NumberOfAdults" name="NumberOfAdults" value="@Model.TypeRoom.NumberOfAdult" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfAdults" class="form-label">Số người lớn được phép thêm <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="MaximumExtraAdult" name="MaximumExtraAdult" value="@Model.TypeRoom.MaximumExtraAdult" placeholder="Nhập số người lớn được phép thêm" required />
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfAdults" class="form-label">Phụ phí thêm người lớn <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="ExtraAdultFee" name="ExtraAdultFee" value="@Model.TypeRoom.ExtraAdultFee" placeholder="Nhập phụ phí thêm người lớn " required />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfChildren" class="form-label">Số trẻ em <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="NumberOfChildren" name="NumberOfChildren" value="@Model.TypeRoom.NumberOfChild" required />
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfChildren" class="form-label">Số trẻ em được phép thêm <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="MaximumExtraChild" name="MaximumExtraChild" value="@Model.TypeRoom.MaximumExtraChild" placeholder="Nhập số trẻ em được phép thêm " required />
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="NumberOfChildren" class="form-label">Phụ phí thêm trẻ em <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="ExtraChildFee" name="ExtraChildFee" value="@Model.TypeRoom.ExtraChildFee" placeholder="Nhập phụ phí thêm trẻ em " required />
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="Price" class="form-label">Giá <span class="text-danger">*</span></label>
                 <input type="number" class="form-control" id="Price" name="Price" value="@Model.TypeRoom.Price" required />
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="Services" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
-                <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple" required>
+                <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple">
                     @foreach (var service in Model.SelectedServices)
                     {
                         <option value="@service.Value" selected="@service.Selected">@service.Text</option>
                     }
                 </select>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 ms-2">
                 <label for="Description" class="form-label">Mô tả</label>
                 <textarea class="form-control" id="Description" name="Description" rows="5">@Model.TypeRoom.Description</textarea>
             </div>
@@ -174,7 +174,7 @@
     </div>
 </div>
 @Html.AntiForgeryToken()
-
+@section Scripts {
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -207,3 +207,55 @@
     }
         });
 </script>
+    <script>
+        $(document).ready(function () {
+            function adjustCarouselSize() {
+                let colWidth = $('.col').width();
+
+                // Thêm lớp mờ dần để chuẩn bị thay đổi kích thước
+                $('#carouselExample').addClass('carousel-transition');
+
+                $('#carouselExample').css({
+                    'width': colWidth + 'px',
+                    'height': (colWidth * 3 / 5) + 'px'
+                });
+
+                // Xóa lớp sau khi chuyển đổi để hiển thị lại carousel
+                setTimeout(() => {
+                    $('#carouselExample').removeClass('carousel-transition');
+                }, 200); // Thời gian này phải trùng với thời gian transition trong CSS
+            }
+
+            // Function to adjust form container layout
+            function adjustFormContainer() {
+                const containerWidth = $('.form-container').outerWidth();
+                if (containerWidth < 1200) {
+                    $('.form-container').removeClass('row row-cols-2');
+                } else {
+                    $('.form-container').addClass('row row-cols-2');
+                }
+
+                // Sau khi layout được cập nhật, dùng requestAnimationFrame để đảm bảo carousel cập nhật sau khi trình duyệt render xong
+                requestAnimationFrame(() => {
+                    setTimeout(adjustCarouselSize, 50); // Delay nhỏ để đảm bảo layout đã hoàn tất
+                });
+            }
+
+            // Initial check on page load
+            adjustFormContainer();
+
+            // Adjust layout on window resize
+            $(window).resize(function () {
+                adjustFormContainer();
+            });
+
+            // Check when header-toggle button is clicked
+            $(document).on('click', '#header-toggle', function () {
+                setTimeout(function () {
+                    adjustFormContainer();
+                }, 100);
+            });
+        });
+
+    </script>
+}

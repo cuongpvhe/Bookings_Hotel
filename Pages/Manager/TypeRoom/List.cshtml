@@ -32,7 +32,7 @@
     </div> *@
 
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search">
+        <input class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search" name="keyword">
         <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
     </div>
 </div>
@@ -56,7 +56,12 @@
                     <td>@Model.TypeRooms[i].TypeName</td>
                     <td>@Model.TypeRooms[i].NumberOfBed</td>
                     <td>@Model.TypeRooms[i].NumberOfAdult</td>
+                    <td>@Model.TypeRooms[i].MaximumExtraAdult</td>
+                    <td>@Model.TypeRooms[i].ExtraAdultFee</td>
                     <td>@Model.TypeRooms[i].NumberOfChild</td>
+                    <td>@Model.TypeRooms[i].MaximumExtraChild</td>
+                    <td>@Model.TypeRooms[i].ExtraChildFee</td>
+
                     <td>@Model.TypeRooms[i].Price</td>
 
                     <td class="action-column">
@@ -84,7 +89,7 @@
 
 <div class="pagination-container ">
     <div class="me-2">
-        <select class="form-select" aria-label="Default select example">
+        <select class="form-select" aria-label="Default select example" name ="page-size">
             <option value="1">10</option>
             <option value="2">20</option>
             <option value="3">30</option>
