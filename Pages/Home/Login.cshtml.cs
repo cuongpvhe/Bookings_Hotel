@@ -25,13 +25,12 @@ namespace Bookings_Hotel.Pages.Home
         [BindProperty]
         public string Password { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public string ReturnUrl { get; set; } // Lưu đường dẫn trở lại
+
         public async Task<IActionResult> OnPostAsync()
         {
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
             var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
 
             if (account != null)
@@ -51,29 +50,36 @@ namespace Bookings_Hotel.Pages.Home
                     new Claim("Avatar", account.Avatar ?? "/path/to/default/avatar")
                 };
 
-               
+
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                
+
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-             
-                if (account.RoleId == 2) 
+                if (!string.IsNullOrEmpty(ReturnUrl))
                 {
-                    return RedirectToPage("/Index");
+                    return LocalRedirect(ReturnUrl); // Trở lại URL ban đầu nếu có
                 }
-                else if (account.RoleId == 1)
+                else
                 {
-                    return RedirectToPage("/Admin/Managers");
+                    if (account.RoleId == 2)
+                    {
+                        return RedirectToPage("/Index");
+                    }
+                    else if (account.RoleId == 1)
+                    {
+                        return RedirectToPage("/Admin/Managers");
+                    }
+                    else if (account.RoleId == 3)
+                    {
+                        return RedirectToPage("/Manager/IndexStaff");
+                    }
                 }
-                else if (account.RoleId == 3) 
-                {
-                    return RedirectToPage("/Manager/IndexStaff");
-                }
+
             }
 
-            
-            ModelState.AddModelError("Error_Login", "Tài khoản hoặc mật khẩu không chính xác.");
+
+            ModelState.AddModelError("Error_Login", "Invalid username or password.");
             return Page();
 
         }
