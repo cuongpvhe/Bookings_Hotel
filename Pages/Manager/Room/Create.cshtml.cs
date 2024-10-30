@@ -1,4 +1,5 @@
 ﻿using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,7 @@ namespace Bookings_Hotel.Pages.Manager
         private readonly HotelBookingSystemContext _context;
         private readonly Cloudinary _cloudinary;
 
-        public List<TypeRoom> RoomTypes { get; set; }
-        public List<Models.Service> Services { get; set; }
+        public List<Models.TypeRoom> RoomTypes { get; set; }
 
         public AddNewRoomModel(HotelBookingSystemContext context, Cloudinary cloudinary)
         {
@@ -24,88 +24,42 @@ namespace Bookings_Hotel.Pages.Manager
         public async Task<IActionResult> OnGetAsync()
         {
             RoomTypes = await _context.TypeRooms.ToListAsync();
-            Services = await _context.Services.ToListAsync();
+
             return Page();
         }
 
-        //public async Task<IActionResult> OnPostAsync()
-        //{
-        //    // Lấy dữ liệu từ form
-        //    var roomNumber = int.Parse(Request.Form["RoomNumber"]);
-        //    var numberOfBeds = int.Parse(Request.Form["NumberOfBeds"]);
-        //    var numberOfAdults = int.Parse(Request.Form["NumberOfAdults"]);
-        //    var numberOfChildren = int.Parse(Request.Form["NumberOfChildren"]);
-        //    var price = decimal.Parse(Request.Form["Price"]);
-        //    var roomTypeId = int.Parse(Request.Form["RoomTypeId"]);
-        //    var description = Request.Form["Description"].ToString();
+        public async Task<IActionResult> OnPostAsync()
+        {
+            // Lấy dữ liệu từ form
+            var roomNumber = int.Parse(Request.Form["RoomNumber"]);
+            var floor = roomNumber / 100;
+            var roomTypeId = int.Parse(Request.Form["RoomTypeId"]);
+            var description = Request.Form["Description"].ToString();
 
-        //    // Lưu thông tin phòng vào bảng Room
-        //    var room = new Models.Room
-        //    {
-        //        RoomNumber = roomNumber,
-        //        NumberOfBed = numberOfBeds,
-        //        NumberOfAdult = numberOfAdults,
-        //        NumberOfChild = numberOfChildren,
-        //        Price = price,
-        //        TypeId = roomTypeId,
-        //        Description = description,
-        //        RoomStatus = "Active",
-        //        CreatedDate = DateTime.Now,
-        //        UpdateDate = DateTime.Now,
-        //    };
-        //    _context.Rooms.Add(room);
-        //    await _context.SaveChangesAsync();
-
-        //    // Lưu danh sách dịch vụ cho phòng vào bảng RoomService
-        //    var serviceIds = Request.Form["ServiceIds"].ToList();
+            // Lưu thông tin phòng vào bảng Room
+            var room = new Models.Room
+            {
+                RoomNumber = roomNumber,
+                Floor = floor,
+                TypeId = roomTypeId,
+                Description = description,
+                RoomStatus = RoomStatus.ACTIVE,
+                CreatedDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+            };
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
 
 
-        //    foreach (var serviceId in serviceIds)
-        //        {
-        //            var roomService = new Models.RoomService
-        //            {
-        //                RoomId = room.RoomId,
-        //                ServiceId = int.Parse(serviceId)
-        //            };
-        //            _context.RoomServices.Add(roomService);
-                    
-        //        }
-        //        await _context.SaveChangesAsync(); // Lưu RoomService vào DB
 
+            return new JsonResult(new { success = true });
+        }
 
-        //    // Lưu ảnh vào bảng RoomImage
-        //    var images = Request.Form.Files;
-        //    for (int i = 0; i < images.Count; i++)
-        //    {
-        //        var file = images[i];
-        //        var imageIndex = int.Parse(Request.Form[$"Images[{i}][index]"]);
-
-        //        // Upload ảnh lên Cloudinary
-        //        var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
-        //        {
-        //            File = new FileDescription(file.FileName, file.OpenReadStream()),
-        //            Folder = "hotel_images"
-        //        });
-
-        //        var roomImage = new RoomImage
-        //        {
-        //            RoomId = room.RoomId,
-        //            ImageUrl = uploadResult.Url.ToString(),
-        //            ImageIndex = imageIndex
-        //        };
-        //        _context.RoomImages.Add(roomImage);
-        //    }
-
-        //    await _context.SaveChangesAsync();
-
-        //    return new JsonResult(new { success = true });
-        //}
-
-        //public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
-        //{
-        //    var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
-        //    return new JsonResult(new { exists = roomExists });
-        //}
+        public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
+        {
+            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
+            return new JsonResult(new { exists = roomExists });
+        }
     }
 
 

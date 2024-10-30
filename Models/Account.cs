@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace Bookings_Hotel.Models
 {
@@ -11,7 +10,6 @@ namespace Bookings_Hotel.Models
         {
             Feedbacks = new HashSet<Feedback>();
             Orders = new HashSet<Order>();
-            Reviews = new HashSet<Review>();
         }
 
         public int AccountId { get; set; }
@@ -46,6 +44,5 @@ namespace Bookings_Hotel.Models
         public virtual Role? Role { get; set; }
         public virtual ICollection<Feedback> Feedbacks { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿
-@page
-@model Bookings_Hotel.Pages.Manager.RoomsModel
+﻿@page
+@model Bookings_Hotel.Pages.Manager.TypeRoom.TypeRoomModel
+
 @{
-    ViewData["Title"] = "Rooms List";
+    ViewData["Title"] = "Type Room List";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
@@ -14,25 +14,25 @@
 
 <div class="main-header d-flex justify-content-between">
     <div>
-        <span class="mb-0 fs-3 fw-bold">Danh sách phòng</span>
+        <span class="mb-0 fs-3 fw-bold">Danh sách các loại phòng</span>
     </div>
 
     <div>
-            <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Tạo phòng mới</a>
+        <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Thêm loại phòng</a>
     </div>
 </div>
 
 <div class="search-bar d-flex justify-content-start">
-    <div class="me-2">
+@*     <div class="me-2">
         <select class="form-select" aria-label="Default select example">
-            <option value="">Tất cả trạng thái</option>
-            <option value="Active">Hoạt động</option>
-            <option value="Inactive">Không hoạt động</option>
+            <option value="1">All Status</option>
+            <option value="2">Booked</option>
+            <option value="3">Available</option>
         </select>
-    </div>
+    </div> *@
 
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
+        <input class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search">
         <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
     </div>
 </div>
@@ -49,25 +49,15 @@
             </tr>
         </thead>
         <tbody>
-            @for (int i = 0; i < Model.RoomsList.Count; i++)
+            @for (int i = 0; i < Model.TypeRooms.Count; i++)
             {
                 <tr>
                     <td>@(i + 1)</td>
-                    @*    <td>@Model.RoomsList[i].RoomId</td> *@
-                    <td>@Model.RoomsList[i].RoomNumber</td>
-                    <td>@Model.RoomsList[i].RoomType</td>
-                     <td>@Model.RoomsList[i].Description</td> 
-                    <td>
-                        @if (Model.RoomsList[i].Status == "Active")
-                        {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Hoạt động</span>
-                        }
-                        else
-                        {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Không hoạt động</span>
-                        }
-                    </td>
-
+                    <td>@Model.TypeRooms[i].TypeName</td>
+                    <td>@Model.TypeRooms[i].NumberOfBed</td>
+                    <td>@Model.TypeRooms[i].NumberOfAdult</td>
+                    <td>@Model.TypeRooms[i].NumberOfChild</td>
+                    <td>@Model.TypeRooms[i].Price</td>
 
                     <td class="action-column">
                         <div class="dropdown dropstart">
@@ -75,9 +65,9 @@
                                 <i class="ri-more-2-fill"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
+                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
                                 <li>
-                                    <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
+                                    <a class="dropdown-item" onclick="confirmDelete(@Model.TypeRooms[i].TypeId)">
                                         <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
                                     </a>
                                 </li>
@@ -126,10 +116,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function confirmDelete(roomId) {
+    function confirmDelete(typeRoomId) {
         Swal.fire({
             title: 'Are you sure?',
-            text: "Do you really want to delete this room?",
+            text: "Do you really want to delete this type Room?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -138,18 +128,18 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
-                deleteRoom(roomId);
+                deleteRoom(typeRoomId);
             }
         });
     }
 
 
-    function deleteRoom(roomId) {
+    function deleteRoom(typeRoomId) {
         $.ajax({
-            url: '/Manager/Room/List?handler=Delete',
+            url: '/Manager/TypeRoom/List?handler=Delete',
             type: 'POST',
             data: {
-                id: roomId
+                id: typeRoomId
             },
             headers: {
                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
@@ -167,10 +157,10 @@
             },
             success: function (response) {
                 // On success, redirect to the payment page
-                if (response.success) { 
+                if (response.success) {
                     window.location.reload();
                 }
-                
+
             },
             error: function (xhr, status, error) {
                 // Handle error response
@@ -190,4 +180,4 @@
 
 
 
-</script>
+</script></table>

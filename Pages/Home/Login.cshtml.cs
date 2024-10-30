@@ -31,6 +31,12 @@ namespace Bookings_Hotel.Pages.Home
         public async Task<IActionResult> OnPostAsync()
         {
 
+            ModelState.Remove(nameof(ReturnUrl));
+
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
             var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
 
             if (account != null)

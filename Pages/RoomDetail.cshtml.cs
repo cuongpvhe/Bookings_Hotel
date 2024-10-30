@@ -20,42 +20,53 @@ namespace Bookings_Hotel.Pages
 
         [BindProperty(SupportsGet = true)]
         [ValidateNever]
-        public RoomDTO roomDTOGet { get; set; }
+        public TypeRoomDTO typeRoomDTOGet { get; set; }
 
 
-        //public async Task<IActionResult> OnGetAsync(int? id)
-        //{
-        //    //Get parameter
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> OnGetAsync(int? id)
+        {
+            //Get parameter
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    //Process
-        //    var room = _context.Rooms.FirstOrDefault(r => r.RoomId == id);
+            //Process
+            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
 
-        //    if (room == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (typeRoom == null)
+            {
+                return NotFound("Not Found ID");
+            }
 
-
-        //    roomDTOGet = new RoomDTO(
-        //        room.RoomId,
-        //        room.RoomNumber,
-        //        room.NumberOfChild,
-        //        room.NumberOfAdult,
-        //        room.NumberOfBed,
-        //        room.Price,
-        //        room.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
-        //        room.Description
-        //    );
+            //Get Service
+            var lstServiceName = _context.TypeRoomServices
+                    .Where(trs => trs.TypeId == typeRoom.TypeId)
+                    .Join(_context.Services,
+                        trs => trs.ServiceId,
+                        s => s.ServiceId,
+                        (trs, s) => s.ServiceName)
+            .ToList();
 
 
+            typeRoomDTOGet = new TypeRoomDTO
+            {
+                TypeId = typeRoom.TypeId,
+                TypeName = typeRoom.TypeName,
+                Description = typeRoom.Description,
+                NumberOfChild = typeRoom.NumberOfChild,
+                NumberOfAdult = typeRoom.NumberOfAdult,
+                NumberOfBed = typeRoom.NumberOfBed,
+                Price = typeRoom.Price,
+                PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstService = lstServiceName
+            };
 
-        //    return Page();
 
 
-        //}
+return Page();
+
+
+        }
     }
 }

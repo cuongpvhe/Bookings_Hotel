@@ -1,41 +1,95 @@
-﻿@* @model List<Bookings_Hotel.Models.Room>
+﻿@using Bookings_Hotel.Util
+@model List<Bookings_Hotel.Models.TypeRoom>
 
 <div class="row g-4">
-    @foreach (var room in Model)
+    @foreach (var typeRoom in Model)
     {
-        var rate = room.Reviews.Any() ? room.Reviews.Average(r => r.Rating) : 0;
+        var averageRating = typeRoom.Rooms
+        .SelectMany(r => r.Feedbacks)
+        .Any()
+        ? typeRoom.Rooms.SelectMany(r => r.Feedbacks).Average(f => f.Rating)
+        : 0;
+
         <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
             <div class="room-item shadow rounded overflow-hidden">
                 <div class="position-relative">
-                    <img class="img-fluid" src="~/template/@room.RoomImages.FirstOrDefault()" alt="">
+                    @{
+                        var firstImage = typeRoom.TypeRoomImages.FirstOrDefault()?.ImageUrl;
+                        if (!string.IsNullOrEmpty(firstImage))
+                        {
+                            <img class="img-fluid" src="@firstImage" alt="@typeRoom.TypeName">
+                        }
+                        else
+                        {
+                            <img class="img-fluid" src="~/images/default-room.jpg" alt="Default Room Image">
+                        }
+                    }
                     <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                        @room.Price/Night
+                        $@typeRoom.Price/Night
                     </small>
                 </div>
                 <div class="p-4 mt-2">
                     <div class="d-flex justify-content-between mb-3">
-                        <h5 class="mb-0">@room.Type.TypeName</h5>
-                        <div class="ps-2 rating" data-rating="@rate"></div>
+                        <h5 class="mb-0">@typeRoom.TypeName</h5>
+                        <div class="ps-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= averageRating)
+                                {
+                                    <i class="fa fa-star text-primary"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star text-secondary"></i>
+                                }
+                            }
+                        </div>
                     </div>
                     <div class="d-flex mb-3">
                         <small class="border-end me-3 pe-3">
-                            <i class="fa fa-bed text-primary me-2"></i>@room.NumberOfBed
+                            <i class="fa fa-bed text-primary me-2"></i>@typeRoom.NumberOfBed <br/> Giường
                         </small>
                         <small class="border-end me-3 pe-3">
-                            <i class="fa fa-user text-primary me-2"></i>@room.NumberOfAdult 
+                            <i class="fa fa-user text-primary me-2"></i>@typeRoom.NumberOfAdult <br/>Người lớn
                         </small>
                         <small>
-                            <i class="fa fa-child text-primary me-2"></i>@room.NumberOfChild
+                            <i class="fa fa-child text-primary me-2"></i>@typeRoom.NumberOfChild <br/>Trẻ em
                         </small>
                     </div>
-                    <p class="text-body mb-3">@room.Description</p>
+                    <p class="text-body mb-3">@(string.IsNullOrEmpty(typeRoom.Description) ? "Không có mô tả nào" : typeRoom.Description)</p>
+
+                    @if (typeRoom.TypeRoomServices.Any())
+                    {
+                        <div class="mb-3">
+                            <h6 class="mb-2">Dịch vụ phòng:</h6>
+                            <div class="d-flex flex-wrap">
+                                @foreach (var service in typeRoom.TypeRoomServices.Select(ts => ts.Service).Take(3))
+                                {
+                                    if (service.Status == ServiceStatus.ACTIVE)
+                                    {
+                                        <span class="badge bg-light text-dark me-2 mb-2">
+                                            <i class="fa fa-check text-primary me-1"></i>@service.ServiceName
+                                        </span>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+
                     <div class="d-flex justify-content-between">
-                        <a class="btn btn-sm btn-primary rounded py-2 px-4" asp-page="RoomDetail" asp-route-id="@room.RoomId">View Detail</a>
-                        <a class="btn btn-sm btn-dark rounded py-2 px-4" asp-page="Booking" asp-route-id="@room.RoomId">Book Now</a>
+                        <a class="btn btn-sm btn-primary rounded py-2 px-4"
+                           asp-page="RoomDetail"
+                           asp-route-id="@typeRoom.TypeId">Xem chi tiết</a>
+                        <a class="btn btn-sm btn-dark rounded py-2 px-4"
+                           asp-page="Booking"
+                           asp-route-id="@typeRoom.TypeId">Đặt ngay</a>
                     </div>
                 </div>
             </div>
         </div>
     }
 </div>
- *@
+
+<script>
+    new WOW().init();
+</script>

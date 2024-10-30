@@ -7,11 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using CloudinaryDotNet; // Import Cloudinary namespace
-using CloudinaryAccount = CloudinaryDotNet.Account; // Alias to avoid conflict with your Models.Account
+using CloudinaryAccount = CloudinaryDotNet.Account;
+using Bookings_Hotel.Service; // Alias to avoid conflict with your Models.Account
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
+builder.Services.AddTransient<EmailService>();
 
 builder.Services.AddDbContext<HotelBookingSystemContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
@@ -52,9 +54,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

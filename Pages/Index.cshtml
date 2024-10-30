@@ -5,65 +5,89 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<!-- Booking Start -->
+<!-- Search Room Start -->
 <div class="container-fluid booking pb-5 wow fadeIn" data-wow-delay="0.1s">
     <div class="container">
         <div class="bg-white shadow" style="padding: 35px;">
-            <div class="row g-2">
-                <div class="col-md-10">
-                    <div class="row g-2">
-                        <div class="col-md-3">
-                            <div class="date" id="date1" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input"
-                                       placeholder="Check in" data-target="#date1" data-toggle="datetimepicker" />
+            <form action="/Room">
+                <div class="row g-2">
+                    <div class="col-md-10">
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <div class="date" id="date1" data-target-input="nearest">
+                                    <input type="date" id="checkin" name="checkin"
+                                           class="form-control datetimepicker-input"
+                                           placeholder="Check in" required />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="date" id="date2" data-target-input="nearest">
-                                <input type="text" class="form-control datetimepicker-input" placeholder="Check out" data-target="#date2" data-toggle="datetimepicker" />
+                            <div class="col-md-2">
+                                <div class="date" id="date2" data-target-input="nearest">
+                                    <input type="date" id="checkout" name="checkout"
+                                           class="form-control datetimepicker-input"
+                                           placeholder="Check out" required />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Adult</option>
-                                <option value="1">Adult 1</option>
-                                <option value="2">Adult 2</option>
-                                <option value="3">Adult 3</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option selected>Child</option>
-                                <option value="1">Child 1</option>
-                                <option value="2">Child 2</option>
-                                <option value="3">Child 3</option>
-                            </select>
+                            <div class="col-md-3">
+                                <input type="number" name="AdultCount"
+                                       class="form-control" placeholder="Số lượng người lớn" />
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" name="ChildCount"
+                                       class="form-control" placeholder="Số lượng trẻ em" />
+                            </div>
+                            <div class="col-md-3">
+                                <div class="dropdown h-100">
+                                    <button class="form-select text-start h-100 w-100" type="button"
+                                            id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                            aria-expanded="false">
+                                        Loại phòng
+                                    </button>
+                                    <ul class="dropdown-menu w-100 p-2" aria-labelledby="dropdownMenuButton"
+                                        style="z-index: 1000;">
+                                        @foreach (var typeRoom in Model.TypeRooms)
+                                        {
+                                            <li class="my-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           name="SelectedTypeRooms" value="@typeRoom.TypeName"
+                                                           id="@typeRoom.TypeId">
+                                                    <label class="form-check-label" for="checkbox1">
+                                                        @typeRoom.TypeName
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <button class="btn btn-primary w-100">Submit</button>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
-<!-- Booking End -->
+<!-- Search Room End-->
 <!-- About Start -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="row g-5 align-items-center">
             <div class="col-lg-6">
-                <h6 class="section-title text-start text-primary text-uppercase">About Us</h6>
-                <h1 class="mb-4">Welcome to <span class="text-primary text-uppercase">Hotelier</span></h1>
-                <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+                <h6 class="section-title text-start text-primary text-uppercase">Vể chúng tôi</h6>
+                <h1 class="mb-4">Chào mừng bạn đến với<span class="text-primary text-uppercase">Hotelier</span></h1>
+                <p class="mb-4">
+                    Hotelier – nơi đẳng cấp và tinh tế hội tụ. Tận hưởng không gian sang trọng, dịch vụ chu đáo và trải nghiệm hoàn hảo cho kỳ nghỉ của bạn.
+                </p>
                 <div class="row g-3 pb-4">
                     <div class="col-sm-4 wow fadeIn" data-wow-delay="0.1s">
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-hotel fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                <p class="mb-0">Rooms</p>
+                                <h2 class="mb-1" data-toggle="counter-up">132</h2>
+                                <p class="mb-0">Phòng</p>
                             </div>
                         </div>
                     </div>
@@ -71,8 +95,8 @@
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-users-cog fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                <p class="mb-0">Staffs</p>
+                                <h2 class="mb-1" data-toggle="counter-up">40</h2>
+                                <p class="mb-0">Dịch vụ</p>
                             </div>
                         </div>
                     </div>
@@ -80,13 +104,13 @@
                         <div class="border rounded p-1">
                             <div class="border rounded text-center p-4">
                                 <i class="fa fa-users fa-2x text-primary mb-2"></i>
-                                <h2 class="mb-1" data-toggle="counter-up">1234</h2>
-                                <p class="mb-0">Clients</p>
+                                <h2 class="mb-1" data-toggle="counter-up">1203</h2>
+                                <p class="mb-0">Khách hàng</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-primary py-3 px-5 mt-2" href="">Explore More</a>
+                <a class="btn btn-primary py-3 px-5 mt-2" href="">Khám phá ngay</a>
             </div>
             <div class="col-lg-6">
                 <div class="row g-3">
@@ -109,15 +133,30 @@
 </div>
 <!-- About End -->
 <!-- Room Start -->
+<!-- Room được đánh giá tốt nhất -->
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title text-center text-primary text-uppercase">Our Rooms</h6>
-            <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Rooms</span></h1>
+            <h6 class="section-title text-center text-primary text-uppercase">Khách sạn của chúng tôi</h6>
+            <h1 class="mb-5">Top 10 phòng được đánh giá <span class="text-primary text-uppercase">tốt nhất</span></h1>
         </div>
         <!-- List Room Start -->
         <div>
-            @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.Rooms)
+            @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.TypeRoomsTopRate)
+        </div>
+        <!-- List Room End -->
+    </div>
+</div>
+<!-- Room được lựa chọn nhiều nhất -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Khách sạn của chúng tôi</h6>
+            <h1 class="mb-5">Top 10 phòng được lựa chọn <span class="text-primary text-uppercase">nhiều nhất</span></h1>
+        </div>
+        <!-- List Room Start -->
+        <div>
+            @await Html.PartialAsync("PartialViews/_RoomsPartialView", Model.TypeRoomsTopBooking)
         </div>
         <!-- List Room End -->
     </div>
@@ -129,10 +168,8 @@
         <div class="col-md-6 bg-dark d-flex align-items-center">
             <div class="p-5">
                 <h6 class="section-title text-start text-white text-uppercase mb-3">Luxury Living</h6>
-                <h1 class="text-white mb-4">Discover A Brand Luxurious Hotel</h1>
-                <p class="text-white mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
-                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3">Our Rooms</a>
-                <a href="" class="btn btn-light py-md-3 px-md-5">Book A Room</a>
+                <h1 class="text-white mb-4">Khám phá khách sạn sang trọng</h1>
+                <p class="text-white mb-4">Chào mừng bạn đến với Hotelier – nơi đẳng cấp và tinh tế hội tụ. Tận hưởng không gian sang trọng, dịch vụ chu đáo và trải nghiệm hoàn hảo cho kỳ nghỉ của bạn.</p>
             </div>
         </div>
         <div class="col-md-6">
@@ -167,8 +204,8 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title text-center text-primary text-uppercase">Our Services</h6>
-            <h1 class="mb-5">Explore Our <span class="text-primary text-uppercase">Services</span></h1>
+            <h6 class="section-title text-center text-primary text-uppercase">Dịch vụ của chúng tôi</h6>
+            <h1 class="mb-5">Khám phá dịch vụ <span class="text-primary text-uppercase">tốt nhất</span></h1>
         </div>
         <div class="row g-4">
             <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
@@ -313,6 +350,147 @@
                 }
             });
         });
+
+        $(document).ready(function () {
+            initializeDateDefaults();
+            setupDateValidation();
+            setupGuestCountValidation();
+        });
+
+        function initializeDateDefaults() {
+            const today = new Date();
+
+            // Set default check-in date (tomorrow)
+            const checkin = new Date();
+            checkin.setDate(today.getDate() + 1);
+            const checkinDateString = checkin.toISOString().split('T')[0];
+            $('#checkin').val(checkinDateString);
+
+            // Set default check-out date (day after tomorrow)
+            const checkout = new Date();
+            checkout.setDate(today.getDate() + 2);
+            const checkoutDateString = checkout.toISOString().split('T')[0];
+            $('#checkout').val(checkoutDateString);
+
+            // Set min attribute for both inputs
+            const todayString = today.toISOString().split('T')[0];
+            $('#checkin').attr('min', todayString);
+            $('#checkout').attr('min', todayString);
+        }
+
+        function setupDateValidation() {
+            // Validate check-in date
+            $('#checkin').on('change', function () {
+                const checkinDate = new Date($(this).val());
+                const checkoutDate = new Date($('#checkout').val());
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkinDate < today) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ngày không hợp lệ',
+                        text: 'Ngày check-in không thể trước ngày hôm nay!'
+                    });
+                    // Reset to tomorrow
+                    const tomorrow = new Date();
+                    tomorrow.setDate(today.getDate() + 1);
+                    $(this).val(tomorrow.toISOString().split('T')[0]);
+                } else if ($('#checkout').val() && checkoutDate <= checkinDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ngày không hợp lệ',
+                        text: 'Ngày check-in phải trước ngày check-out!'
+                    });
+                    // Reset checkout to day after new checkin
+                    const newCheckout = new Date(checkinDate);
+                    newCheckout.setDate(checkinDate.getDate() + 1);
+                    $('#checkout').val(newCheckout.toISOString().split('T')[0]);
+                }
+
+                // Update minimum date for checkout
+                const minCheckout = new Date(checkinDate);
+                minCheckout.setDate(checkinDate.getDate() + 1);
+                $('#checkout').attr('min', minCheckout.toISOString().split('T')[0]);
+            });
+
+            // Validate check-out date
+            $('#checkout').on('change', function () {
+                const checkinDate = new Date($('#checkin').val());
+                const checkoutDate = new Date($(this).val());
+
+                if (checkoutDate <= checkinDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ngày không hợp lệ',
+                        text: 'Ngày check-out phải sau ngày check-in!'
+                    });
+                    // Reset to day after checkin
+                    const newCheckout = new Date(checkinDate);
+                    newCheckout.setDate(checkinDate.getDate() + 1);
+                    $(this).val(newCheckout.toISOString().split('T')[0]);
+                }
+            });
+
+            // Form submission validation
+            $('form').on('submit', function (e) {
+                const checkinDate = new Date($('#checkin').val());
+                const checkoutDate = new Date($('#checkout').val());
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (checkinDate < today || checkoutDate <= checkinDate) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi ngày tháng',
+                        text: 'Vui lòng kiểm tra lại ngày check-in và check-out!'
+                    });
+                    return false;
+                }
+            });
+        }
+
+        function setupGuestCountValidation() {
+            // Set initial attributes for guest count inputs
+            $('input[name="AdultCount"], input[name="ChildCount"]').attr({
+                'min': '0',
+                'step': '1'
+            });
+
+            // Validate adult count
+            $('input[name="AdultCount"]').on('input', function () {
+                const value = parseInt($(this).val());
+                if (value <= 0 || !Number.isInteger(value)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Số lượng không hợp lệ',
+                        text: 'Số lượng người lớn phải lớn hơn 0!'
+                    });
+                    $(this).val(''); // Clear invalid input
+                }
+            });
+
+            // Validate child count
+            $('input[name="ChildCount"]').on('input', function () {
+                const value = parseInt($(this).val());
+                if (value < 0 || !Number.isInteger(value)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Số lượng không hợp lệ',
+                        text: 'Số lượng trẻ em phải lớn hơn hoặc bằng 0!'
+                    });
+                    $(this).val(''); // Clear invalid input
+                }
+            });
+
+            // Prevent non-numeric input
+            $('input[name="AdultCount"], input[name="ChildCount"]').on('keypress', function (e) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                    return false;
+                }
+            });
+        }
     </script>
 }
 <!-- Scripts End-->

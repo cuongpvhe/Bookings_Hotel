@@ -14,19 +14,38 @@
         {
             <tr>
                 <td>@(i + 1)</td>
-                <td>@Model.Services[i].ServiceId</td>
                 <td>@Model.Services[i].ServiceName</td>
                 <td>@Model.Services[i].CreatedDate</td>
                 <td>@Model.Services[i].UpdateDate</td>
-                <td>@Model.Services[i].Price</td>
+                <td>
+                    <form method="post" asp-page-handler="ToggleStatus">
+                        <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
+                        <button type="button" onclick="confirmDeactivation(this)" class="btn @(Model.Services[i].Status == "Active" ? "btn-success" : "btn-warning")">
+                            @(Model.Services[i].Status == "Active" ? "Hoạt động" : "Không hoạt động")
+                        </button>
+                    </form>
+                </td>
                 <td class="action-column">
                     <div class="dropdown dropstart">
                         <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ri-more-2-fill"></i>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Edit</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Delete</a></li>
+                            <li>
+                                <a class="dropdown-item" asp-page="Edit" asp-route-id="@Model.Services[i].ServiceId" class="btn btn-primary">
+                                    <i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i>
+                                    Cập nhật
+                                </a>
+                            </li>
+                            <li>
+                                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                    <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
+                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </td>
@@ -34,3 +53,4 @@
         }
     </tbody>
 </table>
+

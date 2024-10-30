@@ -20,40 +20,7 @@
 
 
 <form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addRoomForm" enctype="multipart/form-data">
-    <div class="col m-0 p-0">
-        <div class="carousel-container">
-            <div>
-                <div class="carousel slide" id="carouselExample">
-                    <div class="carousel-inner" id="carousel-inner">
-                        <!-- Images will be added here dynamically -->
-                    </div>
-                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample"
-                        type="button">
-                        <span aria-hidden="true" class="carousel-control-prev-icon"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample"
-                        type="button">
-                        <span aria-hidden="true" class="carousel-control-next-icon"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
 
-                <div class="mt-2 mb-5 d-flex btn-carousel">
-                    <button class="btn btn-primary me-2" type="button"
-                        onclick="document.getElementById('imageInput').click()">Thêm ảnh mới</button>
-                    <button class="btn btn-secondary" type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="me-2">
-            <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;"
-                type="file">
-
-            <div class="thumbnail-container"></div>
-        </div>
-    </div>
 
     <div class="col m-0 p-0">
         <div class="row">
@@ -64,42 +31,13 @@
                 <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" placeholder="Enter room number" required />
             </div>
 
-            <div class="mb-3">
-                <label for="NumberOfBeds" class="form-label">Số giường <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfBeds" name="NumberOfBeds" placeholder="Enter number of beds" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="NumberOfAdults" class="form-label">Số người lớn <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfAdults" name="NumberOfAdults" placeholder="Enter number of adults" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="NumberOfChildren" class="form-label">Số trẻ em <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="NumberOfChildren" name="NumberOfChildren" placeholder="Enter number of children" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="Price" class="form-label">Giá <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="Price" name="Price" placeholder="Enter price" required />
-            </div>
-
+ 
             <div class="mb-3">
                 <label for="RoomTypeId" class="form-label">Loại phòng <span class="text-danger">*</span></label>
                 <select class="form-select" id="RoomTypeId" name="RoomTypeId" required>
                     @foreach (var type in Model.RoomTypes)
                     {
                         <option value="@type.TypeId">@type.TypeName</option>
-                    }
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="Services" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
-                <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple" required>
-                    @foreach (var service in Model.Services)
-                    {
-                        <option value="@service.ServiceId">@service.ServiceName</option>
                     }
                 </select>
             </div>

@@ -10,12 +10,13 @@ namespace Bookings_Hotel.Pages
     {
 
         private readonly HotelBookingSystemContext _context;
+
         public RoomModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
 
-        //Attribute for filter
+        // Attributes for filtering
         [BindProperty(SupportsGet = true)]
         public decimal? PriceMin { get; set; }
 
@@ -25,79 +26,126 @@ namespace Bookings_Hotel.Pages
         [BindProperty(SupportsGet = true)]
         public int? SortPrice { get; set; }
 
-        //Pagination
+        // Pagination
         [BindProperty(SupportsGet = true)]
         public int CurrentPage { get; set; } = 1;
 
         public int TotalPages { get; set; }
+        public const int ItemsPerPage = 10;
 
-        public const int ItemsPerPage = 20;
-
-        //List
+        // Lists
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedServices { get; set; } = new List<string>();
 
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedTypeRooms { get; set; } = new List<string>();
+
         public List<Room> Rooms { get; set; }
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
         public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
 
-        //public async Task<IActionResult> OnGetAsync()
-        //{
-        //    Services = await _context.Services.ToListAsync();
-        //    TypeRooms = await _context.TypeRooms.ToListAsync();
+        // New properties for search
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CheckIn { get; set; }
 
-        //    var query = _context.Rooms.Include(x => x.Type).Include(x => x.RoomImages).Include(x => x.Reviews).AsQueryable();
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CheckOut { get; set; }
 
-        //    // Filter price
-        //    if (PriceMin.HasValue)
-        //    {
-        //        query = query.Where(x => x.Price >= PriceMin.Value);
-        //    }
-        //    if (PriceMax.HasValue)
-        //    {
-        //        query = query.Where(x => x.Price <= PriceMax.Value);
-        //    }
+        [BindProperty(SupportsGet = true)]
+        public int? AdultCount { get; set; }
 
-        //    // Filter services
-        //    if (SelectedServices != null && SelectedServices.Count > 0)
-        //    {
-        //        query = query.Where(room => room.RoomServices.Any(service => SelectedServices.Contains(service.Service.ServiceName)));
-        //    }
+        [BindProperty(SupportsGet = true)]
+        public int? ChildCount { get; set; }
 
-        //    // Filter typeRooms
-        //    if (SelectedTypeRooms != null && SelectedTypeRooms.Count > 0)
-        //    {
-        //        query = query.Where(room => room.Type != null && SelectedTypeRooms.Contains(room.Type.TypeName));
-        //    }
+        public async Task<IActionResult> OnGetAsync()
+        {
+            Services = await _context.Services.ToListAsync();
 
-        //    // Sort price
-        //    switch (SortPrice)
-        //    {
-        //        case 1:
-        //            query = query.OrderBy(x => x.Price);
-        //            break;
-        //        case 2:
-        //            query = query.OrderByDescending(x => x.Price);
-        //            break;
-        //        default:
-        //            SortPrice = 3;
-        //            break;
-        //    }
+            TypeRooms = await _context.TypeRooms
+                .Include(tr => tr.Rooms)
+                    .ThenInclude(r => r.OrderDetails)
+                .Include(tr => tr.TypeRoomImages)
+                .Include(tr => tr.TypeRoomServices)
+                    .ThenInclude(ts => ts.Service)
+                        .ThenInclude(s => s.ServiceImages)
+                .ToListAsync();
 
-        //    var totalRooms = await query.CountAsync();
-        //    TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
+            // Filter by CheckIn and CheckOut dates
+            if (CheckIn.HasValue && CheckOut.HasValue)
+            {
+                foreach (var typeRoom in TypeRooms)
+                {
+                    typeRoom.Rooms = typeRoom.Rooms
+                        .Where(r => !r.OrderDetails.Any(od =>
+                            od.CheckIn < CheckOut.Value && od.CheckOut > CheckIn.Value &&
+                            (od.Order != null && od.Order.OrderStatus != "Cancelled")
+                        ))
+                        .ToList();
+                }
+            }
 
-        //    Rooms = Pagination.GetCurrentPageData(query.ToList(), CurrentPage, ItemsPerPage).ToList();
+            // Additional filters for each room
+            if (AdultCount.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.NumberOfAdult >= AdultCount.Value)
+                    .ToList();
+            }
 
-        //    if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-        //    {
-        //        return Partial("PartialViews/_RoomsPartialView", Rooms);
-        //    }
+            if (ChildCount.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.NumberOfChild >= ChildCount.Value)
+                    .ToList();
+            }
 
-        //    return Page();
-        //}
+            if (PriceMin.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.Price >= PriceMin.Value)
+                    .ToList();
+            }
 
+            if (PriceMax.HasValue)
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.Price <= PriceMax.Value)
+                    .ToList();
+            }
+
+
+            if (SelectedTypeRooms != null && SelectedTypeRooms.Any())
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => SelectedTypeRooms.Contains(tr.TypeName))
+                    .ToList();
+            }
+
+            if (SelectedServices != null && SelectedServices.Any())
+            {
+                TypeRooms = TypeRooms
+                    .Where(tr => tr.TypeRoomServices.Any(ts => SelectedServices.Contains(ts.Service.ServiceName)))
+                    .ToList();
+            }
+
+            // Sort by price if applicable
+            TypeRooms = SortPrice switch
+            {
+                1 => TypeRooms.OrderBy(tr => tr.Price).ToList(),
+                2 => TypeRooms.OrderByDescending(tr => tr.Price).ToList(),
+                _ => TypeRooms.OrderBy(tr => tr.TypeName).ToList()
+            };
+
+            var totalRooms = TypeRooms.Count();
+            TotalPages = (int)Math.Ceiling(totalRooms / (double)ItemsPerPage);
+
+            TypeRooms = Pagination.GetCurrentPageData(TypeRooms.ToList(), CurrentPage, ItemsPerPage).ToList();
+
+            // Return partial view for AJAX requests
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                return Partial("PartialViews/_RoomsPartialView", TypeRooms);
+
+            return Page();
+        }
     }
 }
