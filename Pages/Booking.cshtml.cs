@@ -23,18 +23,18 @@ namespace Bookings_Hotel.Pages
         [ValidateNever]
         public TypeRoomDTO typeRoomDTOGet { get; set; }
 
-        
 
-        //public async Task<IActionResult> OnGetAsync(int? id)
-        //{
-        //    //Get parameter
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
 
-        //    //Checklogin
-        //    var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
+        public async Task<IActionResult> OnGetAsync(int? id)
+        {
+            //Get parameter
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //Checklogin
+            var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
 
             if (string.IsNullOrEmpty(accountId))
             {
@@ -85,31 +85,31 @@ namespace Bookings_Hotel.Pages
 
 
 
-        //    return Page();
-        //}
+            return Page();
+        }
 
-        
+
         public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest,int TypeId,int NumberOfAdult, int NumberOfChild)
         {
             // Checklogin
             var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
 
-        //    if (string.IsNullOrEmpty(accountId))
-        //    {
-        //        return Unauthorized();
-        //    }
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return Unauthorized();
+            }
 
-        //    var account = await _context.Accounts.FindAsync(int.Parse(accountId));
-        //    if (account == null)
-        //    {
-        //        return Unauthorized();
-        //    }
+            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+            if (account == null)
+            {
+                return Unauthorized();
+            }
 
-        //    // Validate input
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState); 
-        //    }
+            // Validate input
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             //Convert Date
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
@@ -117,10 +117,10 @@ namespace Bookings_Hotel.Pages
                 return BadRequest("Invalid Check-In Date format.");
             }
 
-        //    if (!DateTime.TryParse(CheckOutDate, out DateTime checkoutDate))
-        //    {
-        //        return BadRequest("Invalid Check-Out Date format.");
-        //    }
+            if (!DateTime.TryParse(CheckOutDate, out DateTime checkoutDate))
+            {
+                return BadRequest("Invalid Check-Out Date format.");
+            }
 
             //Get Type by TypeID(from header request)
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == TypeId);
@@ -193,14 +193,14 @@ namespace Bookings_Hotel.Pages
             // Save the changes to the database
             await _context.SaveChangesAsync();
 
-        //    // Trả về kết quả
-        //    return new JsonResult(new
-        //    {
-        //        success = true,
-        //        message = "Received successfully!",
-        //        data = newOrder.OrderId
-        //    });
-        //}
+            // Trả về kết quả
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Received successfully!",
+                data = newOrder.OrderId
+            });
+        }
 
         public List<Room> getValidLstRoom(TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate)
         {
@@ -217,18 +217,18 @@ namespace Bookings_Hotel.Pages
                 .ToList();
         }
 
-        //public static string GenerateRandomPaymentCode()
-        //{
-        //    const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        //    Random random = new Random();
-        //    char[] stringChars = new char[8];
+        public static string GenerateRandomPaymentCode()
+        {
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            char[] stringChars = new char[8];
 
-        //    for (int i = 0; i < 8; i++)
-        //    {
-        //        stringChars[i] = chars[random.Next(chars.Length)];
-        //    }
+            for (int i = 0; i < 8; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
 
-        //    return new string(stringChars);
-        //}
+            return new string(stringChars);
+        }
     }
 }
