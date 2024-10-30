@@ -50,16 +50,16 @@ namespace Bookings_Hotel.Pages.Manager
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 
-         
 
-        //    return new JsonResult(new { success = true });
-        //}
 
-        //public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
-        //{
-        //    var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
-        //    return new JsonResult(new { exists = roomExists });
-        //}
+            return new JsonResult(new { success = true });
+        }
+
+        public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
+        {
+            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
+            return new JsonResult(new { exists = roomExists });
+        }
     }
 
 
