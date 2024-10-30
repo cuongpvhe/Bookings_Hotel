@@ -38,14 +38,14 @@ namespace Bookings_Hotel.Pages.Manager
            .ToListAsync();
         }
 
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
-        {
-            var room = await _context.Rooms.FindAsync(id);
+    //    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    //    {
+    //        var room = await _context.Rooms.FindAsync(id);
 
-            if (room == null)
-            {
-                return NotFound();
-            }
+    //        if (room == null)
+    //        {
+    //            return NotFound();
+    //        }
 
             room.RoomStatus = "Deleted";
             await _context.SaveChangesAsync();

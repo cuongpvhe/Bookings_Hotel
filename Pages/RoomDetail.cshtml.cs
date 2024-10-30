@@ -23,13 +23,13 @@ namespace Bookings_Hotel.Pages
         public TypeRoomDTO typeRoomDTOGet { get; set; }
 
 
-        public async Task<IActionResult> OnGetAsync(int? id)
-        {
-            //Get parameter
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> OnGetAsync(int? id)
+        //{
+        //    //Get parameter
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
             //Process
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
@@ -64,9 +64,9 @@ namespace Bookings_Hotel.Pages
 
 
 
-            return Page();
+        //    return Page();
 
 
-        }
+        //}
     }
 }

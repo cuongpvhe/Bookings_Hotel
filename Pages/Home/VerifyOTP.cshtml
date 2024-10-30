@@ -5,13 +5,13 @@
     Layout = "~/Pages/Shared/Layout_Login.cshtml";
 }
 
-<h2>Verify OTP</h2>
+<h2>Xác thực OTP</h2>
 
 <form method="post">
     <div>
-        <label for="otp">Enter your OTP:</label>
+        <label for="otp">Nhập OTP:</label>
         <input type="number" id="otp" name="otp" />
         <span asp-validation-for="OTP"></span>
     </div>
-    <button type="submit">Verify</button>
+    <button type="submit">Xác thực</button>
 </form>

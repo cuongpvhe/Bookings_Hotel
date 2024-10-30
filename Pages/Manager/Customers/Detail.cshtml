@@ -5,19 +5,19 @@
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
-<h2>Customer Details</h2>
+<h2>Chi tiết người dùng</h2>
 
 <div>
-    <h4>Full Name: @Model.Account.FullName</h4>
+    <h4>Họ và tên: @Model.Account.FullName</h4>
     <p><strong>Id:</strong> @Model.Account.AccountId</p>
     <p><strong>Email:</strong> @Model.Account.Email</p>
-    <p><strong>Phone Number:</strong> @Model.Account.Phonenumber</p>
-    <p><strong>DOB:</strong> @(Model.Account.Dob.HasValue ? Model.Account.Dob.Value.ToShortDateString() : "N/A")</p>
-    <p><strong>Gender:</strong> @Model.Account.Gender</p>
-    <p><strong>Address:</strong> @Model.Account.Address</p>
-    <p><strong>Status:</strong> @Model.Account.Status</p>
-    <p><strong>Created Date:</strong> @(Model.Account.CreatedDate.HasValue ? Model.Account.CreatedDate.Value.ToShortDateString() : "N/A")</p>
+    <p><strong>Số điện thoại:</strong> @Model.Account.Phonenumber</p>
+    <p><strong>Ngày sinh:</strong> @(Model.Account.Dob.HasValue ? Model.Account.Dob.Value.ToShortDateString() : "N/A")</p>
+    <p><strong>Giới tính:</strong> @Model.Account.Gender</p>
+    <p><strong>Địa chỉ:</strong> @Model.Account.Address</p>
+    <p><strong>Trạng thái:</strong> @Model.Account.Status</p>
+    <p><strong>Ngày tạo:</strong> @(Model.Account.CreatedDate.HasValue ? Model.Account.CreatedDate.Value.ToShortDateString() : "N/A")</p>
 </div>
 
-<a asp-page="./List" class="btn btn-secondary">Back to List</a>
-<a asp-page="./Edit" asp-route-id="@Model.Account.AccountId" class="btn btn-primary">Edit</a>
+<a asp-page="./List" class="btn btn-secondary">Trở về</a>
+<a asp-page="./Edit" asp-route-id="@Model.Account.AccountId" class="btn btn-primary">Chỉnh sửa</a>

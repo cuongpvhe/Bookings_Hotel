@@ -52,14 +52,14 @@ namespace Bookings_Hotel.Pages.Manager
 
          
 
-            return new JsonResult(new { success = true });
-        }
+        //    return new JsonResult(new { success = true });
+        //}
 
-        public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
-        {
-            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
-            return new JsonResult(new { exists = roomExists });
-        }
+        //public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
+        //{
+        //    var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
+        //    return new JsonResult(new { exists = roomExists });
+        //}
     }
 
 

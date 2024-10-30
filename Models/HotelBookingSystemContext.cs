@@ -31,11 +31,11 @@ namespace Bookings_Hotel.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=(local);database=HotelBookingSystem;uid=sa;pwd=1;TrustServerCertificate=true");
-            }
+            var builder = new ConfigurationBuilder()
+                              .SetBasePath(Directory.GetCurrentDirectory())
+                              .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            IConfigurationRoot configuration = builder.Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyDB"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,7 +44,7 @@ namespace Bookings_Hotel.Models
             {
                 entity.ToTable("Account");
 
-                entity.HasIndex(e => e.Email, "UQ__Account__A9D10534DAE7D29A")
+                entity.HasIndex(e => e.Email, "UQ__Account__A9D1053448870F61")
                     .IsUnique();
 
                 entity.Property(e => e.AccountId).HasColumnName("Account_ID");
@@ -84,7 +84,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<Feedback>(entity =>
             {
                 entity.HasKey(e => e.ReviewId)
-                    .HasName("PK__Feedback__F85DA7EBF15F8E67");
+                    .HasName("PK__Feedback__F85DA7EB003FE3E3");
 
                 entity.ToTable("Feedback");
 
@@ -121,7 +121,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<FeedbackImage>(entity =>
             {
                 entity.HasKey(e => e.ReviewImageId)
-                    .HasName("PK__Feedback__E961B89C7390CFB4");
+                    .HasName("PK__Feedback__E961B89C39C7D8C7");
 
                 entity.ToTable("Feedback_Image");
 
@@ -176,7 +176,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => e.OdId)
-                    .HasName("PK__Order_De__3D0CE883C210C6A3");
+                    .HasName("PK__Order_De__3D0CE883756B73AA");
 
                 entity.ToTable("Order_Details");
 
@@ -286,23 +286,11 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoom>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__Type_Roo__FE90DDFEBBFEECF0");
+                    .HasName("PK__Type_Roo__FE90DDFEF6D7FAA2");
 
                 entity.ToTable("Type_Room");
 
                 entity.Property(e => e.TypeId).HasColumnName("Type_ID");
-
-                entity.Property(e => e.ExtraAdultFee)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("Extra_Adult_Fee");
-
-                entity.Property(e => e.ExtraChildFee)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("Extra_Child_Fee");
-
-                entity.Property(e => e.MaximumExtraAdult).HasColumnName("Maximum_Extra_Adult");
-
-                entity.Property(e => e.MaximumExtraChild).HasColumnName("Maximum_Extra_Child");
 
                 entity.Property(e => e.NumberOfAdult).HasColumnName("Number_Of_Adult");
 
@@ -338,7 +326,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoomService>(entity =>
             {
                 entity.HasKey(e => e.TypeServiceId)
-                    .HasName("PK__Type_Roo__B51908657215F28F");
+                    .HasName("PK__Type_Roo__B51908659DE8C568");
 
                 entity.ToTable("Type_Room_Service");
 

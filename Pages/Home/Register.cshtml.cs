@@ -41,34 +41,34 @@ namespace Bookings_Hotel.Pages.Home
             // Kiểm tra sự phù hợp của mật khẩu
             if (Account.Password != ConfirmPassword)
             {
-                ModelState.AddModelError("ConfirmPassword", "Password confirmation does not match.");
+                ModelState.AddModelError("ConfirmPassword", "Mật khẩu không khớp.");
                 return Page();
             }
 
             // Kiểm tra email hợp lệ
             if (!IsValidEmail(Account.Email))
             {
-                ModelState.AddModelError("Email", "Invalid email address.");
+                ModelState.AddModelError("Email", "Địa chỉ email không hợp lệ.");
                 return Page();
             }
 
             // Kiểm tra số điện thoại hợp lệ
             if (!IsValidPhoneNumber(Account.Phonenumber))
             {
-                ModelState.AddModelError("Phonenumber", "Invalid phone number.");
+                ModelState.AddModelError("Phonenumber", "Số điện thoại không hợp lệ.");
                 return Page();
             }
 
             // Kiểm tra sự tồn tại của tên đăng nhập hoặc email
             if (_context.Accounts.Any(a => a.UseName == Account.UseName.ToLower().Trim()))
             {
-                ModelState.AddModelError("UseName", "Username already exists.");
+                ModelState.AddModelError("UseName", "Tài khoản đã tồn tại.");
                 return Page();
             }
 
             if (_context.Accounts.Any(a => a.Email == Account.Email.ToLower().Trim()))
             {
-                ModelState.AddModelError("Email", "Email already exists.");
+                ModelState.AddModelError("Email", "Email đã tồn tại.");
                 return Page();
             }
 
@@ -86,7 +86,7 @@ namespace Bookings_Hotel.Pages.Home
                 return RedirectToPage("/Home/VerifyOTP");
             }
 
-            ModelState.AddModelError("", "Failed to send OTP. Please try again."); // Thông báo lỗi gửi OTP
+            ModelState.AddModelError("", "Gửi OTP không thành công. Vui lòng thử lại."); // Thông báo lỗi gửi OTP
             return Page();
         }
 

@@ -45,24 +45,24 @@ namespace Bookings_Hotel.Pages.Manager.Customers
             }
             if (await _context.Accounts.AnyAsync(a => a.Email == Account.Email && a.AccountId != accountToUpdate.AccountId))
             {
-                ModelState.AddModelError("Account.Email", "Email already exists.");
+                ModelState.AddModelError("Account.Email", "Email đã tồn tại.");
                 return Page();
             }
 
             // Kiểm tra tính duy nhất của UseName
             if (await _context.Accounts.AnyAsync(a => a.UseName == Account.UseName && a.AccountId != accountToUpdate.AccountId))
             {
-                ModelState.AddModelError("Account.UseName", "Username already exists.");
+                ModelState.AddModelError("Account.UseName", "Tài khoản đã tồn tại.");
                 return Page();
             }
             if (await _context.Accounts.AnyAsync(a => a.FullName == Account.FullName && a.AccountId != accountToUpdate.AccountId))
             {
-                ModelState.AddModelError("Account.FullName", "FullName already exists.");
+                ModelState.AddModelError("Account.FullName", "Họ và tên đã tồn tại.");
                 return Page();
             }
             if (await _context.Accounts.AnyAsync(a => a.Phonenumber == Account.Phonenumber && a.AccountId != accountToUpdate.AccountId))
             {
-                ModelState.AddModelError("Account.Phonenumber", "Phonenumber already exists.");
+                ModelState.AddModelError("Account.Phonenumber", "Số điện thoại đã tồn tại.");
                 return Page();
             }
            
