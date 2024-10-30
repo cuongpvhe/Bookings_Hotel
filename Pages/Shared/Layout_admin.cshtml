@@ -84,7 +84,7 @@
                             <i class="ri-door-closed-line"></i>
                             <span>Quản lý loại phòng</span>
                         </a>
-                        <a asp-page="/Manager/Booking/BookingViews" class="sidebar__link active-link">
+                        <a asp-page="/Manager/Booking/BookingViews" class="sidebar__link @(IsActive("/Manager/Booking/BookingViews") ? "active-link" : "")">
                             <i class="ri-team-line"></i>
                             <span>Đặt lịch</span>
                         </a>
