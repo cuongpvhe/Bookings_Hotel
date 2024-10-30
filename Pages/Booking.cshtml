@@ -356,6 +356,7 @@
                         text: 'Số Lượng Người Lớn Tối Đa Là: ' + maximunAdult
                     });
                     $(this).val(maximunAdult);
+                    numberOfExtraAdult = @Model.typeRoomDTOGet.MaximumExtraAdult;
                 }
 
                 if (numberOfExtraAdult > 0) {
@@ -387,6 +388,7 @@
                         text: 'Số Lượng Trẻ Em Tối Đa Là: ' + maximunChild
                     });
                     $(this).val(maximunChild);
+                    numberOfExtraChild = @Model.typeRoomDTOGet.MaximumExtraChild;
                 }
                 if (numberOfExtraChild > 0) {
                     $('#extra-child-alert').removeClass('d-none')
