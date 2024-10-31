@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@using Bookings_Hotel.Util
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,28 +93,15 @@
                                 <a asp-page="Contact" class="nav-item nav-link">Liên hệ</a>
                             </div>
 
-
-                          
-                            @{
-                                var roleId = User.FindFirst("RoleId")?.Value;
-                            }
-
                             @if (User.Identity.IsAuthenticated)
                             {
-                                <script type="text/javascript">
-                                    var roleId = '@roleId';
-                                    if (roleId === "1") { 
-                                        window.location.href = '/Admin/IndexAdmin';
-                                   
-                                    } else if (roleId === "3") { 
-                                        window.location.href = '/Manager/IndexStaff';
-                                    }
-                                </script>
+                                if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
+                                {
+                                    <script type="text/javascript">
+                                        window.location.href = '/Manager/Welcome';
+                                    </script>
+                                }
                             }
-
-
-
-
                             <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
                                

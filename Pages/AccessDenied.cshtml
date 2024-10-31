@@ -1,0 +1,23 @@
+﻿
+@page
+@model Bookings_Hotel.Pages.AccessDeniedModel
+@using Bookings_Hotel.Util
+@{
+    if (User.IsInRole(RoleName.CUSTOMER))
+    {
+        Layout = "~/Pages/Shared/Layout_User.cshtml"; // Layout cho Customer
+    }
+    else if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
+    {
+        Layout = "~/Pages/Shared/Layout_admin.cshtml"; // Layout cho Manager và Staff
+    }
+}
+<div class="mt-3">
+    <h2>Quyền truy cập bị từ chối</h2>
+    <p>Bạn không có quyền truy cập vào trang này.</p>
+
+    @if (User.IsInRole("Customer"))
+    {
+        <a href="/">Quay lại trang chủ</a>
+    }
+</div>
