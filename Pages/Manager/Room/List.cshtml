@@ -24,7 +24,7 @@
 
 <div class="search-bar d-flex justify-content-start">
     <div class="me-2">
-        <select class="form-select" aria-label="Default select example">
+        <select class="form-select" aria-label="Default select example" id="roomStatusFilter">
             <option value="">Tất cả trạng thái</option>
             <option value="Active">Hoạt động</option>
             <option value="Inactive">Không hoạt động</option>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
+        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search" id="keyword"> 
         <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
     </div>
 </div>
@@ -94,7 +94,7 @@
 
 <div class="pagination-container ">
     <div class="me-2">
-        <select class="form-select" aria-label="Default select example">
+        <select class="form-select" aria-label="Default select example" id="pageSize">
             <option value="1">10</option>
             <option value="2">20</option>
             <option value="3">30</option>
@@ -120,6 +120,7 @@
     </div>
 </div>
 @Html.AntiForgeryToken()
+@section Scripts {
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -191,3 +192,4 @@
 
 
 </script>
+}

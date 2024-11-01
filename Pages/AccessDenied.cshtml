@@ -5,7 +5,7 @@
 @{
     if (User.IsInRole(RoleName.CUSTOMER))
     {
-        Layout = "~/Pages/Shared/Layout_User.cshtml"; // Layout cho Customer
+        Layout = "~/Pages/Shared/_Layout.cshtml"; // Layout cho Customer
     }
     else if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
     {

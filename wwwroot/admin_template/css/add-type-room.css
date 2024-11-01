@@ -25,6 +25,10 @@
     --casual-with: 35rem;
 }
 
+body {
+    overflow-y: hidden;
+}
+
 .main-header {
     border-bottom: 1px solid #d6d6d6;
     padding-bottom: 0.25rem;
