@@ -10,9 +10,11 @@ using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient.Server;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
+    [Authorize(Policy = "StaffOnly")]
     public class CreateModel : PageModel
     {
 

@@ -2,6 +2,8 @@
 @{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString()?.ToLower();
 }
+@using Bookings_Hotel.Util
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -112,11 +114,15 @@
                                         window.location.href = '/Manager/IndexStaff';
                                     }
                                 </script>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
+                                {
+                                    <script type="text/javascript">
+                                        window.location.href = '/Manager/Welcome';
+                                    </script>
+                                }
                             }
-
-
-
-
                             <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
 

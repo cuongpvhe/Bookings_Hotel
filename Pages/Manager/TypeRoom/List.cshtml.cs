@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
+    [Authorize(Policy = "StaffOnly")]
     public class TypeRoomModel : PageModel
     {
         private readonly Bookings_Hotel.Models.HotelBookingSystemContext _context;
@@ -20,7 +22,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
         public IList<Models.TypeRoom> TypeRooms { get;set; } = default!;
         public List<string> TableHeaders { get; set; } =
-        new List<string> { "#", "Tên loại phòng", "Số giường", "Số người lớn", "Số trẻ em", "Giá", "Thao tác" };
+        new List<string> { "#", "Tên loại phòng", "Số giường", "Số người lớn","Số người lớn được phép thêm","Phụ phí thêm người lớn" ,"Số trẻ em","Số trẻ em được phép thêm","Phụ phí thêm trẻ em" ,"Giá phòng", "Thao tác" };
 
         public async Task OnGetAsync()
         {

@@ -127,7 +127,8 @@ function addThumbnail(imageSrc) {
     };
     const button = document.createElement('button');
     button.className = 'btn btn-sm btn-primary';
-    button.innerText = 'Change';
+    button.type = 'button';
+    button.innerText = 'Thay đổi';
     button.onclick = function () {
         input.click();
     };
@@ -322,9 +323,9 @@ function validateTypeRoomForm() {
                 required: true,
                 min: 0
             },
-            ServiceIds: {
+/*            ServiceIds: {
                 required: true
-            },
+            },*/
 
         },
         messages: {
@@ -363,9 +364,9 @@ function validateTypeRoomForm() {
                 required: "Hãy nhập giá phòng.",
                 min: "Giá phòng nhỏ nhất là 0."
             },
-            ServiceIds: {
+/*            ServiceIds: {
                 required: "Hãy chọn ít nhất 1 dịch vụ."
-            },
+            },*/
         },
         errorPlacement: function (error, element) {
             error.addClass("text-danger");

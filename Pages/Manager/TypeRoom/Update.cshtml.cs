@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
+    [Authorize(Policy = "StaffOnly")]
     public class UpdateModel : PageModel
     {
 

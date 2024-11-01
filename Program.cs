@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using CloudinaryDotNet; // Import Cloudinary namespace
 using CloudinaryAccount = CloudinaryDotNet.Account;
-using Bookings_Hotel.Service; // Alias to avoid conflict with your Models.Account
+using Bookings_Hotel.Service;
+using Bookings_Hotel.Util; // Alias to avoid conflict with your Models.Account
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,13 +19,19 @@ builder.Services.AddTransient<EmailService>();
 builder.Services.AddDbContext<HotelBookingSystemContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyDB")));
 builder.Services.AddScoped<HotelBookingSystemContext>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ManagerOnly", policy => policy.RequireRole(RoleName.MANAGER));
+    options.AddPolicy("StaffOnly", policy => policy.RequireRole(RoleName.STAFF));
+    options.AddPolicy("NonCustomerOnly", policy => policy.RequireRole(RoleName.MANAGER, RoleName.STAFF));
+});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Home/Login";  
+        options.LoginPath = "/Login";  
         options.LogoutPath = "/Home/LogOut"; 
-        options.AccessDeniedPath = "/Home/AccessDenied"; 
+        options.AccessDeniedPath = "/AccessDenied"; 
         options.ExpireTimeSpan = TimeSpan.FromMinutes(10); 
     });
 

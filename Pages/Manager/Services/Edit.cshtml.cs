@@ -1,11 +1,13 @@
 using Bookings_Hotel.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Bookings_Hotel.Pages.Manager.Services
 {
+    [Authorize(Policy = "StaffOnly")]
     public class EditModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

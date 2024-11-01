@@ -3,12 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
 using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
 using Bookings_Hotel.Util; // Đảm bảo bạn đã thêm namespace của mô hình
 
 namespace Bookings_Hotel.Pages.Manager
 {
+    [Authorize(Policy = "StaffOnly")]
     public class RoomsModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
