@@ -116,6 +116,8 @@
                                 </script>
                             @if (User.Identity.IsAuthenticated)
                             {
+                            @if (User.Identity.IsAuthenticated)
+                            {
                                 if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
                                 {
                                     <script type="text/javascript">
