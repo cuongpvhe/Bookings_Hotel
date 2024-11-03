@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Bookings_Hotel.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
+    [Authorize(Policy = "StaffOnly")]
     public class TypeRoomModel : PageModel
     {
         private readonly Bookings_Hotel.Models.HotelBookingSystemContext _context;

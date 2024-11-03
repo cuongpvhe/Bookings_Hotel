@@ -108,7 +108,7 @@
             </div>
 
             <div class="mb-3 ms-2">
-                <label for="Services" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
+                <label for="Services" class="form-label">Dịch vụ</label>
                 <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple">
                     @foreach (var service in Model.Services)
                     {
@@ -207,6 +207,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="~/admin_template/js/addTypeRoom.js"></script>
 <script>
     $(document).ready(function () {
         $('.js-example-basic-multiple').select2();
@@ -243,7 +247,7 @@
 
             // Sau khi layout được cập nhật, dùng requestAnimationFrame để đảm bảo carousel cập nhật sau khi trình duyệt render xong
             requestAnimationFrame(() => {
-                setTimeout(adjustCarouselSize, 50); // Delay nhỏ để đảm bảo layout đã hoàn tất
+                setTimeout(adjustCarouselSize, 200); // Delay nhỏ để đảm bảo layout đã hoàn tất
             });
         }
 

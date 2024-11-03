@@ -1,11 +1,12 @@
 ﻿using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-
 namespace Bookings_Hotel.Pages.Manager.Room
 {
+    [Authorize(Policy = "StaffOnly")]
     public class UpdateModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

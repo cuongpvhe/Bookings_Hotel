@@ -91,7 +91,7 @@
                 <input type="number" class="form-control" id="Price" name="Price" value="@Model.TypeRoom.Price" required />
             </div>
             <div class="mb-3 ms-2">
-                <label for="Services" class="form-label">Dịch vụ <span class="text-danger">*</span></label>
+                <label for="Services" class="form-label">Dịch vụ</label>
                 <select class="form-select js-example-basic-multiple" id="Services" name="ServiceIds" multiple="multiple">
                     @foreach (var service in Model.SelectedServices)
                     {
@@ -237,7 +237,7 @@
 
                 // Sau khi layout được cập nhật, dùng requestAnimationFrame để đảm bảo carousel cập nhật sau khi trình duyệt render xong
                 requestAnimationFrame(() => {
-                    setTimeout(adjustCarouselSize, 50); // Delay nhỏ để đảm bảo layout đã hoàn tất
+                    setTimeout(adjustCarouselSize, 200); // Delay nhỏ để đảm bảo layout đã hoàn tất
                 });
             }
 
