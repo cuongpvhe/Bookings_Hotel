@@ -24,71 +24,25 @@
 
 <div class="search-bar d-flex justify-content-start">
     <div class="me-2">
-        <select class="form-select" aria-label="Default select example">
-            <option value="">Tất cả trạng thái</option>
+        <select class="form-select" id="statusFilter" aria-label="Status filter">
+            <option value="All">Tất cả trạng thái</option>
             <option value="Active">Hoạt động</option>
             <option value="Inactive">Không hoạt động</option>
         </select>
     </div>
 
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Enter something ..." aria-label="Search">
-        <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
+        <input id="searchInput" class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Tìm kiếm">
+        <button class="btn btn-primary me-0" type="button" id="searchButton"><i class="ri-search-line"></i></button>
     </div>
 </div>
 
 <div class="table-container">
-    <table class="table m-0">
-        <thead>
-            <tr>
-                @foreach (var header in Model.TableHeaders)
-                {
-                    <th scope="col" class="bg-table-head">@header</th>
-                }
-                @* <th scope="col" class="bg-table-head">Description</th>  *@
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.RoomsList.Count; i++)
-            {
-                <tr>
-                    <td>@(i + 1)</td>
-                    @*    <td>@Model.RoomsList[i].RoomId</td> *@
-                    <td>@Model.RoomsList[i].RoomNumber</td>
-                    <td>@Model.RoomsList[i].RoomType</td>
-                     <td>@Model.RoomsList[i].Description</td> 
-                    <td>
-                        @if (Model.RoomsList[i].Status == "Active")
-                        {
-                            <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Hoạt động</span>
-                        }
-                        else
-                        {
-                            <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Không hoạt động</span>
-                        }
-                    </td>
-
-
-                    <td class="action-column">
-                        <div class="dropdown dropstart">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="ri-more-2-fill"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.RoomsList[i].RoomId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
-                                <li>
-                                    <a class="dropdown-item" onclick="confirmDelete(@Model.RoomsList[i].RoomId)">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div id="roomListContainer">
+        @await Html.PartialAsync("PartialViews/Manager/_RoomsPartialView", Model)
+    </div>
 </div>
+
 
 
 
@@ -101,19 +55,20 @@
         </select>
     </div>
 
-    <div class="">
+    <div class="pagination-container">
         <nav aria-label="...">
             <ul class="pagination m-0">
-                <li class="page-item disabled">
-                    <a class="page-link">Previous</a>
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage - 1)" data-page="@(Model.CurrentPage - 1)">Previous</a>
                 </li>
-                <li class="page-item active"><a class="page-link " href="#">1</a></li>
-                <li class="page-item " aria-current="page">
-                    <a class="page-link text-dark" href="#">2</a>
-                </li>
-                <li class="page-item "><a class="page-link text-dark" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link text-dark" href="#">Next</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link ajax-page" href="?pageIndex=@i" data-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage + 1)" data-page="@(Model.CurrentPage + 1)">Next</a>
                 </li>
             </ul>
         </nav>
@@ -183,6 +138,12 @@
         });
     }
 
+    $(document).ready(function () {
+        $('#statusFilter').on('change', function () {
+            var status = $(this).val();
+            var query = $('#searchInput').val();
+            loadPageContent({ searchTerm: query, status: status, pageIndex: 1 });
+        });
 
         $('#searchButton').on('click', function () {
             var query = $('#searchInput').val();

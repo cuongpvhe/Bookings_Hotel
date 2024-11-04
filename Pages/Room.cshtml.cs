@@ -1,5 +1,6 @@
 using Bookings_Hotel.Common;
 using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +60,7 @@ namespace Bookings_Hotel.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Services = await _context.Services.ToListAsync();
+            Services = await _context.Services.Where(s => s.Status == ServiceStatus.ACTIVE).ToListAsync();
 
             TypeRooms = await _context.TypeRooms
                 .Include(tr => tr.Rooms)
