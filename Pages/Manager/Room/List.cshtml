@@ -137,7 +137,6 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
                 deleteRoom(roomId);
             }
         });
@@ -166,27 +165,82 @@
                 });
             },
             success: function (response) {
-                // On success, redirect to the payment page
                 if (response.success) { 
                     window.location.reload();
                 }
                 
             },
             error: function (xhr, status, error) {
-                // Handle error response
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'There was an error processing your checking!'
                 });
 
-                var errorMessage = xhr.responseText; // Log the server error message
+                var errorMessage = xhr.responseText; 
                 console.log(errorMessage);
             }
         });
     }
 
 
+        $('#searchButton').on('click', function () {
+            var query = $('#searchInput').val();
+            var status = $('#statusFilter').val();
+            loadPageContent({ searchTerm: query, status: status, pageIndex: 1 });
+        });
+
+        // Handle pagination clicks
+        $(document).on('click', '.ajax-page', function (e) {
+            e.preventDefault();
+            var pageIndex = $(this).data('page');
+            var query = $('#searchInput').val();
+            var status = $('#statusFilter').val();
+
+            if (pageIndex > 0) {
+                loadPageContent({
+                    searchTerm: query,
+                    status: status,
+                    pageIndex: pageIndex
+                });
+                updatePagination(pageIndex);
+            }
+        });
+
+        function loadPageContent(data) {
+            $.ajax({
+                url: '/Manager/Room/List?handler=Search',
+                type: 'GET',
+                data: data,
+                success: function (result) {
+                    $('#roomListContainer').html(result);
+                    updatePagination(data.pageIndex);
+                },
+                error: function () {
+                    alert('Error fetching data');
+                }
+            });
+        }
+
+        function updatePagination(currentPage) {
+            $('.pagination .page-item').removeClass('active');
+            $('.pagination .page-item').each(function () {
+                var pageLink = $(this).find('.page-link');
+                if (pageLink.data('page') == currentPage) {
+                    $(this).addClass('active');
+                }
+            });
+
+            var prevPageItem = $('.pagination .page-item').first();
+            prevPageItem.toggleClass('disabled', currentPage == 1);
+            prevPageItem.find('.page-link').data('page', parseInt(currentPage) - 1);
+
+            var nextPageItem = $('.pagination .page-item').last();
+            var totalPages = @Model.TotalPages;
+            nextPageItem.toggleClass('disabled', currentPage == totalPages);
+            nextPageItem.find('.page-link').data('page', parseInt(currentPage) + 1);
+        }
+    });
 
 
 

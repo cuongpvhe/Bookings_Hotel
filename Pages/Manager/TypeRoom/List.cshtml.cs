@@ -20,6 +20,12 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             _context = context;
         }
 
+        // Pagination properties
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public const int PageSize = 10;
+
+
         public IList<Models.TypeRoom> TypeRooms { get;set; } = default!;
         public List<string> TableHeaders { get; set; } =
         new List<string> { "#", "Tên loại phòng", "Số giường", "Số người lớn","Số người lớn được phép thêm","Phụ phí thêm người lớn" ,"Số trẻ em","Số trẻ em được phép thêm","Phụ phí thêm trẻ em" ,"Giá phòng", "Thao tác" };
