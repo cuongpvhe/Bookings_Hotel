@@ -20,16 +20,53 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             _context = context;
         }
 
+        // Pagination properties
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public const int PageSize = 10;
+
         public IList<Models.TypeRoom> TypeRooms { get;set; } = default!;
         public List<string> TableHeaders { get; set; } =
         new List<string> { "#", "Tên loại phòng", "Số giường", "Số người lớn","Số người lớn được phép thêm","Phụ phí thêm người lớn" ,"Số trẻ em","Số trẻ em được phép thêm","Phụ phí thêm trẻ em" ,"Giá phòng", "Thao tác" };
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int pageIndex = 1)
         {
-            if (_context.TypeRooms != null)
+            CurrentPage = pageIndex;
+            var typeRoomsQuery = _context.TypeRooms
+                .Where(tr => tr.Deleted == false)
+                .AsQueryable();
+
+            TotalPages = (int)Math.Ceiling(await typeRoomsQuery.CountAsync() / (double)PageSize);
+
+            TypeRooms = await typeRoomsQuery
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnGetSearchAsync(string searchTerm, int pageIndex = 1)
+        {
+            CurrentPage = pageIndex;
+            var typeRoomsQuery = _context.TypeRooms
+                .Where(tr => tr.Deleted == false)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                TypeRooms = await _context.TypeRooms.Where(tr => tr.Deleted == false).ToListAsync();
+                typeRoomsQuery = typeRoomsQuery.Where(x =>
+                    x.TypeName.Contains(searchTerm));
             }
+
+            TotalPages = (int)Math.Ceiling(await typeRoomsQuery.CountAsync() / (double)PageSize);
+
+            TypeRooms = await typeRoomsQuery
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .ToListAsync();
+
+            return Partial("PartialViews/Manager/_TypeRoomsPartialView", this);
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)

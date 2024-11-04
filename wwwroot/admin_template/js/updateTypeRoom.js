@@ -314,6 +314,7 @@ async function submitUpdateFormAjax() {
 
     // Thu thập các ảnh từ collectImageDTOs
     const imageDTOs = collectImageDTOs();
+ 
     imageDTOs.forEach((imageDTO, index) => {
         formData.append(`imageDTOS[${index}].index`, imageDTO.index);
         formData.append(`imageDTOS[${index}].imageId`, imageDTO.imageId);

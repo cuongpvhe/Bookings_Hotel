@@ -73,7 +73,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync([FromForm] List<TypeRoomImageDTO> imageDTOs)
         {
 
             var typeId= int.Parse(Request.Form["TypeId"]);
@@ -116,58 +116,46 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             }
 
             // Cập nhật ảnh
-            var imageDTOs = Request.Form.Files;
-            for (int i = 0; i < imageDTOs.Count; i++)
+            foreach (var imageDTO in imageDTOs)
             {
-                var file = imageDTOs[i];
-                var imageIndex = int.Parse(Request.Form[$"imageDTOS[{i}].index"]);
-                var imageId = int.Parse(Request.Form[$"imageDTOS[{i}].imageId"]);
-
-                if (imageId != 0)
+                if (imageDTO.ImageId != 0)
                 {
-                    // Ảnh đã tồn tại
-                    var existingImage = await _context.TypeRoomImages.FirstOrDefaultAsync(img => img.TypeRoomImageId == imageId);
-                    if (existingImage != null)
+                    // Existing image
+                    var existingImage = await _context.TypeRoomImages.FirstOrDefaultAsync(img => img.TypeRoomImageId == imageDTO.ImageId);
+                    if (existingImage != null && imageDTO.ImageFile != null && imageDTO.ImageFile.Length > 0)
                     {
-                        
-                        if (file != null && file.Length > 0)
-                        {
-                            // Xóa ảnh cũ trên Cloudinary
-                            var publicId = existingImage.ImageUrl.Split('/').Last().Split('.').First();
-                            await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+                        // Delete the old image from Cloudinary
+                        var publicId = existingImage.ImageUrl.Split('/').Last().Split('.').First();
+                        await _cloudinary.DestroyAsync(new DeletionParams(publicId));
 
-                            var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
-                            {
-                                File = new FileDescription(file.FileName, file.OpenReadStream()),
-                                Folder = "hotel_images"
-                            });
-
-                            existingImage.ImageUrl = uploadResult.Url.ToString();
-                            existingImage.ImageIndex = imageIndex;
-                        }
-                    }
-                }
-                else
-                {
-                    // Ảnh mới
-                    if (file != null && file.Length > 0)
-                    {
-                        // Upload ảnh mới lên Cloudinary
+                        // Upload the new image
                         var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
                         {
-                            File = new FileDescription(file.FileName, file.OpenReadStream()),
+                            File = new FileDescription(imageDTO.ImageFile.FileName, imageDTO.ImageFile.OpenReadStream()),
                             Folder = "hotel_images"
                         });
 
-                        var typeRoomImage = new TypeRoomImage
-                        {
-                            TypeId = typeRoom.TypeId,
-                            ImageUrl = uploadResult.Url.ToString(),
-                            ImageIndex = imageIndex
-                        };
-
-                        _context.TypeRoomImages.Add(typeRoomImage);
+                        existingImage.ImageUrl = uploadResult.Url.ToString();
+                        existingImage.ImageIndex = imageDTO.Index;
                     }
+                }
+                else if (imageDTO.ImageFile != null && imageDTO.ImageFile.Length > 0)
+                {
+                    // New image
+                    var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                    {
+                        File = new FileDescription(imageDTO.ImageFile.FileName, imageDTO.ImageFile.OpenReadStream()),
+                        Folder = "hotel_images"
+                    });
+
+                    var typeRoomImage = new TypeRoomImage
+                    {
+                        TypeId = typeRoom.TypeId,
+                        ImageUrl = uploadResult.Url.ToString(),
+                        ImageIndex = imageDTO.Index
+                    };
+
+                    _context.TypeRoomImages.Add(typeRoomImage);
                 }
             }
 
@@ -182,6 +170,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             public int ImageId { get; set; }
             public string ImageUrl { get; set; }
             public int Index { get; set; }
+            public IFormFile ImageFile { get; set; }
         }
     }
 }
