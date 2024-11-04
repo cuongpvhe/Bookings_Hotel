@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Bookings_Hotel.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.Customers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class DetailModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

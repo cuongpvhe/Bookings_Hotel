@@ -1,11 +1,13 @@
-using Bookings_Hotel.Models;
+﻿using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookings_Hotel.Pages.Manager.Services
 {
+    [Authorize(Policy = "StaffOnly")]
     public class ServicesModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
@@ -15,7 +17,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
         }
 
         // List
-        public List<string>? TableHeaders { get; set; } = new List<string> { ".No", "Service Name", "Created Date", "Update Date", "Status", "Actions" };
+        public List<string>? TableHeaders { get; set; } = new List<string> { ".No", "Tên dịch vụ", "Ngày tạo", "Ngày cập nhật", "Trạng thái", "Thao tác" };
         public List<Models.Service> Services { get; set; }
 
         // Pagination

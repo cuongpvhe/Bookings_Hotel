@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.Linq;
 using System.Threading.Tasks;
+using CloudinaryDotNet.Actions;
+using Bookings_Hotel.Util;
 
 namespace Bookings_Hotel.Pages.Home
 {
@@ -38,7 +40,10 @@ namespace Bookings_Hotel.Pages.Home
                 return Page();
             }
             var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
-
+            var roleName = _context.Roles
+                          .Where(r => r.RoleId == account.RoleId)
+                          .Select(r => r.RoleName)
+                          .FirstOrDefault();
             if (account != null)
             {
                 if (account.Status == "InActive")
@@ -53,6 +58,7 @@ namespace Bookings_Hotel.Pages.Home
                     new Claim("AccountId", account.AccountId.ToString()),
                     new Claim(ClaimTypes.Email, account.Email),
                     new Claim("RoleId", account.RoleId.ToString()),
+                    new Claim(ClaimTypes.Role, roleName),
                     new Claim("Avatar", account.Avatar ?? "/path/to/default/avatar")
                 };
 
@@ -68,17 +74,13 @@ namespace Bookings_Hotel.Pages.Home
                 }
                 else
                 {
-                    if (account.RoleId == 2)
+                    if (roleName == RoleName.CUSTOMER)
                     {
                         return RedirectToPage("/Index");
                     }
-                    else if (account.RoleId == 1)
+                    else if (roleName == RoleName.STAFF || roleName == RoleName.MANAGER)
                     {
-                        return RedirectToPage("/Admin/Managers");
-                    }
-                    else if (account.RoleId == 3)
-                    {
-                        return RedirectToPage("/Manager/IndexStaff");
+                        return RedirectToPage("/Manager/Welcome");
                     }
                 }
 
