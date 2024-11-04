@@ -23,7 +23,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
         // Pagination properties
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; }
-        public const int PageSize = 1;
+        public const int PageSize = 10;
 
         public IList<Models.TypeRoom> TypeRooms { get;set; } = default!;
         public List<string> TableHeaders { get; set; } =
