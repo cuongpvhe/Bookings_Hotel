@@ -1,4 +1,5 @@
 ﻿using Bookings_Hotel.Models;
+using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +9,36 @@ namespace Bookings_Hotel.Pages
     public class IndexModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
-        public List<TypeRoom> TypeRooms { get; set; }
-        public List<TypeRoom> TypeRoomsTopRate { get; set; }
-        public List<TypeRoom> TypeRoomsTopBooking { get; set; }
 
         public IndexModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
 
+        [BindProperty]
+        public int NumberRoom { get; set; }
+
+        [BindProperty]
+        public int NumberService { get; set; }
+
+        [BindProperty]
+        public int NumberCustomer { get; set; }
+
+        [BindProperty]
+        public List<TypeRoom> TypeRooms { get; set; }
+
+        [BindProperty]
+        public List<TypeRoom> TypeRoomsTopRate { get; set; }
+
+        [BindProperty]
+        public List<TypeRoom> TypeRoomsTopBooking { get; set; }
+
         public async Task OnGetAsync()
         {
+            NumberRoom = _context.Rooms.ToList().Count;
+            NumberService = _context.Services.ToList().Count;
+            NumberCustomer = _context.Accounts.Where(a => a.Role.RoleName == RoleName.CUSTOMER).ToList().Count;
+
             TypeRooms = await _context.TypeRooms.ToListAsync();
 
             TypeRoomsTopRate = await _context.TypeRooms.Include(tr => tr.Rooms).ThenInclude(room => room.Feedbacks)
