@@ -1,0 +1,44 @@
+﻿@model Bookings_Hotel.Pages.Manager.TypeRoom.TypeRoomModel
+
+<table class="table m-0">
+    <thead>
+        <tr>
+            @foreach (var header in Model.TableHeaders)
+            {
+                <th scope="col" class="bg-table-head">@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.TypeRooms.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model.TypeRooms[i].TypeName</td>
+                <td>@Model.TypeRooms[i].NumberOfBed</td>
+                <td>@Model.TypeRooms[i].NumberOfAdult</td>
+                <td>@Model.TypeRooms[i].MaximumExtraAdult</td>
+                <td>@Model.TypeRooms[i].ExtraAdultFee</td>
+                <td>@Model.TypeRooms[i].NumberOfChild</td>
+                <td>@Model.TypeRooms[i].MaximumExtraChild</td>
+                <td>@Model.TypeRooms[i].ExtraChildFee</td>
+                <td>@Model.TypeRooms[i].Price</td>
+                <td class="action-column">
+                    <div class="dropdown dropstart">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-2-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
+                            <li>
+                                <a class="dropdown-item" onclick="confirmDelete(@Model.TypeRooms[i].TypeId)">
+                                    <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

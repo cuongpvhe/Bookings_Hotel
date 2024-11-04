@@ -59,23 +59,6 @@ namespace Bookings_Hotel.Pages.Manager
         }
 
 
-        //public async Task OnGetAsync()
-        //{
-        //    RoomsList = await _context.Rooms
-        //   .Include(r => r.Type)
-        //   .Where(r => r.RoomStatus != "Deleted")
-        //   .Select(r => new RoomViewModel
-        //   {
-        //       RoomId = r.RoomId,
-        //       RoomNumber = r.RoomNumber,
-        //       RoomType = r.Type != null ? r.Type.TypeName : "N/A",
-        //       Status = r.RoomStatus,
-        //       Description = r.Description
-        //   })
-        //   .ToListAsync();
-        //}
-
-
         public async Task<IActionResult> OnGetSearchAsync(string searchTerm, string status, int pageIndex = 1)
         {
             CurrentPage = pageIndex;

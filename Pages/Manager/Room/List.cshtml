@@ -92,7 +92,6 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
                 deleteRoom(roomId);
             }
         });
@@ -135,7 +134,7 @@
                     text: 'There was an error processing your checking!'
                 });
 
-                var errorMessage = xhr.responseText; // Log the server error message
+                var errorMessage = xhr.responseText; 
                 console.log(errorMessage);
             }
         });
@@ -185,25 +184,6 @@
                 }
             });
         }
-
-        // function loadPageContent(data) {
-        //     $.ajax({
-        //         url: '/Manager/Room/List?handler=Search', 
-        //         type: 'GET',
-        //         data: data,
-        //         beforeSend: function (xhr) {
-        //             xhr.setRequestHeader("XSRF-TOKEN",
-        //                 $('input:hidden[name="__RequestVerificationToken"]').val());
-        //         },
-        //         success: function (result) {
-        //             $('#roomListContainer').html(result);
-        //             updatePagination(data.pageIndex);
-        //         },
-        //         error: function () {
-        //             alert('Error fetching data');
-        //         }
-        //     });
-        // }
 
         function updatePagination(currentPage) {
             $('.pagination .page-item').removeClass('active');
