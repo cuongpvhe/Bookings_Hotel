@@ -4,9 +4,11 @@ using Bookings_Hotel.Models;
 using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.Customers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class EditModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

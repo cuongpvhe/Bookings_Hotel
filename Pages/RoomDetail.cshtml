@@ -16,35 +16,32 @@
             <div class="col-lg-6">
                 <div class="row g-3">
                     <div class="d-flex align-items-center justify-content-center">
-                        <div class="thumbnail_slider">
+                        <div class="thumbnail_slider w-100">
                             <!-- Primary Slider Start-->
                             <div id="primary_slider" class="splide">
                                 <div class="splide__track">
                                     <ul class="splide__list">
-                                        <li class="splide__slide">
-                                            <img src="~/template/img/room-1.jpg" alt="Image 1">
-                                        </li>
-                                        <li class="splide__slide">
-                                            <img src="~/template/img/room-2.jpg" alt="Image 2">
-                                        </li>
-                                        <li class="splide__slide">
-                                            <img src="~/template/img/room-3.jpg" alt="Image 3">
-                                        </li>
-                                        <li class="splide__slide">
-                                            <img src="~/template/img/room-2.jpg" alt="Image 4">
-                                        </li>
-                                        <li class="splide__slide">
-                                            <img src="~/template/img/room-1.jpg" alt="Image 4">
-                                        </li>
+                                        @foreach (var imageUrl in Model.typeRoomDTOGet.LstImage)
+                                        {
+                                            <li class="splide__slide">
+                                                <img src="@imageUrl" alt="Image">
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
                             </div>
                             <!-- Primary Slider End-->
                             <!-- Thumbnail Slider Start-->
-                            <div id="thumbnail_slider" class="splide">
+                            <div id="thumbnail_slider" class="splide" style="position:relative;top:120px;">
                                 <div class="splide__track">
                                     <ul class="splide__list">
-                                        <li class="splide__slide">
+                                        @foreach (var imageUrl in Model.typeRoomDTOGet.LstImage)
+                                        {
+                                            <li class="splide__slide">
+                                                <img src="@imageUrl" alt="Thumbnail">
+                                            </li>
+                                        }
+                                        @* <li class="splide__slide">
                                             <img src="~/template/img/room-1.jpg" alt="Thumbnail 1">
                                         </li>
                                         <li class="splide__slide">
@@ -58,7 +55,7 @@
                                         </li>
                                         <li class="splide__slide">
                                             <img src="~/template/img/room-1.jpg" alt="Thumbnail 4">
-                                        </li>
+                                        </li> *@
                                     </ul>
                                 </div>
                             </div>
@@ -343,16 +340,35 @@
     <script src="https://cdn.jsdelivr.net/npm/@@splidejs/splide@3.6.9/dist/js/splide.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Set both sliders to 100% width dynamically
+            document.getElementById('primary_slider').style.width = '100%';
+            document.getElementById('thumbnail_slider').style.width = '100%';
+
+            // Adjust primary slider height based on the aspect ratio
+            function adjustPrimarySliderHeight() {
+                const primarySlider = document.getElementById('primary_slider');
+                const sliderWidth = primarySlider.offsetWidth;
+                const aspectRatio = 0.5; // Adjust this as needed
+                primarySlider.style.height = `${sliderWidth * aspectRatio}px`;
+            }
+
+            // Call once to set the initial height
+            adjustPrimarySliderHeight();
+
+            // Adjust on window resize for responsiveness
+            window.addEventListener('resize', adjustPrimarySliderHeight);
+
+            // Initialize primary slider
             var primarySlider = new Splide('#primary_slider', {
                 type: 'fade',
-                heightRatio: 0.5,
                 pagination: false,
                 arrows: false,
                 cover: true,
             }).mount();
 
+            // Initialize thumbnail slider
             var thumbnailSlider = new Splide('#thumbnail_slider', {
-                fixedWidth: 100,
+                fixedWidth: 100, // Adjust based on preference
                 fixedHeight: 64,
                 isNavigation: true,
                 gap: 10,
@@ -367,8 +383,8 @@
                 },
             }).mount();
 
+            // Sync both sliders
             primarySlider.sync(thumbnailSlider).mount();
         });
-
     </script>
 }

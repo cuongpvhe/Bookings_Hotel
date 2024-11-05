@@ -6,6 +6,7 @@
         return currentPath == page;
     }
 }
+@using Bookings_Hotel.Util
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,12 +56,16 @@
                 </div>
 
                @if (User.Identity.IsAuthenticated)
-                                {
-                                    var username = User.Identity.Name;
-                                    
-                                    var accountId = User.FindFirst("AccountId")?.Value;                                                                                                             
-                                       @username
-                                }
+               {
+                  var username = User.Identity.Name;
+                    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                  var accountId = User.FindFirst("AccountId")?.Value;                                                                                                             
+                                       
+                    <div class="sidebar__info">
+                        <h3>@username</h3>
+                        <span>Role: @role</span>
+                    </div>
+               }
                
                 
             </div>
@@ -70,44 +75,50 @@
                     <!-- <h3 class="sidebar__title">MANAGE</h3> -->
 
                     <div class="sidebar__list">
+                        @if (User.IsInRole(RoleName.STAFF))
+                        {
+                            <a asp-page="/Manager/Customers/List" class="sidebar__link @(IsActive("/Manager/Customers/List") ? "active-link" : "")">
+                                <i class="ri-team-line"></i>
+                                <span>Quản lý khác hàng</span>
+                            </a>
 
-                        <a asp-page="/Manager/Customers/List" class="sidebar__link @(IsActive("/Manager/Customers/List") ? "active-link" : "")">
-                            <i class="ri-team-line"></i>
-                            <span>Quản lý khác hàng</span>
-                        </a>
+                            <a asp-page="/Manager/Room/List" class="sidebar__link @(IsActive("/Manager/Room/List") ? "active-link" : "")">
+                                <i class="ri-door-closed-line"></i>
+                                <span>Quản lý phòng</span>
+                            </a>
+                            <a asp-page="/Manager/TypeRoom/List" class="sidebar__link @(IsActive("/Manager/TypeRoom/List") ? "active-link" : "")">
+                                <i class="ri-door-closed-line"></i>
+                                <span>Quản lý loại phòng</span>
+                            </a>
+                            <a asp-page="/Manager/Booking/BookingViews" class="sidebar__link @(IsActive("/Manager/Booking/BookingViews") ? "active-link" : "")">
+                                <i class="ri-team-line"></i>
+                                <span>Đặt lịch</span>
+                            </a>
 
-                        <a asp-page="/Manager/Room/List" class="sidebar__link @(IsActive("/Manager/Room/List") ? "active-link" : "")">
-                            <i class="ri-door-closed-line"></i>
-                            <span>Quản lý phòng</span>
-                        </a>
-                        <a asp-page="/Manager/TypeRoom/List" class="sidebar__link @(IsActive("/Manager/TypeRoom/List") ? "active-link" : "")">
-                            <i class="ri-door-closed-line"></i>
-                            <span>Quản lý loại phòng</span>
-                        </a>
-                        <a asp-page="/Manager/Booking/BookingViews" class="sidebar__link @(IsActive("/Manager/Booking/BookingViews") ? "active-link" : "")">
-                            <i class="ri-team-line"></i>
-                            <span>Đặt lịch</span>
-                        </a>
+                            <a asp-page="/Manager/Services/List" class="sidebar__link @(IsActive("/Manager/Services/List") ? "active-link" : "")">
+                                <i class="ri-customer-service-2-fill"></i>
+                                <span>Quản lý dịch vụ</span>
+                            </a>
+                        }
 
-                        <a asp-page="/Manager/Services/List" class="sidebar__link @(IsActive("/Manager/Services/List") ? "active-link" : "")">
-                            <i class="ri-customer-service-2-fill"></i>
-                            <span>Quản lý dịch vụ</span>
-                        </a>
+                        @if (User.IsInRole(RoleName.MANAGER))
+                        {
+                            <a href="#" class="sidebar__link">
+                                <i class="ri-group-2-fill"></i>
+                                <span>Quản lý nhân viên</span>
+                            </a>
 
-                        <a href="#" class="sidebar__link">
-                            <i class="ri-group-2-fill"></i>
-                            <span>Quản lý nhân viên</span>
-                        </a>
+                            <a href="#" class="sidebar__link">
+                                <i class="ri-bill-line"></i>
+                                <span>Hóa đơn thanh toán</span>
+                            </a>
 
-                        <a href="#" class="sidebar__link">
-                            <i class="ri-bill-line"></i>
-                            <span>Hóa đơn thanh toán</span>
-                        </a>
+                            <a href="#" class="sidebar__link">
+                                <i class="ri-message-2-line"></i>
+                                <span>Complaints</span>
+                            </a>
+                        }
 
-@*                         <a href="#" class="sidebar__link">
-                            <i class="ri-message-2-line"></i>
-                            <span>Complaints</span>
-                        </a> *@
 
                     </div>
                 </div>
@@ -138,7 +149,7 @@
                 <form method="post" asp-page="/Home/LogOut">
                     <button class="sidebar__link" type="submit">
                         <i class="ri-logout-box-r-line"></i>
-                        <span>Log Out</span>
+                        <span>Đăng xuất</span>
                     </button>
                 </form>
 

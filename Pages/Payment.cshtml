@@ -7,10 +7,10 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title text-center text-primary text-uppercase">Payment</h6>
+            <h6 class="section-title text-center text-primary text-uppercase">Thanh Toán</h6>
             <h1 class="mb-5"><img src="~/template/img/VietinbankLogo.png" width="200" alt=""></h1>
         </div>
-        <div class="row g-5">
+        <div class="row g-5 mb-5">
             <div class="col-lg-6">
                 <div class="row g-3">
                     <div class="col-12 text-center">
@@ -28,14 +28,14 @@
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="name" value="@Model.paymentDTO.BankName" disabled>
-                                    <label for="name">Bank</label>
+                                    <label for="name">Ngân Hàng</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating input-group">
                                     <input type="text" class="form-control" id="accountNumber"
                                            value="@Model.paymentDTO.AccountNumber" disabled>
-                                    <label for="accountNumber">Account Number</label>
+                                    <label for="accountNumber">Số Tài Khoản</label>
                                     <button class="btn btn-outline-secondary" type="button">
                                         <i class="fa-regular fa-copy"></i>
                                     </button>
@@ -44,21 +44,21 @@
                             <div class="col-md-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="money" value="@Model.paymentDTO.MoneyString VNĐ" disabled>
-                                    <label for="money">Money</label>
+                                    <label for="money">Số Tiền</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating input-group">
                                     <input type="text" class="form-control" id="accountNumber"
                                            value="@Model.paymentDTO.CurrencyCode" disabled>
-                                    <label for="accountNumber">Description</label>
+                                    <label for="accountNumber">Nội Dung Chuyển Khoản</label>
                                     <button class="btn btn-outline-secondary" type="button">
                                         <i class="fa-regular fa-copy"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="button" id="check-btn">Check</button>
+                                <button class="btn btn-primary w-100 py-3" type="button" id="check-btn">Kiểm Tra</button>
                             </div>
                         </div>
                     </form>
@@ -90,8 +90,8 @@
                     },
                     beforeSend: function () {
                         Swal.fire({
-                            title: 'Processing',
-                            text: 'Please wait while we checking...',
+                            title: 'Đang Xử Lý',
+                            text: 'Vui Lòng Đợi Ít Phút Trong Lúc Chúng Tôi Kiểm Tra...',
                             allowOutsideClick: false,
                             showConfirmButton: false,
                             willOpen: () => {
@@ -104,14 +104,14 @@
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Payment Successful',
-                                text: 'Thank you for your reservation.'
+                                title: 'Thanh Toán Thành Công',
+                                text: 'Cảm ơn sự ủng hộ của bạn!'
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Payment Failed',
-                                text: 'Please check the transfer amount and transfer content again, if there is any problem please contact my customer service'
+                                title: 'Thanh Toán Thất Bại',
+                                text: 'Hãy Kiểm Tra Lại Số Tiền Chuyển Khoản Và Nội Dung Chuyển Khoản. Nếu Gặp Vấn Đề Vui Lòng Liên Hệ Bộ Phận Hỗ Trợ!'
                             });
                         }
                     },
@@ -119,8 +119,8 @@
                         // Handle error response
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error',
-                            text: 'There was an error processing your checking!'
+                            title: 'Máy Chủ Gặp Lỗi',
+                            text: 'Có lỗi trong quá tình xử lý, vui lòng thử lại sau!'
                         });
 
                         var errorMessage = xhr.responseText; // Log the server error message

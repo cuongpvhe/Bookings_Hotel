@@ -44,7 +44,8 @@
     background-color: var(--body-color);
     box-shadow: 0 2px 24px var(--shadow-color);
     border-radius: 15px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     height: calc(100vh - 5.5rem - 2rem - 48px);
 }
 
@@ -104,13 +105,18 @@ form label {
     position: relative; /* Đặt position để phần tử giả hoạt động đúng */
     /* background-image: url('../img/noImg.png') !important; */
     background-size: cover;
-    background-position: center;
-    width: var(--casual-with); /* Giữ nguyên chiều rộng */
-    height: calc(var(--casual-with) * 3 / 5); /* Điều chỉnh chiều cao */
-    overflow: hidden; /* Đảm bảo phần tử giả không tràn ra ngoài */
     border: 3px solid #d6d6d6; /* Điều chỉnh kích thước và màu của viền bên trong */
+    width: 100%; /* Đảm bảo carousel chiếm toàn bộ chiều rộng của col */
+    height: calc(100% * 3 / 5); /* Thiết lập chiều cao dựa trên tỷ lệ 5:3 */
+    max-width: 100%; /* Giới hạn carousel không vượt quá kích thước của col */
+    max-height: calc(100% * 3 / 5); /* Đảm bảo chiều cao không vượt quá tỷ lệ */
+    overflow: hidden; /* Ẩn phần nội dung thừa nếu cần */
+    object-fit: cover; /* Đảm bảo hình ảnh bao phủ hoàn toàn carousel */
 }
-
+.carousel-transition {
+    opacity: 0;
+    transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
     #carouselExample::before {
         content: "";
         position: absolute;
@@ -177,90 +183,6 @@ form label {
     background-color: #e4e6eb !important;
 }
 
-/*.btn-name {*/
-/*    color: ;*/
-/*}*/
-
-.btns-container i {
-    font-size: 24px;
-}
-
-/* 
-.thumbnail-item button {
-  width: 100% !important;
-} */
-
-/* 
-@media screen and (min-width: 1600px) {
-  .carousel-inner img {
-      height: 41.3rem !important;
-      object-fit: cover !important;
-  }
-
-  #carouselExample {
-      width: var(--casual-with) !important;
-      height: 41.3rem !important;
-  }
-
-  .btn-carousel {
-      max-width: var(--casual-with) !important;
-  }
-
-
-  .thumbnail-item img {
-      width: 4rem !important;
-      height: 4rem !important;
-  }
-}
-
-@media screen and (min-width: 1400px) {
-  .carousel-inner img {
-      height: 36rem;
-      object-fit: cover;
-  }
-
-  #carouselExample {
-      width: 27rem;
-      height: 36rem;
-  }
-
-  .thumbnail-item img {
-      width: 4rem !important;
-      height: 4rem !important;
-  }
-  .btn-carousel {
-      max-width: 27rem;
-  }
-
-}
-
-@media screen and (min-width: 768px) {
-  .carousel-inner img {
-      height: 36rem;
-      object-fit: cover;
-  }
-
-  #carouselExample {
-      width: 27rem;
-      height: 36rem;
-  }
-
-  .btn-carousel {
-      max-width: 27rem;
-  }
-
-  .carousel-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-  }
-
-  .thumbnail-item img {
-      width: 6rem;
-      height: 8rem;
-  }
-}
-*/
 .select2.select2-container.select2-container--default {
     width: 100% !important;
 }

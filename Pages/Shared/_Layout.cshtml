@@ -1,5 +1,9 @@
 ﻿@using System.Security.Claims
+@using Bookings_Hotel.Util
 
+@{
+    var currentPage = ViewContext.RouteData.Values["page"]?.ToString()?.ToLower();
+}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -85,43 +89,33 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a asp-page="/Index" class="nav-item nav-link">Trang chủ</a>
-                                <a asp-page="AboutUs" class="nav-item nav-link">Về chúng tôi</a>
-                                <a asp-page="Services" class="nav-item nav-link">Dịch vụ</a>
-                                <a asp-page="/Room" class="nav-item nav-link">Phòng</a>
-                                <a asp-page="Contact" class="nav-item nav-link">Liên hệ</a>
+                                @if (currentPage != "/booking" && currentPage != "/payment")
+                                {
+                                    <a asp-page="/Index" class="nav-item nav-link">Trang chủ</a>
+                                    <a asp-page="AboutUs" class="nav-item nav-link">Về chúng tôi</a>
+                                    <a asp-page="Services" class="nav-item nav-link">Dịch vụ</a>
+                                    <a asp-page="/Room" class="nav-item nav-link">Phòng</a>
+                                    <a asp-page="Contact" class="nav-item nav-link">Liên hệ</a>
+                                }
                             </div>
-
-
-                          
-                            @{
-                                var roleId = User.FindFirst("RoleId")?.Value;
-                            }
 
                             @if (User.Identity.IsAuthenticated)
                             {
-                                <script type="text/javascript">
-                                    var roleId = '@roleId';
-                                    if (roleId === "1") { 
-                                        window.location.href = '/Admin/IndexAdmin';
-                                   
-                                    } else if (roleId === "3") { 
-                                        window.location.href = '/Manager/IndexStaff';
-                                    }
-                                </script>
+                                if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
+                                {
+                                    <script type="text/javascript">
+                                        window.location.href = '/Manager/Welcome';
+                                    </script>
+                                }
                             }
-
-
-
-
                             <!-- User Login/Logout & Profile Dropdown -->
                             <ul class="navbar-nav">
-                               
+
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     var username = User.Identity.Name;
-                                    
+
                                     var accountId = User.FindFirst("AccountId")?.Value; // Ensure "AccountId" is stored in claims
                                     var avatarPath = User.FindFirst("Avatar")?.Value ?? "/path/to/default/avatar";
                                     <li class="nav-item dropdown">
@@ -134,9 +128,8 @@
                                                 <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Tài khoản</a>
                                             </li>
                                             <li>
-                                                <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Lịch sử đặt phòng</button>
-                                                </form>
+                                               
+                                                <a asp-page="/Users/HistoryBooking" asp-route-id="@accountId" class="dropdown-item">Lịch sử đặt phòng</a>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
@@ -170,9 +163,7 @@
             </div>
         </div>
         <!-- Header End -->
-        @{
-            var currentPage = ViewContext.RouteData.Values["page"]?.ToString()?.ToLower();
-        }
+        
 
         @if (currentPage != "/booking" && currentPage != "/payment")
         {
@@ -217,8 +208,10 @@
             <hr />
         </div>
         <!-- Newsletter Start -->
-        <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="row justify-content-center">
+        @if (currentPage != "/booking" && currentPage != "/payment")
+        {
+            <div class="container newsletter mt-5 wow fadeIn" data-wow-delay="0.1s">
+                <div class="row justify-content-center">
                 <div class="col-lg-10 border rounded p-1">
                     <div class="border rounded text-center p-1">
                         <div class="bg-white rounded text-center p-5">
@@ -232,6 +225,7 @@
                 </div>
             </div>
         </div>
+        }
         <!-- Newsletter Start -->
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-light footer wow fadeIn" data-wow-delay="0.1s">

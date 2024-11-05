@@ -1,6 +1,6 @@
 ﻿@using Bookings_Hotel.Util
 @model List<Bookings_Hotel.Models.TypeRoom>
-
+@using System.Globalization
 <div class="row g-4">
     @foreach (var typeRoom in Model)
     {
@@ -25,7 +25,7 @@
                         }
                     }
                     <small class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">
-                        $@typeRoom.Price/Night
+                        @typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")) VNĐ/Đêm
                     </small>
                 </div>
                 <div class="p-4 mt-2">
@@ -56,7 +56,14 @@
                             <i class="fa fa-child text-primary me-2"></i>@typeRoom.NumberOfChild <br/>Trẻ em
                         </small>
                     </div>
-                    <p class="text-body mb-3">@(string.IsNullOrEmpty(typeRoom.Description) ? "Không có mô tả nào" : typeRoom.Description)</p>
+                    <p class="text-body mb-3">
+                        @(string.IsNullOrEmpty(typeRoom.Description)
+                            ? "Không có mô tả nào"
+                            : (typeRoom.Description.Length > 50
+                            ? typeRoom.Description.Substring(0, 50) + "..."
+                            : typeRoom.Description))
+                    </p>
+
 
                     @if (typeRoom.TypeRoomServices.Any())
                     {

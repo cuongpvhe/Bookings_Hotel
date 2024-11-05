@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bookings_Hotel.Pages.Manager.Customers
 {
+    [Authorize(Policy = "StaffOnly")]
     public class ListModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
