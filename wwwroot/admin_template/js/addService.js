@@ -195,7 +195,7 @@ function validateServiceForm() {
         },
         messages: {
             'service.ServiceName': {
-                required: "ui lòng nhập tên dịch vụ.",
+                required: "Vui lòng nhập tên dịch vụ.",
                 minlength: "Tên dịch vụ phải dài ít nhất 2 ký tự.",
                 maxlength: "Tên dịch vụ không quá 50 ký tự."
             },

@@ -40,12 +40,12 @@ namespace Bookings_Hotel.Pages.Home
                 return Page();
             }
             var account = _context.Accounts.FirstOrDefault(a => a.UseName == Username.Trim() && a.Password == Password);
-            var roleName = _context.Roles
-                          .Where(r => r.RoleId == account.RoleId)
-                          .Select(r => r.RoleName)
-                          .FirstOrDefault();
             if (account != null)
             {
+                var roleName = _context.Roles
+                              .Where(r => r.RoleId == account.RoleId)
+                              .Select(r => r.RoleName)
+                              .FirstOrDefault();
                 if (account.Status == "InActive")
                 {
                     ModelState.AddModelError(string.Empty, "Tài khoản không hoạt động.");
@@ -87,7 +87,7 @@ namespace Bookings_Hotel.Pages.Home
             }
 
 
-            ModelState.AddModelError("Error_Login", "Tài khoản và mật khẩu không chính xác.");
+            ModelState.AddModelError("Error_Login", "Tài khoản hoặc mật khẩu không chính xác.");
             return Page();
 
         }
