@@ -38,26 +38,30 @@ namespace Bookings_Hotel.Pages.Home
 
         public IActionResult OnPost(string ConfirmPassword)
         {
-            // Kiểm tra sự phù hợp của mật khẩu
-            if (Account.Password != ConfirmPassword)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("ConfirmPassword", "Mật khẩu không khớp.");
                 return Page();
             }
+            //// Kiểm tra sự phù hợp của mật khẩu
+            //if (Account.Password != ConfirmPassword)
+            //{
+            //    ModelState.AddModelError("ConfirmPassword", "Mật khẩu không khớp.");
+            //    return Page();
+            //}
 
-            // Kiểm tra email hợp lệ
-            if (!IsValidEmail(Account.Email))
-            {
-                ModelState.AddModelError("Email", "Địa chỉ email không hợp lệ.");
-                return Page();
-            }
+            //// Kiểm tra email hợp lệ
+            //if (!IsValidEmail(Account.Email))
+            //{
+            //    ModelState.AddModelError("Email", "Địa chỉ email không hợp lệ.");
+            //    return Page();
+            //}
 
-            // Kiểm tra số điện thoại hợp lệ
-            if (!IsValidPhoneNumber(Account.Phonenumber))
-            {
-                ModelState.AddModelError("Phonenumber", "Số điện thoại không hợp lệ.");
-                return Page();
-            }
+            //// Kiểm tra số điện thoại hợp lệ
+            //if (!IsValidPhoneNumber(Account.Phonenumber))
+            //{
+            //    ModelState.AddModelError("Phonenumber", "Số điện thoại không hợp lệ.");
+            //    return Page();
+            //}
 
             // Kiểm tra sự tồn tại của tên đăng nhập hoặc email
             if (_context.Accounts.Any(a => a.UseName == Account.UseName.ToLower().Trim()))
@@ -69,6 +73,11 @@ namespace Bookings_Hotel.Pages.Home
             if (_context.Accounts.Any(a => a.Email == Account.Email.ToLower().Trim()))
             {
                 ModelState.AddModelError("Email", "Email đã tồn tại.");
+                return Page();
+            }
+            if (_context.Accounts.Any(a => a.Phonenumber == Account.Phonenumber.ToLower().Trim()))
+            {
+                ModelState.AddModelError("Phonenumber", "Số điện thoại đã tồn tại.");
                 return Page();
             }
 

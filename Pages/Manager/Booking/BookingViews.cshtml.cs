@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,11 +64,13 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             month ??= DateTime.Now.Month;
             year ??= DateTime.Now.Year;
 
+            // Fetch orders with status SUCCESS or WAITING_PAYMENT
             var orders = _context.Orders
-                .Where(o => o.OrderStatus == OrderStatus.SUCCESS)
+                .Where(o => o.OrderStatus == OrderStatus.SUCCESS || o.OrderStatus == OrderStatus.WAITING_PAYMENT)
                 .Select(o => o.OrderId)
                 .ToList();
 
+            // Retrieve booking dates including waiting payment orders
             var bookedDates = _context.OrderDetails
                 .Where(od => od.RoomId == roomId &&
                              orders.Contains(od.OrderId ?? 0) &&
@@ -78,12 +81,17 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 {
                     CheckIn = od.CheckIn,
                     CheckOut = od.CheckOut,
-                    OrderId = od.OrderId
+                    OrderId = od.OrderId,
+                    OrderStatus = _context.Orders
+                        .Where(o => o.OrderId == od.OrderId)
+                        .Select(o => o.OrderStatus)
+                        .FirstOrDefault()
                 })
                 .ToList();
 
             return new JsonResult(bookedDates);
         }
+
 
         public JsonResult OnGetGetBookingDetails(int orderId)
         {
@@ -104,7 +112,8 @@ namespace Bookings_Hotel.Pages.Manager.Booking
 
             return new JsonResult(bookingDetail);
         }
-
+      
+      
 
     }
 }
