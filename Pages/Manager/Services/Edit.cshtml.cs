@@ -1,4 +1,4 @@
-using Bookings_Hotel.Models;
+﻿using Bookings_Hotel.Models;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -40,27 +40,33 @@ namespace Bookings_Hotel.Pages.Manager.Services
             {
                 if (!ModelState.IsValid)
                 {
-                    TempData["ErrorMessage"] = "Edit failure!";
+                    TempData["ErrorMessage"] = "Các trường thông tin không chính xác";
                     return Page();
                 }
 
                 var serviceInDb = await _context.Services.FindAsync(service.ServiceId);
-                var checkServiceNameExit = _context.Services.Where(x => x.ServiceName.ToLower() == service.ServiceName.ToLower()).FirstOrDefault();
+                var checkServiceNameExit = _context.Services.Any(x => x.ServiceId != serviceInDb.ServiceId && x.ServiceName.ToLower() == service.ServiceName.ToLower());
 
-                if (serviceInDb != null && checkServiceNameExit == null)
+
+
+                if (serviceInDb != null)
                 {
-                    serviceInDb.ServiceName = service.ServiceName;
-                    serviceInDb.UpdateDate = System.DateTime.Now;
-                    serviceInDb.Price = service.Price;
-                    serviceInDb.Description = service.Description;
-                    serviceInDb.Status = service.Status;
-                    await _context.SaveChangesAsync();
-
-                    TempData["SuccessMessage"] = "Edit successfully";
-                    return RedirectToPage("./Edit", new { id = service.ServiceId });
+                    if (checkServiceNameExit)
+                    {
+                        TempData["ErrorMessage"] = "Dịch vụ đã tồn tại";
+                    }
+                    else
+                    {
+                        serviceInDb.ServiceName = service.ServiceName;
+                        serviceInDb.UpdateDate = System.DateTime.Now;
+                        serviceInDb.Price = service.Price;
+                        serviceInDb.Description = service.Description;
+                        serviceInDb.Status = service.Status;
+                        await _context.SaveChangesAsync();
+                        TempData["SuccessMessage"] = "Cập nhật dịch vụ thành công";
+                    }
                 }
 
-                TempData["ErrorMessage"] = "Edit error!";
             }
             catch (Exception ex)
             {

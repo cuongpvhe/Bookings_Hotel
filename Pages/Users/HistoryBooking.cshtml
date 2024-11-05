@@ -1,0 +1,71 @@
+﻿@page
+@model Bookings_Hotel.Pages.Users.HistoryBookingModel
+@{
+    Layout = "~/Pages/Shared/Layout_User.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-5">Lịch sử Đặt phòng</h2>
+
+    <!-- Filter Section -->
+    <div class="mb-4">
+        <form method="get" id="statusFilterForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <select asp-for="SelectedStatus" class="form-select" asp-items="Model.StatusList" onchange="this.form.submit()">
+                        <option value="">-- Tất cả trạng thái --</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Booking History Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã Đơn</th>
+                <th>Ngày Đặt</th>
+                <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
+                <th>Chi Tiết Đơn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.BookingHistory)
+            {
+                <tr>
+                    <td>@order.OrderId</td>
+                    <td>@order.OrderDate.ToString("dd-MM-yyyy HH:mm")</td>
+                    <td>@order.TotalMoney.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))</td>
+                    <td>@Model.TranslateOrderStatus(order.OrderStatus)</td>
+                    <td>
+                        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#details-@order.OrderId">
+                            Xem chi tiết
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="details-@order.OrderId">
+                    <td colspan="5">
+                        <div>
+                            <h5>Chi tiết đơn hàng</h5>
+                            <ul>
+                                @foreach (var detail in order.OrderDetails)
+                                {
+                                    <li>Phòng: @detail.RoomNumber | Ngày nhận phòng: @detail.CheckIn.ToString("dd-MM-yyyy") | Ngày trả phòng: @detail.CheckOut.ToString("dd-MM-yyyy HH:mm")</li>
+                                }
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Automatically submit the form when the status dropdown changes
+    document.getElementById("statusFilterForm").onsubmit = function () {
+        this.submit();
+    };
+</script>
