@@ -63,13 +63,14 @@
             </div>
 
             <div class="d-flex justify-content-center">
-                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitRoomFormAjax()">Save</button>
+                <a type="button" class="btn btn-outline-dark px-4 rounded-pill me-2" href="/Manager/Room/List">Hủy</a>
+                <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitRoomFormAjax()">Lưu</button>
             </div>
         </div>
 </form>
 
 @Html.AntiForgeryToken()
-
+@section Scripts {
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -88,9 +89,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="~/admin_template/js/updateRoom.js"></script>
+}
 
-<script>
-    $(document).ready(function () {
-        $('.js-example-basic-multiple').select2();
-    });
-</script>

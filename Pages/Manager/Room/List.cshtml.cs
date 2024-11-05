@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 using Bookings_Hotel.Models;
 using Microsoft.AspNetCore.Mvc;
-using Bookings_Hotel.Util; // Đảm bảo bạn đã thêm namespace của mô hình
+using Bookings_Hotel.Util;
 
 namespace Bookings_Hotel.Pages.Manager
 {
@@ -20,26 +20,85 @@ namespace Bookings_Hotel.Pages.Manager
         {
             _context = context;
         }
+
+        // Pagination properties
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; }
+        public const int PageSize = 10;
+
+
         [BindProperty]
         public List<RoomViewModel> RoomsList { get; set; }
-        public List<string> TableHeaders { get; set; } = 
-            new List<string> { "#", "Số phòng", "Loại phòng", "Mô tả", "Trạng thái" , "Thao tác" };
+        public List<string> TableHeaders { get; set; } =
+            new List<string> { "#", "Số phòng", "Loại phòng", "Mô tả", "Trạng thái", "Thao tác" };
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int pageIndex = 1)
         {
-            RoomsList = await _context.Rooms
-           .Include(r => r.Type) 
-           .Where(r => r.RoomStatus != "Deleted") 
-           .Select(r => new RoomViewModel
-           {
-               RoomId = r.RoomId,
-               RoomNumber = r.RoomNumber,
-               RoomType = r.Type != null ? r.Type.TypeName : "N/A",
-               Status = r.RoomStatus,
-               Description = r.Description
-           })
-           .ToListAsync();
+            CurrentPage = pageIndex;
+            var roomsQuery = _context.Rooms
+                .Include(r => r.Type)
+                .Where(r => r.RoomStatus != "Deleted")
+                .AsQueryable();
+
+            TotalPages = (int)Math.Ceiling(await roomsQuery.CountAsync() / (double)PageSize);
+
+            RoomsList = await roomsQuery
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .Select(r => new RoomViewModel
+                {
+                    RoomId = r.RoomId,
+                    RoomNumber = r.RoomNumber,
+                    RoomType = r.Type != null ? r.Type.TypeName : "N/A",
+                    Status = r.RoomStatus,
+                    Description = r.Description
+                })
+                .ToListAsync();
+
+            return Page();
         }
+
+
+        public async Task<IActionResult> OnGetSearchAsync(string searchTerm, string status, int pageIndex = 1)
+        {
+            CurrentPage = pageIndex;
+            var roomsQuery = _context.Rooms
+                .Include(r => r.Type)
+                .Where(r => r.RoomStatus != "Deleted")
+                .AsQueryable();
+
+            // Filter by search term
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                roomsQuery = roomsQuery.Where(x =>
+                    x.RoomNumber.ToString().Contains(searchTerm) ||
+                    x.Type.TypeName.Contains(searchTerm));
+            }
+
+            // Filter by status
+            if (!string.IsNullOrWhiteSpace(status) && status != "All")
+            {
+                roomsQuery = roomsQuery.Where(x => x.RoomStatus == status);
+            }
+
+            TotalPages = (int)Math.Ceiling(await roomsQuery.CountAsync() / (double)PageSize);
+
+            RoomsList = await roomsQuery
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize)
+                .Select(r => new RoomViewModel
+                {
+                    RoomId = r.RoomId,
+                    RoomNumber = r.RoomNumber,
+                    RoomType = r.Type != null ? r.Type.TypeName : "N/A",
+                    Status = r.RoomStatus,
+                    Description = r.Description
+                })
+                .ToListAsync();
+
+            return Partial("PartialViews/Manager/_RoomsPartialView", this);
+        }
+
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {

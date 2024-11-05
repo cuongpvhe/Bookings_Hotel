@@ -190,11 +190,21 @@ function deleteLastImage() {
                 // Send the imageId to the server if it's not zero
                 if (imageId && parseInt(imageId) !== 0) {
                     $.ajax({
-                        url: '/admin/delete-last-image',
+                        url: '/Manager/TypeRoom/Update?handler=DeleteLastImage',
                         type: 'POST',
-                        data: { imageId: imageId },
+                        data: { id: imageId },
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
                         beforeSend: function () {
-                            lsdRing.removeClass('d-none');
+                            Swal.fire({
+                                title: 'Đang xử lý',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                willOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
                         },
                         success: function (response) {
                             // Remove the last image from carousel
@@ -211,8 +221,8 @@ function deleteLastImage() {
                             }
 
                             Swal.fire(
-                                'Deleted!',
-                                'The last image has been deleted.',
+                                'Hoàn tất',
+                                'Đã xóa ảnh thành công!',
                                 'success'
                             );
                         },
@@ -222,12 +232,10 @@ function deleteLastImage() {
                                 title: "Error",
                                 icon: "error",
                                 text: "Failed to delete the image. Please try again later.",
-                                confirmButtonText: "Close",
+                                confirmButtonText: "Đóng",
                             });
                         },
-                        complete: function (xhr, status) {
-                            lsdRing.addClass('d-none');
-                        }
+
                     });
                 } else {
                     // Remove the last image from carousel
@@ -244,8 +252,8 @@ function deleteLastImage() {
                     }
 
                     Swal.fire(
-                        'Deleted!',
-                        'The last image has been deleted.',
+                    'Hoàn tất',
+                        'Đã xóa ảnh thành công!',
                         'success'
                     );
                 }
@@ -314,6 +322,7 @@ async function submitUpdateFormAjax() {
 
     // Thu thập các ảnh từ collectImageDTOs
     const imageDTOs = collectImageDTOs();
+ 
     imageDTOs.forEach((imageDTO, index) => {
         formData.append(`imageDTOS[${index}].index`, imageDTO.index);
         formData.append(`imageDTOS[${index}].imageId`, imageDTO.imageId);
@@ -334,8 +343,7 @@ async function submitUpdateFormAjax() {
         },
         beforeSend: function () {
             Swal.fire({
-                title: 'Processing',
-                text: 'Saving type room details...',
+                title: 'Đang xử lý',
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 willOpen: () => {
@@ -345,12 +353,12 @@ async function submitUpdateFormAjax() {
         },
         success: function (response) {
             if (response.success) {
-                Swal.fire("Success", "Type room information saved successfully!", "success")
+                Swal.fire("Success", "Cập nhật thông tin loại phòng  thành công!", "success")
                     .then(() => window.location.href = '/Manager/TypeRoom/List'); // Redirect to rooms list
             }
         },
         error: function (xhr, status, error) {
-            Swal.fire("Error", "There was an error saving the type room information.", "error");
+            Swal.fire("Error", "Đã có lỗi trong quá trình cập nhật thông tin loại phòng.", "error");
             console.log(xhr.responseText);
         }
 
@@ -455,3 +463,22 @@ function validateTypeRoomForm() {
     // Trả về kết quả hợp lệ của form
     return $('#updateTypeRoomForm').valid();
 }
+
+
+document.getElementById('rotateLeft').addEventListener('click', function () {
+    cropper.rotate(-45);
+});
+
+document.getElementById('rotateRight').addEventListener('click', function () {
+    cropper.rotate(45);
+});
+
+document.getElementById('scaleX').addEventListener('click', function () {
+    const currentScaleX = cropper.getData().scaleX || 1;
+    cropper.scaleX(-currentScaleX);
+});
+
+document.getElementById('scaleY').addEventListener('click', function () {
+    const currentScaleY = cropper.getData().scaleY || 1;
+    cropper.scaleY(-currentScaleY);
+});

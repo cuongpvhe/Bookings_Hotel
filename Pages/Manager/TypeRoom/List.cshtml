@@ -23,97 +23,39 @@
 </div>
 
 <div class="search-bar d-flex justify-content-start">
-@*     <div class="me-2">
-        <select class="form-select" aria-label="Default select example">
-            <option value="1">All Status</option>
-            <option value="2">Booked</option>
-            <option value="3">Available</option>
-        </select>
-    </div> *@
-
     <div class="d-flex justify-content-between">
-        <input class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search" name="keyword">
-        <button class="btn btn-primary me-0" type="submit"><i class="ri-search-line"></i></button>
+        <input id="searchInput" class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Search">
+        <button class="btn btn-primary me-0" type="button" id="searchButton"><i class="ri-search-line"></i></button>
     </div>
 </div>
 
 <div class="table-container">
-    <table class="table m-0">
-        <thead>
-            <tr>
-                @foreach (var header in Model.TableHeaders)
-                {
-                    <th scope="col" class="bg-table-head">@header</th>
-                }
-                @* <th scope="col" class="bg-table-head">Description</th>  *@
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.TypeRooms.Count; i++)
+    <div id="typeRoomListContainer">
+        @await Html.PartialAsync("PartialViews/Manager/_TypeRoomsPartialView", Model)
+    </div>
+</div>
+
+
+<div class="pagination-container">
+    <nav aria-label="...">
+        <ul class="pagination m-0">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage - 1)" data-page="@(Model.CurrentPage - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
             {
-                <tr>
-                    <td>@(i + 1)</td>
-                    <td>@Model.TypeRooms[i].TypeName</td>
-                    <td>@Model.TypeRooms[i].NumberOfBed</td>
-                    <td>@Model.TypeRooms[i].NumberOfAdult</td>
-                    <td>@Model.TypeRooms[i].MaximumExtraAdult</td>
-                    <td>@Model.TypeRooms[i].ExtraAdultFee</td>
-                    <td>@Model.TypeRooms[i].NumberOfChild</td>
-                    <td>@Model.TypeRooms[i].MaximumExtraChild</td>
-                    <td>@Model.TypeRooms[i].ExtraChildFee</td>
-
-                    <td>@Model.TypeRooms[i].Price</td>
-
-                    <td class="action-column">
-                        <div class="dropdown dropstart">
-                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="ri-more-2-fill"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-page="Update" asp-route-id="@Model.TypeRooms[i].TypeId"><i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i> Cập nhật</a></li>
-                                <li>
-                                    <a class="dropdown-item" onclick="confirmDelete(@Model.TypeRooms[i].TypeId)">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                    <a class="page-link ajax-page" href="?pageIndex=@i" data-page="@i">@i</a>
+                </li>
             }
-        </tbody>
-    </table>
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage + 1)" data-page="@(Model.CurrentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 </div>
 
-
-
-<div class="pagination-container ">
-    <div class="me-2">
-        <select class="form-select" aria-label="Default select example" name ="page-size">
-            <option value="1">10</option>
-            <option value="2">20</option>
-            <option value="3">30</option>
-        </select>
-    </div>
-
-    <div class="">
-        <nav aria-label="...">
-            <ul class="pagination m-0">
-                <li class="page-item disabled">
-                    <a class="page-link">Previous</a>
-                </li>
-                <li class="page-item active"><a class="page-link " href="#">1</a></li>
-                <li class="page-item " aria-current="page">
-                    <a class="page-link text-dark" href="#">2</a>
-                </li>
-                <li class="page-item "><a class="page-link text-dark" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link text-dark" href="#">Next</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-</div>
 @Html.AntiForgeryToken()
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -132,12 +74,10 @@
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Nếu người dùng xác nhận, thực hiện chuyển hướng đến handler để xóa
                 deleteRoom(typeRoomId);
             }
         });
     }
-
 
     function deleteRoom(typeRoomId) {
         $.ajax({
@@ -161,28 +101,77 @@
                 });
             },
             success: function (response) {
-                // On success, redirect to the payment page
                 if (response.success) {
                     window.location.reload();
                 }
 
             },
             error: function (xhr, status, error) {
-                // Handle error response
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'There was an error processing your checking!'
                 });
 
-                var errorMessage = xhr.responseText; // Log the server error message
+                var errorMessage = xhr.responseText; 
                 console.log(errorMessage);
             }
         });
     }
+    $(document).ready(function () {
+        $('#searchButton').on('click', function () {
+            var query = $('#searchInput').val();
+            loadPageContent({ searchTerm: query, pageIndex: 1 });
+        });
+
+        $(document).on('click', '.ajax-page', function (e) {
+            e.preventDefault();
+            var pageIndex = $(this).data('page');
+            var query = $('#searchInput').val();
+
+            if (pageIndex > 0) {
+                loadPageContent({
+                    searchTerm: query,
+                    pageIndex: pageIndex
+                });
+                updatePagination(pageIndex);
+            }
+        });
+
+        function loadPageContent(data) {
+            $.ajax({
+                url: '/Manager/TypeRoom/List?handler=Search',
+                type: 'GET',
+                data: data,
+                success: function (result) {
+                    $('#typeRoomListContainer').html(result);
+                    updatePagination(data.pageIndex);
+                },
+                error: function () {
+                    alert('Error fetching data');
+                }
+            });
+        }
+
+        function updatePagination(currentPage) {
+            $('.pagination .page-item').removeClass('active');
+            $('.pagination .page-item').each(function () {
+                var pageLink = $(this).find('.page-link');
+                if (pageLink.data('page') == currentPage) {
+                    $(this).addClass('active');
+                }
+            });
+
+            var prevPageItem = $('.pagination .page-item').first();
+            prevPageItem.toggleClass('disabled', currentPage == 1);
+            prevPageItem.find('.page-link').data('page', parseInt(currentPage) - 1);
+
+            var nextPageItem = $('.pagination .page-item').last();
+            var totalPages = @Model.TotalPages;
+            nextPageItem.toggleClass('disabled', currentPage == totalPages);
+            nextPageItem.find('.page-link').data('page', parseInt(currentPage) + 1);
+        }
+    });
 
 
-
-
-
-</script></table>
+</script>

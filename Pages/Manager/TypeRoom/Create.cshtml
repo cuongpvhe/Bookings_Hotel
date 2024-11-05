@@ -8,7 +8,8 @@
 
 
 <head>
-    <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
+    <link rel="stylesheet" href="~/admin_template/css/add-type-room.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
@@ -123,6 +124,7 @@
             </div>
 
         <div class="d-flex justify-content-center">
+                <a type="button" class="btn btn-outline-dark px-4 rounded-pill me-2" href="/Manager/TypeRoom/List">Hủy</a>
                 <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitFormAjax()">Lưu</button>
         </div>
     </div>
@@ -141,27 +143,27 @@
                 <div class="model-sidebar d-flex flex-column justify-content-between p-2">
                     <div class="d-flex flex-column btns-container">
                         <div>
-                            <button class="btn  mb-2 me-2 btn-edit-img" id="rotateLeft">
+                            <button type="button" class="btn  mb-2 me-2 btn-edit-img" id="rotateLeft">
                                 <i class="bi bi-arrow-counterclockwise"></i>
                             </button>
                             <span class="btn-name">Xoay trái</span>
                         </div>
                         <div>
-                            <button class="btn  mb-2 me-2 btn-edit-img" id="rotateRight">
+                            <button type="button" class="btn  mb-2 me-2 btn-edit-img" id="rotateRight">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
                             <span class="btn-name">Xoay phải</span>
                         </div>
 
                         <div>
-                            <button class="btn  mb-2 me-2 btn-edit-img" id="scaleX">
+                            <button type="button"  class="btn  mb-2 me-2 btn-edit-img" id="scaleX">
                                 <i class="bi bi-arrows-expand-vertical"></i>
 
                             </button>
                             <span class="btn-name">Lật ngang</span>
                         </div>
                         <div>
-                            <button class="btn  mb-2 me-2 btn-edit-img" id="scaleY">
+                            <button type="button"  class="btn  mb-2 me-2 btn-edit-img" id="scaleY">
                                 <i class="bi bi-arrows-expand"></i>
 
                             </button>
@@ -171,17 +173,17 @@
 
                     </div>
 
-                    <div class="row">
-                        <div class="col-6 pe-1">
-                            <button class="btn btn-primary w-100" id="cropImageButton" type="button">
+                    <div class="">
+                        
+                            <button class="btn btn-primary " id="cropImageButton" type="button">
                                 Lưu
                             </button>
-                        </div>
-                        <div class="col-6 ps-1">
-                            <button class="btn  w-100 cancel-btn" data-bs-dismiss="modal" type="button">
+                        
+                        
+                            <button class="btn cancel-btn" data-bs-dismiss="modal" type="button">
                                 Hủy
                             </button>
-                        </div>
+                        
                     </div>
                 </div>
                 <div class="img-container">
@@ -247,7 +249,7 @@
 
             // Sau khi layout được cập nhật, dùng requestAnimationFrame để đảm bảo carousel cập nhật sau khi trình duyệt render xong
             requestAnimationFrame(() => {
-                setTimeout(adjustCarouselSize, 50); // Delay nhỏ để đảm bảo layout đã hoàn tất
+                setTimeout(adjustCarouselSize, 200); // Delay nhỏ để đảm bảo layout đã hoàn tất
             });
         }
 

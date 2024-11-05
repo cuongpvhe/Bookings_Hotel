@@ -1,4 +1,6 @@
 ﻿@using System.Security.Claims
+@using Bookings_Hotel.Util
+
 @{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString()?.ToLower();
 }
@@ -99,25 +101,6 @@
                                 }
                             </div>
 
-                            @{
-                                var roleId = User.FindFirst("RoleId")?.Value;
-                            }
-
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <script type="text/javascript">
-                                    var roleId = '@roleId';
-                                    if (roleId === "1") {
-                                        window.location.href = '/Admin/IndexAdmin';
-
-                                    } else if (roleId === "3") {
-                                        window.location.href = '/Manager/IndexStaff';
-                                    }
-                                </script>
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                            @if (User.Identity.IsAuthenticated)
-                            {
                             @if (User.Identity.IsAuthenticated)
                             {
                                 if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
@@ -147,9 +130,8 @@
                                                 <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Tài khoản</a>
                                             </li>
                                             <li>
-                                                <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Lịch sử đặt phòng</button>
-                                                </form>
+                                               
+                                                <a asp-page="/Users/HistoryBooking" asp-route-id="@accountId" class="dropdown-item">Lịch sử đặt phòng</a>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
@@ -185,7 +167,7 @@
         <!-- Header End -->
         
 
-        @if (currentPage != "/booking" && currentPage != "/payment")
+        @if (currentPage != "/booking" && currentPage != "/payment" && currentPage != "/accessdenied")
         {
             <!-- Carousel Start -->
             <div class="container-fluid p-0 mb-5">
