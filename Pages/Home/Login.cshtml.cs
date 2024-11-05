@@ -62,10 +62,10 @@ namespace Bookings_Hotel.Pages.Home
                     new Claim("Avatar", account.Avatar ?? "/path/to/default/avatar")
                 };
 
-               
+
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-                
+
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
                 if (!string.IsNullOrEmpty(ReturnUrl))
@@ -86,8 +86,8 @@ namespace Bookings_Hotel.Pages.Home
 
             }
 
-            
-            ModelState.AddModelError("Error_Login", "Tài khoản hoặc mật khẩu không chính xác.");
+
+            ModelState.AddModelError("Error_Login", "Tài khoản và mật khẩu không chính xác.");
             return Page();
 
         }

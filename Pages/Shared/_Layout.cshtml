@@ -128,9 +128,8 @@
                                                 <a asp-page="/Users/Profile" asp-route-id="@accountId" class="dropdown-item">Tài khoản</a>
                                             </li>
                                             <li>
-                                                <form method="post" asp-page="/Users/Order">
-                                                    <button type="submit" class="dropdown-item">Lịch sử đặt phòng</button>
-                                                </form>
+                                               
+                                                <a asp-page="/Users/HistoryBooking" asp-route-id="@accountId" class="dropdown-item">Lịch sử đặt phòng</a>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li>
