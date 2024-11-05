@@ -39,9 +39,9 @@ namespace Bookings_Hotel.Pages
             NumberService = _context.Services.ToList().Count;
             NumberCustomer = _context.Accounts.Where(a => a.Role.RoleName == RoleName.CUSTOMER).ToList().Count;
 
-            TypeRooms = await _context.TypeRooms.ToListAsync();
+            TypeRooms = await _context.TypeRooms.Where(x => x.Rooms.Count > 0).ToListAsync();
 
-            TypeRoomsTopRate = await _context.TypeRooms.Include(tr => tr.Rooms).ThenInclude(room => room.Feedbacks)
+            TypeRoomsTopRate = await _context.TypeRooms.Where(x => x.Rooms.Count > 0).Include(tr => tr.Rooms).ThenInclude(room => room.Feedbacks)
                 .Include(tr => tr.TypeRoomImages).Include(tr => tr.TypeRoomServices).ThenInclude(trs => trs.Service)
                 .ThenInclude(service => service.ServiceImages)
                 .Select(tr => new
@@ -53,7 +53,7 @@ namespace Bookings_Hotel.Pages
                     .Average(review => review.Rating) ?? 0
                 }).OrderByDescending(tr => tr.AverageRating).Take(10).Select(tr => tr.TypeRoom).ToListAsync();
 
-            TypeRoomsTopBooking = await _context.TypeRooms.Include(x => x.Rooms).ThenInclude(x => x.OrderDetails).Include(x => x.Rooms)
+            TypeRoomsTopBooking = await _context.TypeRooms.Where(x => x.Rooms.Count > 0).Include(x => x.Rooms).ThenInclude(x => x.OrderDetails).Include(x => x.Rooms)
                 .ThenInclude(x => x.Feedbacks).Include(x => x.TypeRoomImages).Include(x => x.TypeRoomServices).ThenInclude(y => y.Service)
                 .ThenInclude(z => z.ServiceImages).Where(t => t.Rooms.Any())
                 .Select(typeRoom => new

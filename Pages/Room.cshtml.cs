@@ -62,7 +62,7 @@ namespace Bookings_Hotel.Pages
         {
             Services = await _context.Services.Where(s => s.Status == ServiceStatus.ACTIVE).ToListAsync();
 
-            TypeRooms = await _context.TypeRooms
+            TypeRooms = await _context.TypeRooms.Where(x => x.Rooms.Count > 0)
                 .Include(tr => tr.Rooms)
                     .ThenInclude(r => r.OrderDetails)
                 .Include(tr => tr.TypeRoomImages)
@@ -79,7 +79,7 @@ namespace Bookings_Hotel.Pages
                     typeRoom.Rooms = typeRoom.Rooms
                         .Where(r => !r.OrderDetails.Any(od =>
                             od.CheckIn < CheckOut.Value && od.CheckOut > CheckIn.Value &&
-                            (od.Order != null && od.Order.OrderStatus != "Cancelled")
+                            (od.Order != null && od.Order.OrderStatus != OrderStatus.CANCEL)
                         ))
                         .ToList();
                 }
