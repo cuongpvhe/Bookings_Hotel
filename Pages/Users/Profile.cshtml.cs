@@ -71,22 +71,22 @@ namespace Bookings_Hotel.Pages.Users
             // Kiểm tra trùng lặp dữ liệu
             if (await _context.Accounts.AnyAsync(a => a.Email == Account.Email && a.AccountId != existingAccount.AccountId))
             {
-                ModelState.AddModelError("Email", "Email already exists.");
+                ModelState.AddModelError("Email", "Email đã tồn tại.");
             }
 
             if (await _context.Accounts.AnyAsync(a => a.UseName == Account.UseName && a.AccountId != existingAccount.AccountId))
             {
-                ModelState.AddModelError("UseName", "Username already exists.");
+                ModelState.AddModelError("UseName", "Tên tài khoản đã tồn tại.");
             }
 
             if (await _context.Accounts.AnyAsync(a => a.FullName == Account.FullName && a.AccountId != existingAccount.AccountId))
             {
-                ModelState.AddModelError("FullName", "Full Name already exists.");
+                ModelState.AddModelError("FullName", "Họ và tên đã tồn tại.");
             }
 
             if (await _context.Accounts.AnyAsync(a => a.Phonenumber == Account.Phonenumber && a.AccountId != existingAccount.AccountId))
             {
-                ModelState.AddModelError("Phonenumber", "Phone number already exists.");
+                ModelState.AddModelError("Phonenumber", "Số điện thoại đã tồn tại.");
             }
 
           
@@ -110,19 +110,11 @@ namespace Bookings_Hotel.Pages.Users
 
                 if (!permittedExtensions.Contains(extension))
                 {
-                    ModelState.AddModelError("AvatarUpload", "Please upload a valid image file (jpg, jpeg, png, gif).");
+                    ModelState.AddModelError("AvatarUpload", "Vui lòng tải lên tệp hình ảnh hợp lệ (jpg, jpeg, png, gif).");
                     return Page();
                 }
 
-                // Kiểm tra loại MIME
-                var contentType = AvatarUpload.ContentType.ToLowerInvariant();
-                var permittedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif" };
-
-                if (!permittedMimeTypes.Contains(contentType))
-                {
-                    ModelState.AddModelError("AvatarUpload", "Please upload a valid image file (jpg, jpeg, png, gif).");
-                    return Page();
-                }
+               
 
                 // Lưu đường dẫn tới thư mục uploads trong wwwroot
                 var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads");
@@ -166,6 +158,7 @@ namespace Bookings_Hotel.Pages.Users
             existingAccount.UpdateDate = DateTime.Now;
             // Lưu thay đổi vào database
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Cập nhật thông tin thành công";
 
             return RedirectToPage("/Users/Profile");
         }

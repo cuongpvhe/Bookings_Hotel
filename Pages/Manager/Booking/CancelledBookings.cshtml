@@ -1,0 +1,35 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Booking.CancelledBookingsModel
+@{
+    ViewData["Title"] = "Quản lý Booking";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<h2>Danh sách đặt phòng đã hủy</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Số Phòng</th>
+            <th>Id khách hàng</th>
+            <th>Họ và tên khách hàng</th>
+            <th>Ngày nhận phòng</th>
+            <th>Ngày trả phòng</th>
+            <th>Ngày hủy đặt phòng</th>
+            <th>Trạng thái</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model.CancelledBookings)
+        {
+            <tr>
+                <td>@booking.RoomNumber</td>
+                <td>@booking.UserId</td>
+                <td>@booking.FullName</td>
+                <td>@booking.CheckIn.ToString("dd/MM/yyyy")</td>
+                <td>@booking.CheckOut.ToString("dd/MM/yyyy")</td>
+                <td>@booking.OrderDate.ToString("dd/MM/yyyy")</td>
+                <td>@booking.OrderStatus</td>
+            </tr>
+        }
+    </tbody>
+</table>

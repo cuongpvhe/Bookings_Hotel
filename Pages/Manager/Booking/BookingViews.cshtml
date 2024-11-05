@@ -8,6 +8,11 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
 
 <h1 class="text-center my-4">Quản lý Booking</h1>
+<div class="col-md-3 mb-3">
+    <button class="btn btn-danger" id="btnCancelledBookings">
+        Danh sách hủy đặt phòng
+    </button>
+</div>
 
 <div class="container">
     <div class="row">
@@ -43,7 +48,9 @@
 
     <input type="hidden" id="currentYear" value="@DateTime.Now.Year" />
     <div id="bookingStatusGrid" class="mt-4" style="display: none;"></div>
+    
 </div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" role="dialog" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
@@ -107,7 +114,10 @@
                     const bookingDays = {};
                     data.forEach(status => {
                         for (let d = new Date(status.checkIn); d <= new Date(status.checkOut); d.setDate(d.getDate() + 1)) {
-                            bookingDays[d.toLocaleDateString()] = status.orderId;
+                            bookingDays[d.toLocaleDateString()] = {
+                                orderId: status.orderId,
+                                orderStatus: status.orderStatus
+                            };
                         }
                     });
 
@@ -122,10 +132,22 @@
                             } else if (day <= daysInMonth) {
                                 const date = new Date(selectedYear, selectedMonth - 1, day);
                                 const dateStr = date.toLocaleDateString();
-                                const status = bookingDays[dateStr] ? 'Đã được đặt' : 'Còn Trống';
-                                const bgColor = bookingDays[dateStr] ? '#ffcccc' : '#ccffcc';
-                                const orderId = bookingDays[dateStr] || '';
-                                calendarHTML += `<td style="background-color: ${bgColor}; padding: 10px;" onclick="showBookingDetails(${orderId})">${day}<br>${status}</td>`;
+                                const bookingInfo = bookingDays[dateStr];
+                                let statusText = 'Còn Trống';
+                                let bgColor = '#ccffcc';
+
+                                if (bookingInfo) {
+                                    if (bookingInfo.orderStatus === "Success") {
+                                        statusText = 'Đã được đặt';
+                                        bgColor = '#ffcccc';
+                                    } else if (bookingInfo.orderStatus === "Waiting payment") {
+                                        statusText = 'Chờ thanh toán';
+                                        bgColor = '#ffffcc';
+                                    }
+                                }
+
+                                const orderId = bookingInfo ? bookingInfo.orderId : '';
+                                calendarHTML += `<td style="background-color: ${bgColor}; padding: 10px;" onclick="showBookingDetails(${orderId})">${day}<br>${statusText}</td>`;
                                 day++;
                             } else {
                                 calendarHTML += '<td></td>';
@@ -142,6 +164,7 @@
                 }
             });
         }
+
 
         function showBookingDetails(orderId) {
             if (!orderId) return;
@@ -173,5 +196,18 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $('#btnCancelledBookings').on('click', function () {
+                const selectedRoomId = $('#roomSelect').val(); // Lấy ID phòng được chọn
+                if (selectedRoomId) {
+                    window.location.href = '@Url.Page("CancelledBookings")?roomId=' + selectedRoomId; // Điều hướng đến trang với ID phòng
+                } else {
+                    alert('Vui lòng chọn một phòng trước khi xem danh sách hủy đặt phòng.'); // Thông báo nếu không có phòng nào được chọn
+                }
+            });
+        });
+
+
     </script>
 }

@@ -17,6 +17,13 @@
             <div class="col-md-8">
                 <div class="card shadow-sm p-4">
                     <h4 class="mb-4">Thông tin người dùng</h4>
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div style="color: green; font-weight: bold;">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="hidden" asp-for="Account.AccountId" />
                     <input type="hidden" asp-for="Account.RoleId" />

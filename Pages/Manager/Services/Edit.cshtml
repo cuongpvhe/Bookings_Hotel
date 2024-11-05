@@ -75,7 +75,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
-                    text: 'Cập nhật dịch vụ thành công',
+                    text: @Json.Serialize(TempData["SuccessMessage"]),
                     showConfirmButton: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -84,13 +84,14 @@
                 });
             </text>
         }
-        @if (TempData["ErrorMessage"] != null)
+        else if (TempData["ErrorMessage"] != null)
         {
+            var errorMessage = TempData["ErrorMessage"].ToString().Replace("\r\n", "<br>");
             <text>
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'Cập nhật dịch vụ thất bại!',
+                    html: 'Cập nhật dịch vụ thất bại!<br>' + @Html.Raw(Json.Serialize(errorMessage)),
                     showConfirmButton: true
                 });
             </text>
