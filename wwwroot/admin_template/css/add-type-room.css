@@ -177,6 +177,8 @@ form label {
 }
 
 .btn-edit-img {
+    font-size: 24px;
+    padding: 0.5rem !important;
     background-color: #e4e6eb !important;
     border-radius: 50%;
     width: 50px;

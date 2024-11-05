@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Bookings_Hotel.Util;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Bookings_Hotel.Pages.Manager.TypeRoom
 {
@@ -163,7 +165,29 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
             return new JsonResult(new { success = true });
         }
+        public async Task<IActionResult> OnPostDeleteLastImageAsync(int id)
+        {
+            var image = await _context.TypeRoomImages.FirstOrDefaultAsync(img => img.TypeRoomImageId == id);
+            if (image == null)
+            {
+                return NotFound();
+            }
 
+            var publicId = image.ImageUrl.Split('/').Last().Split('.').First();
+
+            var deletionParams = new DeletionParams(publicId);
+            var deletionResult = await _cloudinary.DestroyAsync(deletionParams);
+
+/*            if (deletionResult.Result != "ok")
+            {
+                return BadRequest("Xảy ra lỗi trong quá trình xóa file trên Cloudinary");
+            }*/
+
+            _context.TypeRoomImages.Remove(image);
+            await _context.SaveChangesAsync();
+
+            return new JsonResult(new { success = true, message = "Xóa ảnh thành công" });
+        }
 
         public class TypeRoomImageDTO
         {
