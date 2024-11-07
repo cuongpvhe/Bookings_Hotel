@@ -1,66 +1,53 @@
 ﻿@page
-@model Bookings_Hotel.Pages.Manager.Staffs.EditModel
+@model Bookings_Hotel.Pages.Manager.Staffs.CreateModel
 
 @{
-    ViewData["Title"] = "Edit Staff";
+    ViewData["Title"] = "Create Staff";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
 <div class="d-flex justify-content-center">
     <div class="card p-4" style="width: 700px;">
-        <h2 class="text-center">Cập nhật thông tin nhân viên</h2>
-        <form method="post" id="editStaffForm" enctype="multipart/form-data">
+        <h2 class="text-center">Thêm mới nhân viên</h2>
+        <form method="post" id="createStaffForm" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="d-flex justify-content-center align-items-center">
                 <div class="form-group mb-3">
                     <div class="d-flex justify-content-center mb-3">
-                        @if (!string.IsNullOrEmpty(Model.Account.Avatar))
-                        {
-                            <img id="image-preview" src="@Model.Account.Avatar" class=" rounded-circle img- mb-3" style="width: 150px; height: 150px; object-fit: cover;" />
-                        }
+                        <img id ="image-preview" src="#" alt="Preview" class=" rounded-circle img- mb-3" style="width: 150px; height: 150px; object-fit: cover; display:none;" />
                     </div>
-                    <input type="file" name="AvatarFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                    <input type="file" name="AvatarFile" class="form-control" accept="image/*" required onchange="previewImage(this)" />
                 </div>
             </div>
-
-
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
             <div class="form-group mb-3">
-                <label asp-for="Account.AccountId" class="control-label">Mã nhân viên</label>
-                <input type="text" asp-for="Account.AccountId" class="form-control" readonly />
-            </div>
-            <div class="form-group mb-3">
-                <input type="hidden" asp-for="Account.RoleId" />
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.FullName" class="control-label">Họ và tên</label>
+                <label asp-for="Account.FullName" class="control-label">Họ và tên <span class="text-danger">*</span></label>
                 <input asp-for="Account.FullName" class="form-control" />
                 <span asp-validation-for="Account.FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Account.Email" class="control-label">Email <span class="text-danger">*</span></label>
+                <input asp-for="Account.Email" class="form-control" />
+                <span asp-validation-for="Account.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Account.UseName" class="control-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                <input asp-for="Account.UseName" class="form-control" />
+                <span asp-validation-for="Account.UseName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Account.Password" class="control-label">Mật khẩu <span class="text-danger">*</span></label>
+                <input asp-for="Account.Password" class="form-control" />
+                <span asp-validation-for="Account.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Account.Phonenumber" class="control-label">Số điện thoại <span class="text-danger">*</span></label>
+                <input asp-for="Account.Phonenumber" class="form-control" />
+                <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Account.Dob" class="control-label">Ngày sinh</label>
                 <input asp-for="Account.Dob" class="form-control" />
                 <span asp-validation-for="Account.Dob" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.Email" class="control-label">Email</label>
-                <input asp-for="Account.Email" class="form-control" />
-                <span asp-validation-for="Account.Email" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.UseName" class="control-label">Tên đăng nhập</label>
-                <input asp-for="Account.UseName" class="form-control" />
-                <span asp-validation-for="Account.UseName" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.Password" class="control-label">Mật khẩu</label>
-                <input asp-for="Account.Password" class="form-control" />
-                <span asp-validation-for="Account.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.Phonenumber" class="control-label">Số điện thoại</label>
-                <input asp-for="Account.Phonenumber" class="form-control" />
-                <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Account.Gender" class="control-label">Giới tính</label>
@@ -76,16 +63,6 @@
                 <span asp-validation-for="Account.Address" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Account.CreatedDate" class="control-label">Ngày tạo</label>
-                <input type="date" asp-for="Account.CreatedDate" class="form-control" readonly />
-                <span asp-validation-for="Account.CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.UpdateDate" class="control-label">Ngày cập nhật</label>
-                <input type="date" asp-for="Account.UpdateDate" class="form-control" readonly />
-                <span asp-validation-for="Account.UpdateDate" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
                 <label asp-for="Account.Status" class="form-label">Trạng thái:</label>
                 <select asp-for="Account.Status" class="form-select">
                     <option value="Active">Hoạt động</option>
@@ -94,16 +71,17 @@
                 <span asp-validation-for="Account.Status" class="text-danger"></span>
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
                 <a asp-page="./List" class="btn btn-secondary">Trở lại</a>
             </div>
         </form>
     </div>
 </div>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("editStaffForm").addEventListener("submit", function (event) {
+        document.getElementById("createStaffForm").addEventListener("submit", function (event) {
             event.preventDefault();
             Swal.fire({
                 title: 'Processing',
@@ -140,7 +118,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    html: 'Cập nhật thông tin nhân viên thất bại!<br>' + @Html.Raw(Json.Serialize(errorMessage)),
+                    html: 'Thêm nhân viên thất bại!<br>' + @Html.Raw(Json.Serialize(errorMessage)),
                     showConfirmButton: true
                 });
             </text>
@@ -151,7 +129,8 @@
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         $('#image-preview')
-                            .attr('src', e.target.result);
+                            .attr('src', e.target.result)
+                            .css('display', 'block');
                     };
                     reader.readAsDataURL(input.files[0]);
                 }
