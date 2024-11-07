@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Http.Features;
 using CloudinaryDotNet; // Import Cloudinary namespace
 using CloudinaryAccount = CloudinaryDotNet.Account;
 using Bookings_Hotel.Service;
-using Bookings_Hotel.Util; // Alias to avoid conflict with your Models.Account
+using Bookings_Hotel.Util;
+using Bookings_Hotel.Hubs; // Alias to avoid conflict with your Models.Account
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddSignalR();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<EmailService>();
 
@@ -69,5 +70,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapRazorPages();
 });
+app.MapHub<OrderStatusHub>("/orderStatusHub");
+
 
 app.Run();

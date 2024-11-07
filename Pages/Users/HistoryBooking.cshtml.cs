@@ -80,7 +80,8 @@ namespace Bookings_Hotel.Pages.Users
                             .FirstOrDefault() ?? "Unknown"
                             : "Unknown"
 
-                    }).ToList()
+                    }).ToList(),
+                    
                 })
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
@@ -109,6 +110,7 @@ namespace Bookings_Hotel.Pages.Users
             public decimal TotalMoney { get; set; }
             public string OrderStatus { get; set; }
             public List<OrderDetailViewModel> OrderDetails { get; set; }
+        
         }
 
         public class OrderDetailViewModel

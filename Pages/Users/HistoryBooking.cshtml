@@ -1,4 +1,5 @@
 ﻿@page
+@using System.Security.Claims
 @model Bookings_Hotel.Pages.Users.HistoryBookingModel
 @{
     Layout = "~/Pages/Shared/Layout_User.cshtml";
@@ -29,6 +30,8 @@
                 <th>Tổng Tiền</th>
                 <th>Trạng Thái</th>
                 <th>Chi Tiết Đơn</th>
+                <th>Thanh toán</th>
+                <th>Đánh Giá</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +47,33 @@
                             Xem chi tiết
                         </button>
                     </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(order.OrderStatus) && string.Equals(order.OrderStatus.Trim(), Bookings_Hotel.Util.OrderStatus.WAITING_PAYMENT, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <a href="/Payment?oid=@order.OrderId" class="btn btn-primary">Thanh toán</a>
+                        }
+                        else if (string.Equals(order.OrderStatus, "SUCCESS", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <span class="text-success">Đã thanh toán</span>
+                        }
+                        else 
+                        {
+
+                            <span class="text-success">Hủy thanh toán</span>
+                        }
+                       
+
+                    </td>
+
+                    <td>
+                        @if (string.Equals(order.OrderStatus, "SUCCESS", StringComparison.OrdinalIgnoreCase) && order.OrderDetails.Any(od => od.CheckIn < DateTime.Now))
+                        {
+                            <a href="/Users/FeedBack/@order.OrderId/@order.OrderDetails.FirstOrDefault()?.RoomId" class="btn btn-primary">Đánh giá</a>
+                        }
+
+                    </td>
+
+                   
                 </tr>
                 <tr class="collapse" id="details-@order.OrderId">
                     <td colspan="5">
@@ -62,10 +92,12 @@
         </tbody>
     </table>
 </div>
-
 <script>
     // Automatically submit the form when the status dropdown changes
     document.getElementById("statusFilterForm").onsubmit = function () {
         this.submit();
     };
 </script>
+
+
+
