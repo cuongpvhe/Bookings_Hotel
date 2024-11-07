@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Http.Features;
 using CloudinaryDotNet; // Import Cloudinary namespace
 using CloudinaryAccount = CloudinaryDotNet.Account;
 using Bookings_Hotel.Service;
-using Bookings_Hotel.Util; // Alias to avoid conflict with your Models.Account
+using Bookings_Hotel.Util;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,5 +70,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapRazorPages();
 });
+
+
 
 app.Run();

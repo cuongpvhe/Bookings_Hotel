@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <Compile Remove="Pages\User\**" />
+    <Compile Remove="wwwroot\uploads\FeedBack\**" />
     <Content Remove="Pages\User\**" />
+    <Content Remove="wwwroot\uploads\FeedBack\**" />
     <EmbeddedResource Remove="Pages\User\**" />
+    <EmbeddedResource Remove="wwwroot\uploads\FeedBack\**" />
     <None Remove="Pages\User\**" />
+    <None Remove="wwwroot\uploads\FeedBack\**" />
   </ItemGroup>
 
   <ItemGroup>
