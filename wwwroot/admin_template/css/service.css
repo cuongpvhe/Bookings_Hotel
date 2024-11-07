@@ -1,0 +1,194 @@
+﻿:root {
+    --header-height: 3.5rem;
+    /*========== Colors ==========*/
+    /*Color mode HSL(hue, saturation, lightness)*/
+    --first-color: hsl(228, 85%, 63%);
+    --title-color: hsl(228, 18%, 16%);
+    --text-color: hsl(228, 8%, 56%);
+    --body-color: hsl(228, 100%, 99%);
+    --body-color2: hsl(0, 0%, 95%);
+    --shadow-color: hsla(228, 80%, 4%, .1);
+    /*========== Font and typography ==========*/
+    /*.5rem = 8px | 1rem = 16px ...*/
+    --body-font: "Nunito Sans", system-ui;
+    --normal-font-size: .938rem;
+    --smaller-font-size: .75rem;
+    --tiny-font-size: .75rem;
+    /*========== Font weight ==========*/
+    --font-regular: 400;
+    --font-semi-bold: 600;
+    /*========== z index ==========*/
+    --z-tooltip: 10;
+    --z-fixed: 100;
+    /*========== casual-with ==========*/
+
+    --casual-with: 35rem;
+}
+
+body {
+    overflow-y: hidden;
+}
+
+.main-header {
+    border-bottom: 1px solid #d6d6d6;
+    padding-bottom: 0.25rem;
+}
+
+
+.sub-header {
+    /* line-height: 2.5rem; */
+    text-align: center;
+    /* background-color: rgb(181, 196, 237); */
+    border-bottom: 1px solid #d6d6d6;
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-container {
+    background-color: var(--body-color);
+    box-shadow: 0 2px 24px var(--shadow-color);
+    border-radius: 15px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 5.5rem - 2rem - 48px);
+}
+
+form label {
+    font-weight: 500;
+}
+
+@media screen and (max-width: 800px) {
+    .row.g-5 {
+        --bs-gutter-x: 0 !important;
+        --bs-gutter-y: 0 !important;
+    }
+}
+
+
+.thumbnail-container {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    overflow-y: hidden;
+    overflow-x: auto;
+    max-height: 24rem; /* Adjust as needed */
+    column-gap: 1rem;
+}
+
+.thumbnail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+    .thumbnail-item img {
+        max-width: 5rem;
+        max-height: 3rem;
+        object-fit: cover;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+    }
+
+    .thumbnail-item input[type="file"] {
+        display: none;
+    }
+
+.carousel-inner img {
+    width: var(--casual-with);
+    object-fit: cover;
+}
+
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#carouselExample {
+    position: relative; /* Đặt position để phần tử giả hoạt động đúng */
+    /* background-image: url('../img/noImg.png') !important; */
+    background-size: cover;
+    border: 3px solid #d6d6d6; /* Điều chỉnh kích thước và màu của viền bên trong */
+    width: 100%; /* Đảm bảo carousel chiếm toàn bộ chiều rộng của col */
+    height: calc(100% * 3 / 5); /* Thiết lập chiều cao dựa trên tỷ lệ 5:3 */
+    max-width: 100%; /* Giới hạn carousel không vượt quá kích thước của col */
+    max-height: calc(100% * 3 / 5); /* Đảm bảo chiều cao không vượt quá tỷ lệ */
+    overflow: hidden; /* Ẩn phần nội dung thừa nếu cần */
+    object-fit: cover; /* Đảm bảo hình ảnh bao phủ hoàn toàn carousel */
+}
+.carousel-transition {
+    opacity: 0;
+    transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+    #carouselExample::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* border: 2px solid #ccc;  */
+        box-sizing: border-box; /* Đảm bảo viền tính vào kích thước của phần tử giả */
+        pointer-events: none; /* Đảm bảo phần tử giả không ảnh hưởng đến sự tương tác */
+    }
+
+.modal-dialog {
+    /*max-width: 1000px;*/
+    max-width: 80%;
+}
+
+.modal-body {
+    display: flex;
+    height: 75vh;
+}
+
+.model-sidebar {
+    width: 250px;
+    background-color: rgb(255 255 255) !important;
+    color: black;
+    padding-left: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.img-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #1e1e1e;
+}
+
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+.modal-content {
+    background-color: rgb(255 255 255) !important;
+}
+
+.modal-header {
+    border-bottom: 0;
+    display: block;
+    padding-bottom: 0;
+}
+
+.btn-edit-img {
+    font-size: 24px;
+    padding: 0.5rem !important;
+    background-color: #e4e6eb !important;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.cancel-btn {
+    background-color: #e4e6eb !important;
+}
+
+.select2.select2-container.select2-container--default {
+    width: 100% !important;
+}

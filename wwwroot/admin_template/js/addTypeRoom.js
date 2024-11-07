@@ -207,7 +207,7 @@ function collectImageDTOs() {
     }
     return imageDTOs;
 }
-    async function submitFormAjax() {
+async function submitFormAjax() {
         const form = $('#addTypeRoomForm');
 
         // Kiểm tra tính hợp lệ của form

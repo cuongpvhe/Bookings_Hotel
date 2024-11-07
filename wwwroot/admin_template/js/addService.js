@@ -1,114 +1,207 @@
-﻿// Khởi tạo các biến global
-let imageCounter = 0;
-const uploadedImages = new Map();
-let cropper;
+﻿let imageIndex = 0;
+const uploadedImages = {};
 
-// Xử lý khi chọn file ảnh
-function handleImageUpload(event) {
-    const files = event.target.files;
-    if (files && files[0]) {
+let cropper;
+let currentImageIndex;
+
+function handleImageUpload(input) {
+    if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            showCropModal(e.target.result);
+            $('#cropImageModal').modal('show');
+            $('#imageToCrop').attr('src', e.target.result);
+            $('#cropImageModal').on('shown.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(document.getElementById('imageToCrop'), {
+                    aspectRatio: 5 / 3,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    scalable: true,
+                    zoomable: true,
+                    ready() {
+                        this.cropper.setCropBoxData({
+                            width: this.cropper.getContainerData().width,
+                            height: this.cropper.getContainerData().height,
+                        });
+                    },
+                });
+            });
+            currentImageIndex = imageIndex;
         };
-        reader.readAsDataURL(files[0]);
+        reader.readAsDataURL(input.files[0]);
+        input.value = ''; // Reset input value to allow re-upload of the same file
     }
 }
 
-// Hiển thị modal crop ảnh
-function showCropModal(imageSrc) {
-    const modal = $('#cropImageModal');
-    const image = $('#imageToCrop');
+$('#cropImageModal').on('hidden.bs.modal', function () {
+    if (cropper) {
+        cropper.destroy();
+    }
+});
 
-    image.attr('src', imageSrc);
-    modal.modal('show');
-
-    // Khởi tạo cropper khi modal hiển thị
-    modal.on('shown.bs.modal', function () {
-        if (cropper) {
-            cropper.destroy();
-        }
-
-        cropper = new Cropper(image[0], {
-            aspectRatio: 16 / 9,
-            viewMode: 2,
-            autoCropArea: 1,
-            responsive: true,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: false,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false
-        });
-    });
-}
-
-// Xử lý khi nhấn nút lưu ảnh đã crop
-function handleCropSave() {
-    if (!cropper) return;
-
+$('#cropImageButton').on('click', function () {
     const canvas = cropper.getCroppedCanvas({
-        width: 800,
-        height: 450
+        width: 1000,
+        height: 600,
     });
 
     canvas.toBlob(function (blob) {
-        // Tạo URL cho ảnh đã crop
-        const croppedImageUrl = URL.createObjectURL(blob);
-
-        // Thêm ảnh vào carousel
-        addImageToCarousel(croppedImageUrl);
-
-        // Lưu blob để upload
-        const imageFile = new File([blob], `image-${imageCounter}.jpg`, { type: 'image/jpeg' });
-        uploadedImages.set(imageCounter - 1, imageFile);
-
-        // Đóng modal
+        const url = URL.createObjectURL(blob);
+        if (currentImageIndex === imageIndex) {
+            addImageToCarousel(url);
+            addThumbnail(url);
+        } else {
+            updateImageInCarousel(url, currentImageIndex);
+            updateThumbnail(url, currentImageIndex);
+        }
+        uploadedImages[currentImageIndex] = new File([blob], 'croppedImage.jpg', { type: 'image/jpeg' });
         $('#cropImageModal').modal('hide');
     }, 'image/jpeg');
+});
+
+function handleThumbnailChange(input, index) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#cropImageModal').modal('show');
+            $('#imageToCrop').attr('src', e.target.result);
+            $('#cropImageModal').on('shown.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(document.getElementById('imageToCrop'), {
+                    aspectRatio: 5 / 3,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    scalable: true,
+                    zoomable: true,
+                    ready() {
+                        this.cropper.setCropBoxData({
+                            width: this.cropper.getContainerData().width,
+                            height: this.cropper.getContainerData().height,
+                        });
+                    },
+                });
+            });
+            currentImageIndex = index;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
-// Thêm ảnh vào carousel
 function addImageToCarousel(imageSrc) {
     const carouselInner = document.getElementById('carousel-inner');
-    const newDiv = document.createElement('div');
-    newDiv.className = `carousel-item ${imageCounter === 0 ? 'active' : ''}`;
-    newDiv.innerHTML = `
-        <img src="${imageSrc}" class="d-block w-100" alt="Service Image ${imageCounter + 1}">
-    `;
-    carouselInner.appendChild(newDiv);
-    imageCounter++;
+    const div = document.createElement('div');
+    div.className = 'carousel-item' + (imageIndex === 0 ? ' active' : '');
+    div.setAttribute('data-index', imageIndex);
+    div.innerHTML = `<img src="${imageSrc}" class="d-block w-100" alt="Image ${imageIndex}">`;
+    carouselInner.appendChild(div);
+    imageIndex++;
 }
 
-// Xóa ảnh cuối cùng
-function deleteLastImage() {
-    if (imageCounter > 0) {
-        const carouselInner = document.getElementById('carousel-inner');
-        carouselInner.removeChild(carouselInner.lastChild);
-        uploadedImages.delete(imageCounter - 1);
-        imageCounter--;
+function addThumbnail(imageSrc) {
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    const thumbnailItem = document.createElement('div');
+    thumbnailItem.className = 'thumbnail-item';
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.alt = `Thumbnail ${imageIndex - 1}`;
+    img.setAttribute('data-index', imageIndex - 1);
+    img.onclick = function () {
+        const carousel = new bootstrap.Carousel(document.getElementById('carouselExample'));
+        carousel.to(parseInt(img.getAttribute('data-index')));
+    };
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.setAttribute('data-index', imageIndex - 1);
+    input.onchange = function () {
+        handleThumbnailChange(this, parseInt(input.getAttribute('data-index')));
+    };
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-primary';
+    button.type = 'button';
+    button.innerText = 'Thay đổi';
+    button.onclick = function () {
+        input.click();
+    };
 
-        // Nếu xóa hết ảnh, reset counter
-        if (imageCounter === 0) {
-            const input = document.getElementById('imageInput');
-            if (input) input.value = '';
+    thumbnailItem.appendChild(img);
+    thumbnailItem.appendChild(button);
+    thumbnailItem.appendChild(input);
+    thumbnailContainer.appendChild(thumbnailItem);
+}
+
+function updateImageInCarousel(imageSrc, index) {
+    const carouselInner = document.getElementById('carousel-inner');
+    const items = carouselInner.getElementsByClassName('carousel-item');
+    for (let item of items) {
+        if (parseInt(item.getAttribute('data-index')) === index) {
+            item.querySelector('img').src = imageSrc;
         }
     }
 }
 
-// Xử lý các nút điều chỉnh ảnh
-document.getElementById('rotateLeft').addEventListener('click', () => cropper?.rotate(-90));
-document.getElementById('rotateRight').addEventListener('click', () => cropper?.rotate(90));
-document.getElementById('scaleX').addEventListener('click', () => {
-    const scaleX = cropper.getData().scaleX;
-    cropper.scaleX(scaleX === 1 ? -1 : 1);
+function updateThumbnail(imageSrc, index) {
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    const imgs = thumbnailContainer.getElementsByTagName('img');
+    for (let img of imgs) {
+        if (parseInt(img.getAttribute('data-index')) === index) {
+            img.src = imageSrc;
+        }
+    }
+}
+
+function deleteLastImage() {
+    if (imageIndex > 0) {
+        const carouselInner = document.getElementById('carousel-inner');
+        const thumbnailContainer = document.querySelector('.thumbnail-container');
+
+        carouselInner.removeChild(carouselInner.lastElementChild);
+        thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
+
+        imageIndex--;
+
+        if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
+            carouselInner.lastElementChild.classList.add('active');
+        }
+    }
+}
+
+document.getElementById('rotateLeft').addEventListener('click', function () {
+    cropper.rotate(-45);
 });
-document.getElementById('scaleY').addEventListener('click', () => {
-    const scaleY = cropper.getData().scaleY;
-    cropper.scaleY(scaleY === 1 ? -1 : 1);
+
+document.getElementById('rotateRight').addEventListener('click', function () {
+    cropper.rotate(45);
 });
+
+document.getElementById('scaleX').addEventListener('click', function () {
+    const currentScaleX = cropper.getData().scaleX || 1;
+    cropper.scaleX(-currentScaleX);
+});
+
+document.getElementById('scaleY').addEventListener('click', function () {
+    const currentScaleY = cropper.getData().scaleY || 1;
+    cropper.scaleY(-currentScaleY);
+});
+
+
+
+function collectImageDTOs() {
+    const imageDTOs = [];
+    for (let index in uploadedImages) {
+        if (uploadedImages.hasOwnProperty(index)) {
+            const formData = new FormData();
+            formData.append('index', index);
+            formData.append('imageFile', uploadedImages[index]);
+            imageDTOs.push({ index: index, imageFile: uploadedImages[index] });
+        }
+    }
+    return imageDTOs;
+}
+
 
 // Xử lý form submit
 document.getElementById('addServiceForm').addEventListener('submit', async function (e) {
@@ -176,17 +269,17 @@ function validateServiceForm() {
     // Thiết lập validate cho form
     $('#addServiceForm').validate({
         rules: {
-            'service.ServiceName': {
+            'ServiceName': {
                 required: true,
                 minlength: 2,
                 maxlength: 50
             },
-            'service.Price': {
+            'Price': {
                 required: true,
                 min: 0.01,
                 number: true
             },
-            'service.Description': {
+            'Description': {
                 maxlength: 500
             },
 /*            'service.Status': {

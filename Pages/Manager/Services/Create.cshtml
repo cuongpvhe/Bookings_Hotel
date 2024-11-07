@@ -5,15 +5,27 @@
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
 
-@section Styles {
+
     <head>
-        <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
+        <link rel="stylesheet" href="~/admin_template/css/service.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     </head>
-}
-<div class="card p-4">
-    <h2 class="text-center">Thêm dịch vụ mới</h2>
+
+
+<div class="main-header d-flex justify-content-start">
+
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Thêm dịch vụ mới</span>
+    </div>
+</div>
+
+
+
+
+
+@*     <h2 class="text-center">Thêm dịch vụ mới</h2>
     @if (!ModelState.IsValid)
     {
         <div class="alert alert-danger">
@@ -24,46 +36,52 @@
                 }
             </ul>
         </div>
-    }
+    } *@
 
     <form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addServiceForm" enctype="multipart/form-data">
-        <div class="col m-0 p-0">
-            <div class="carousel-container">
-                <div>
-                    <div class="carousel slide" id="serviceCarousel">
-                        <div class="carousel-inner" id="carousel-inner">
-                            <!-- Images will be added here dynamically -->
-                        </div>
-                        <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#serviceCarousel"
-                                type="button">
-                            <span aria-hidden="true" class="carousel-control-prev-icon"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#serviceCarousel"
-                                type="button">
-                            <span aria-hidden="true" class="carousel-control-next-icon"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+    <div class="col m-0 p-0">
+        <div class="carousel-container">
+            <div>
+                <div class="carousel slide" id="carouselExample">
+                    <div class="carousel-inner" id="carousel-inner">
+                        <!-- Images will be added here dynamically -->
                     </div>
+                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#carouselExample"
+                            type="button">
+                        <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#carouselExample"
+                            type="button">
+                        <span aria-hidden="true" class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
 
-                    <div class="mt-2 mb-5 d-flex btn-carousel">
-                        <button class="btn btn-primary me-2" type="button"
-                                onclick="document.getElementById('imageInput').click()">
-                            Thêm ảnh mới
-                        </button>
-                        <button class="btn btn-secondary" type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
-                    </div>
-                    <input type="file" id="imageInput" style="display: none;" accept="image/*" onchange="addImage(event)" />
+                <div class="mt-2 mb-5 d-flex btn-carousel">
+                    <button class="btn btn-primary me-2" type="button"
+                            onclick="document.getElementById('imageInput').click()">
+                        Thêm ảnh mới
+                    </button>
+                    <button class="btn btn-secondary" type="button" onclick="deleteLastImage()">Xóa ảnh cuối</button>
                 </div>
             </div>
         </div>
 
+        <div class="me-2">
+            <input accept="image/*" id="imageInput" onchange="handleImageUpload(this)" style="display: none;"
+                   type="file">
+
+            <div class="thumbnail-container"></div>
+        </div>
+    </div>
 
 
-        <div class="card p-4 col m-0 p-0">
+
+        <div class="ps-2 col m-0 p-0">
             <div class="form-group mb-3">
                 <label asp-for="service.ServiceName" class="form-label">Tên dịch vụ<span class="text-danger">*</span></label>
-                <input type="text" asp-for="service.ServiceName" class="form-control" required />
+            <input type="text" asp-for="service.ServiceName" name="ServiceName" id="ServiceName" class="form-control" required />
                 <span asp-validation-for="service.ServiceName" class="text-danger"></span>
             </div>
 
@@ -85,10 +103,10 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="service.Price" class="form-label">Giá <span class="text-danger">*</span></label>
+                <label asp-for="service.Price" class="form-label">Giá <span class="text-danger"> *</span></label>
                 <div class="input-group">
-                    <span class="input-group-text">$</span>
                     <input type="number" asp-for="service.Price" class="form-control" step="0.01" min="0" required />
+                    <span class="input-group-text">VND</span>
                 </div>
                 <span asp-validation-for="service.Price" class="text-danger"></span>
             </div>
@@ -108,16 +126,15 @@
                 <span asp-validation-for="service.Status" class="text-danger"></span>
             </div>
 
-            <div class="d-flex justify-content-center gap-2">
-                <button type="submit" class="btn btn-primary px-4">
-                    Thêm dịch vụ
-                </button>
-                <a asp-page="./List" class="btn btn-secondary px-4">Trở lại</a>
-            </div>
+
+        <div class="d-flex justify-content-center">
+            <a type="button" class="btn btn-outline-dark px-4 rounded-pill me-2" asp-page="./List">Hủy</a>
+            <button type="submit" class="btn btn-primary px-4 rounded-pill" >Lưu</button>
+        </div>
         </div>
     </form>
-</div>
 
+<!--        Model-->
 
 <div aria-hidden="true" aria-labelledby="cropImageModalLabel" class="modal fade" id="cropImageModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -159,17 +176,17 @@
 
                     </div>
 
-                    <div class="row">
-                        <div class="col-6 pe-1">
-                            <button class="btn btn-primary w-100" id="cropImageButton" type="button">
-                                Lưu
-                            </button>
-                        </div>
-                        <div class="col-6 ps-1">
-                            <button class="btn  w-100 cancel-btn" data-bs-dismiss="modal" type="button">
-                                Hủy
-                            </button>
-                        </div>
+                    <div class="">
+
+                        <button class="btn btn-primary " id="cropImageButton" type="button">
+                            Lưu
+                        </button>
+
+
+                        <button class="btn cancel-btn" data-bs-dismiss="modal" type="button">
+                            Hủy
+                        </button>
+
                     </div>
                 </div>
                 <div class="img-container">
@@ -188,33 +205,64 @@
         document.querySelector('input[type="number"]').addEventListener('input', function (e) {
             if (this.value < 0) this.value = 0;
         });
-
-
     </script>
-
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="~/admin_template/js/addservice.js"></script>
 
     <script>
         $(document).ready(function () {
             $('.js-example-basic-multiple').select2();
         });
+    </script>
+    <script>
+        $(document).ready(function () {
+            function adjustCarouselSize() {
+                let colWidth = $('.col').width();
+
+                // Thêm lớp mờ dần để chuẩn bị thay đổi kích thước
+                $('#carouselExample').addClass('carousel-transition');
+
+                $('#carouselExample').css({
+                    'width': colWidth + 'px',
+                    'height': (colWidth * 3 / 5) + 'px'
+                });
+
+                // Xóa lớp sau khi chuyển đổi để hiển thị lại carousel
+                setTimeout(() => {
+                    $('#carouselExample').removeClass('carousel-transition');
+                }, 200); // Thời gian này phải trùng với thời gian transition trong CSS
+            }
+
+            // Function to adjust form container layout
+            function adjustFormContainer() {
+                const containerWidth = $('.form-container').outerWidth();
+                if (containerWidth < 1200) {
+                    $('.form-container').removeClass('row row-cols-2');
+                } else {
+                    $('.form-container').addClass('row row-cols-2');
+                }
+
+                // Sau khi layout được cập nhật, dùng requestAnimationFrame để đảm bảo carousel cập nhật sau khi trình duyệt render xong
+                requestAnimationFrame(() => {
+                    setTimeout(adjustCarouselSize, 200); // Delay nhỏ để đảm bảo layout đã hoàn tất
+                });
+            }
+
+            // Initial check on page load
+            adjustFormContainer();
+
+            // Adjust layout on window resize
+            $(window).resize(function () {
+                adjustFormContainer();
+            });
+
+            // Check when header-toggle button is clicked
+            $(document).on('click', '#header-toggle', function () {
+                setTimeout(function () {
+                    adjustFormContainer();
+                }, 100);
+            });
+        });
+
     </script>
 }
 
