@@ -37,7 +37,7 @@ namespace Bookings_Hotel.Pages.Manager
             CurrentPage = pageIndex;
             var roomsQuery = _context.Rooms
                 .Include(r => r.Type)
-                .Where(r => r.RoomStatus != "Deleted")
+                .Where(r => r.RoomStatus != RoomStatus.DELETED)
                 .AsQueryable();
 
             TotalPages = (int)Math.Ceiling(await roomsQuery.CountAsync() / (double)PageSize);
@@ -64,7 +64,7 @@ namespace Bookings_Hotel.Pages.Manager
             CurrentPage = pageIndex;
             var roomsQuery = _context.Rooms
                 .Include(r => r.Type)
-                .Where(r => r.RoomStatus != "Deleted")
+                .Where(r => r.RoomStatus != RoomStatus.DELETED)
                 .AsQueryable();
 
             // Filter by search term
@@ -109,7 +109,7 @@ namespace Bookings_Hotel.Pages.Manager
                 return NotFound();
             }
 
-            room.RoomStatus = "Deleted";
+            room.RoomStatus = RoomStatus.DELETED;
             await _context.SaveChangesAsync();
 
 

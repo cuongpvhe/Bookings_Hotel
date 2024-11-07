@@ -1,0 +1,55 @@
+﻿@model Bookings_Hotel.Pages.Manager.Staffs.ListModel
+
+<table class="table m-0" id="staffsTable">
+    <thead>
+        <tr>
+            @foreach (var header in Model.TableHeaders)
+            {
+                <th scope="col" class="bg-table-head">@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Staffs.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@Model.Staffs[i].Email</td>
+                <td>@Model.Staffs[i].FullName</td>
+                <td>@Model.Staffs[i].Phonenumber</td>
+                <td>@Model.Staffs[i].Dob.Value.ToString("dd/MM/yyyy")</td>
+                <td>@Model.Staffs[i].Gender</td>
+                <td>
+                    <span class="status-value btn btn-sm @(Model.Staffs[i].Status == "Active" ? "btn-outline-success text-success" : "btn-outline-warning text-warning") rounded-pill text-opacity-75">
+                        @(Model.Staffs[i].Status == "Active" ? "Hoạt động" : "Không hoạt động")
+                    </span>
+                </td>
+                <td class="action-column">
+                    <div class="dropdown dropstart">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-2-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" asp-page="Edit" asp-route-id="@Model.Staffs[i].AccountId" class="btn btn-primary">
+                                    <i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i>
+                                    Cập nhật
+                                </a>
+                            </li>
+                            <li>
+                                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                    <input type="hidden" name="id" value="@Model.Staffs[i].AccountId" />
+                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

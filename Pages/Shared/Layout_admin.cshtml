@@ -103,7 +103,7 @@
 
                         @if (User.IsInRole(RoleName.MANAGER))
                         {
-                            <a href="#" class="sidebar__link">
+                            <a asp-page="/Manager/Staffs/List" class="sidebar__link @(IsActive("/Manager/Staffs/List") ? "active-link" : "")">
                                 <i class="ri-group-2-fill"></i>
                                 <span>Quản lý nhân viên</span>
                             </a>

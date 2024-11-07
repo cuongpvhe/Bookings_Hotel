@@ -47,8 +47,6 @@ namespace Bookings_Hotel.Pages.Manager.Services
                 var serviceInDb = await _context.Services.FindAsync(service.ServiceId);
                 var checkServiceNameExit = _context.Services.Any(x => x.ServiceId != serviceInDb.ServiceId && x.ServiceName.ToLower() == service.ServiceName.ToLower());
 
-
-
                 if (serviceInDb != null)
                 {
                     if (checkServiceNameExit)
