@@ -27,7 +27,7 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Account.AccountId" class="control-label">Mã nhân viên</label>
-                <input type="text" asp-for="Account.AccountId" class="form-control bg-opacity-10" readonly />
+                <input type="text" asp-for="Account.AccountId" class="form-control" readonly />
             </div>
             <div class="form-group mb-3">
                 <input type="hidden" asp-for="Account.RoleId" />
@@ -77,12 +77,12 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Account.CreatedDate" class="control-label">Ngày tạo</label>
-                <input asp-for="Account.CreatedDate" class="form-control bg-opacity-10" readonly />
+                <input type="date" asp-for="Account.CreatedDate" class="form-control" readonly />
                 <span asp-validation-for="Account.CreatedDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Account.UpdateDate" class="control-label">Ngày cập nhật</label>
-                <input asp-for="Account.UpdateDate" class="form-control bg-opacity-10" readonly />
+                <input type="date" asp-for="Account.UpdateDate" class="form-control" readonly />
                 <span asp-validation-for="Account.UpdateDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">

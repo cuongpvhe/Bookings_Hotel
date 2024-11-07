@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bookings_Hotel.Models;
 using CloudinaryDotNet;
@@ -50,6 +49,32 @@ namespace Bookings_Hotel.Pages.Manager.Staffs
                 return Page();
             }
 
+            var currentAccount = await _context.Accounts.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.AccountId == Account.AccountId);
+
+            if (currentAccount == null)
+            {
+                TempData["ErrorMessage"] = "Tài khoản nhân viên không tồn tại";
+                return RedirectToPage("./Edit", new { id = Account.AccountId });
+            }
+
+            if (await _context.Accounts.AnyAsync(a => a.Email == Account.Email && a.AccountId != currentAccount.AccountId))
+            {
+                TempData["ErrorMessage"] = "Email đã tồn tại";
+                return RedirectToPage("./Edit", new { id = Account.AccountId });
+            }
+
+            if (await _context.Accounts.AnyAsync(a => a.UseName == Account.UseName && a.AccountId != currentAccount.AccountId))
+            {
+                TempData["ErrorMessage"] = "Tên đăng nhập đã tồn tại";
+                return RedirectToPage("./Edit", new { id = Account.AccountId });
+            }
+            if (await _context.Accounts.AnyAsync(a => a.Phonenumber == Account.Phonenumber && a.AccountId != currentAccount.AccountId))
+            {
+                TempData["ErrorMessage"] = "Số điện thoại đã tồn tại";
+                return RedirectToPage("./Edit", new { id = Account.AccountId });
+            }
+
             if (AvatarFile != null)
             {
                 var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
@@ -59,32 +84,24 @@ namespace Bookings_Hotel.Pages.Manager.Staffs
                 });
                 Account.Avatar = uploadResult.SecureUrl.ToString();
             }
-
-            Account.UpdateDate = DateTime.Now;
-            _context.Attach(Account).State = EntityState.Modified;
+            else
+            {
+                Account.Avatar = currentAccount.Avatar;
+            }
 
             try
             {
+                Account.UpdateDate = DateTime.Now;
+                _context.Accounts.Update(Account);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Cập nhật thông tin nhân viên thành công";
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                if (!AccountExists(Account.AccountId))
-                {
-                    TempData["ErrorMessage"] = "Tài khoản nhân viên không tồn tại";
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = ex.Message;
-                }
+                TempData["ErrorMessage"] = ex.Message;
             }
             return RedirectToPage("./Edit", new { id = Account.AccountId });
         }
 
-        private bool AccountExists(int id)
-        {
-            return (_context.Accounts?.Any(e => e.AccountId == id)).GetValueOrDefault();
-        }
     }
 }
