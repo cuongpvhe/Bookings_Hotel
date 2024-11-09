@@ -3,7 +3,6 @@ using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using static Bookings_Hotel.Pages.Manager.StaffsModel;
 
 namespace Bookings_Hotel.Pages.Manager.Staffs
 {
