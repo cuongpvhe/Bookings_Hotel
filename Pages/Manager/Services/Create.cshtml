@@ -22,22 +22,6 @@
 </div>
 
 
-
-
-
-@*     <h2 class="text-center">Thêm dịch vụ mới</h2>
-    @if (!ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <li>@modelError.ErrorMessage</li>
-                }
-            </ul>
-        </div>
-    } *@
-
     <form class="form-container mt-3 p-3 row row-cols-2 mx-0" method="post" id="addServiceForm" enctype="multipart/form-data">
     <div class="col m-0 p-0">
         <div class="carousel-container">
@@ -83,28 +67,10 @@
                 <label for="ServiceName"  class="form-label">Tên dịch vụ<span class="text-danger">*</span></label>
                 <input type="text" name="ServiceName" id="ServiceName" class="form-control" required />
             </div>
-
-@*             <div class="row mb-3">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="CreatedDate" class="form-label">Ngày tạo</label>
-                    <input type="date" value="service.CreatedDate" id="CreatedDate" name="CreatedDate" class="form-control bg-opacity-10" disabled />
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="UpdateDate" class="form-label">Ngày cập nhật</label>
-                        <input type="date" value="service.UpdateDate" id="UpdateDate" name="UpdateDate" class="form-control bg-opacity-10" disabled />
-                    </div>
-                </div>
-            </div> *@
-
             <div class="form-group mb-3">
                 <label for="Price" class="form-label">Giá <span class="text-danger"> *</span></label>
-                <div class="input-group">
+
                 <input type="number" name="Price" id="Price" class="form-control" step="0.01" min="0" required />
-                    <span class="input-group-text">VND</span>
-                </div>
             </div>
 
             <div class="form-group mb-3">
@@ -118,7 +84,7 @@
         </div>
         </div>
     </form>
-@Html.AntiForgeryToken()
+
 
 <!--        Model-->
 
@@ -183,7 +149,7 @@
     </div>
 </div>
 
-
+@Html.AntiForgeryToken()
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
@@ -192,7 +158,7 @@
             if (this.value < 0) this.value = 0;
         });
     </script>
-    <script src="~/admin_template/js/addservice.js"></script>
+    <script src="~/admin_template/js/addService.js"></script>
 
     <script>
         $(document).ready(function () {

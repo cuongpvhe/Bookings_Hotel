@@ -3,7 +3,7 @@ const uploadedImages = {};
 
 let cropper;
 let currentImageIndex;
-
+let hasExistingImages = false;
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -33,6 +33,7 @@ function handleImageUpload(input) {
         reader.readAsDataURL(input.files[0]);
         input.value = ''; // Reset input value to allow re-upload of the same file
     }
+    hasExistingImages = true;
 }
 
 $('#cropImageModal').on('hidden.bs.modal', function () {
@@ -162,7 +163,9 @@ function deleteLastImage() {
         thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
 
         imageIndex--;
-
+        if (carouselInner.children.length === 0) {
+            hasExistingImages = false;
+        }
         if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
             carouselInner.lastElementChild.classList.add('active');
         }
@@ -202,69 +205,83 @@ function collectImageDTOs() {
     return imageDTOs;
 }
 
-a
 async function submitFormAjax() {
     const form = $('#addServiceForm');
 
-    if (!validateServiceForm()) {
-        return; 
+    if (!hasExistingImages) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return;
     }
 
+    if (!validateServiceForm()) {
+        return;
+    }
+    const serviceName = document.getElementById("ServiceName").value;
+    try {
+        const exists = await checkServiceNameExists(serviceName);
+        if (exists) {
+            showServiceNameError();
+        } else {
+            const formData = new FormData();
+            formData.append("ServiceName", document.getElementById("ServiceName").value);
+            formData.append("Price", document.getElementById("Price").value);
+            formData.append("Description", document.getElementById("Description").value);
+            const imageDTOs = collectImageDTOs();
+            imageDTOs.forEach((imageDTO, index) => {
+                formData.append(`Images[${index}][index]`, imageDTO.index);
+                formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
+            });
 
-    const formData = new FormData(this);
-    formData.append("ServiceName", document.getElementById("ServiceName").value);
-    formData.append("Price", document.getElementById("Price").value);
-    formData.append("Description", document.getElementById("Description").value);
-    const imageDTOs = collectImageDTOs();
-    imageDTOs.forEach((imageDTO, index) => {
-        formData.append(`imageDTOS[${index}][index]`, imageDTO.index);
-        formData.append(`imageDTOS[${index}][imageFile]`, imageDTO.imageFile);
-    });
-
-    Swal.fire({
-        title: 'Processing',
-        text: 'Chờ xử lý...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    // AJAX request
-    $.ajax({
-        url: '/Manager/Services/Create?handler=Post', // URL tới phương thức xử lý
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        headers: {
-            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-        },
-        beforeSend: function () {
             Swal.fire({
-                title: 'Đang xử lý',
+                title: 'Processing',
+                text: 'Chờ xử lý...',
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 willOpen: () => {
                     Swal.showLoading();
                 }
             });
-        },
-        success: function (response) {
-            if (response.success) {
-                Swal.fire("Success", "Thêm dịch vụ thành công!", "success")
-                    .then(() => window.location.href = '/Manager/Services/List'); // Redirect to rooms list
-            }
-        },
-        error: function (xhr, status, error) {
-            Swal.fire("Error", "Đã có lỗi trong quá trình lưu thông tin dịch vụ.", "error");
-            console.log(xhr.responseText);
+
+            // AJAX request
+            $.ajax({
+                url: '/Manager/Services/Create?handler=Post', // URL tới phương thức xử lý
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Đang xử lý',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success", "Thêm dịch vụ thành công!", "success")
+                            .then(() => window.location.href = '/Manager/Services/List'); // Redirect to rooms list
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire("Error", "Đã có lỗi trong quá trình lưu thông tin dịch vụ.", "error");
+                    console.log(xhr.responseText);
+                }
+            });
         }
-
-    });
-
-});
+    } catch (error) {
+        console.log("Error ", error);
+    }
+};
 
 function validateServiceForm() {
     // Thiết lập validate cho form
@@ -317,4 +334,36 @@ function validateServiceForm() {
     });
 
     return $('#addServiceForm').valid();
+}
+
+function checkServiceNameExists(name) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/Manager/Services/Create?handler=CheckServiceName', // URL tới phương thức kiểm tra
+            type: 'POST',
+            data: { serviceName: name },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                resolve(response.exists); // Trả về kết quả tồn tại của số phòng qua Promise
+            },
+            error: function () {
+                Swal.fire("Error", "Error", "error");
+                reject();
+            }
+        });
+    });
+}
+
+// Hàm hiển thị lỗi nếu số phòng đã tồn tại
+function showServiceNameError() {
+    const serviceNameField = $("#ServiceName");
+    serviceNameField.addClass("is-invalid"); // Use serviceNameField instead of serviceNamerField
+
+    // Check if an error message already exists, and add it if it doesn't
+    if (!$("#ServiceName-error").length) {
+        $("<span id='ServiceName-error' class='text-danger'>Tên dịch vụ này đã tồn tại</span>")
+            .insertAfter(serviceNameField);
+    }
 }

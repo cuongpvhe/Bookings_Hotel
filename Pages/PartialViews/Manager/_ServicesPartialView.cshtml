@@ -15,8 +15,8 @@
             <tr>
                 <td>@(i + 1)</td>
                 <td>@Model.Services[i].ServiceName</td>
-                <td>@Model.Services[i].CreatedDate</td>
-                <td>@Model.Services[i].UpdateDate</td>
+                <td>@Model.Services[i].CreatedDate.ToString("yyyy-MM-dd")</td>
+                <td>@Model.Services[i].UpdateDate?.ToString("yyyy-MM-dd")</td>
                 <td>
                     <form method="post" asp-page-handler="ToggleStatus">
                         <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
@@ -38,13 +38,10 @@
                                 </a>
                             </li>
                             <li>
-                                <form method="post" asp-page-handler="Delete" style="display: inline;">
-                                    <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
-                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
-                                        Xóa
-                                    </button>
-                                </form>
+
+                                <a class="dropdown-item" onclick="confirmDelete(@Model.Services[i].ServiceId)">
+                                    <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
+                                </a>
                             </li>
                         </ul>
                     </div>

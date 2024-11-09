@@ -214,7 +214,14 @@ async function submitFormAjax() {
         if (!validateTypeRoomForm()) {
             return; // Dừng lại nếu form không hợp lệ
         }
+    const typeName = document.getElementById("TypeName").value;
 
+    try {
+        const exists = await checkTypeNameExists(typeName); // Kiểm tra số phòng
+
+        if (exists) {
+            showTypeNameError()
+        } else {
 
         const formData = new FormData();
 
@@ -281,6 +288,11 @@ async function submitFormAjax() {
             }
 
         });
+
+        }
+    } catch (error) {
+        console.log("Error ", error);
+    }
        
     }
 
@@ -384,12 +396,12 @@ function validateTypeRoomForm() {
 
 
 // Hàm kiểm tra số phòng đã tồn tại qua AJAX
-function checkRoomNumberExists(roomNumber) {
+function checkTypeNameExists(typeName) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: '/Manager/Room/Create?handler=CheckRoomNumber', // URL tới phương thức kiểm tra
+            url: '/Manager/TypeRoom/Create?handler=CheckTypeRoomName', // URL tới phương thức kiểm tra
             type: 'POST',
-            data: { roomNumber: roomNumber },
+            data: { typeRoomName: typeName },
             headers: {
                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
             },
@@ -404,14 +416,14 @@ function checkRoomNumberExists(roomNumber) {
     });
 }
 
-function showRoomNumberError() {
-    const roomNumberField = $("#RoomNumber");
-    roomNumberField.addClass("is-invalid"); // Đánh dấu trường là không hợp lệ
+function showTypeNameError() {
+    const TypeNameField = $("#TypeName");
+    TypeNameField.addClass("is-invalid"); // Đánh dấu trường là không hợp lệ
 
     // Kiểm tra xem đã có thông báo lỗi chưa, nếu chưa thì thêm vào
-    if (!$("#RoomNumber-error").length) {
-        $("<span id='RoomNumber-error' class='text-danger'>This room number already exists.</span>")
-            .insertAfter(roomNumberField);
+    if (!$("#TypeName-error").length) {
+        $("<span id='TypeName-error' class='text-danger'>Tên loại phòng này đã tồn tại.</span>")
+            .insertAfter(TypeNameField);
     }
 }
 

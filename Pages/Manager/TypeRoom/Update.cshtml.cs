@@ -188,7 +188,11 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
             return new JsonResult(new { success = true, message = "Xóa ảnh thành công" });
         }
-
+        public async Task<IActionResult> OnPostCheckTypeRoomNameAsync(string typeRoomName)
+        {
+            var typeRoomExists = await _context.TypeRooms.AnyAsync(r => r.TypeName == typeRoomName && r.Deleted != true);
+            return new JsonResult(new { exists = typeRoomExists });
+        }
         public class TypeRoomImageDTO
         {
             public int ImageId { get; set; }

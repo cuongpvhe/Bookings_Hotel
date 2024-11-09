@@ -27,75 +27,61 @@ namespace Bookings_Hotel.Pages.Manager.Services
 
         public IActionResult OnGet()
         {
-            service.CreatedDate = DateTime.Now;
-            service.UpdateDate = DateTime.Now;
-            service.Status = ServiceStatus.ACTIVE;
+            
             return Page();
         }
 
         
 
-        public async Task<IActionResult> OnPostAsync([FromForm] List<ImageDTO> imageDTOs)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            try
-            {
-                var serviceExists = await _context.Services
-                    .AnyAsync(s => s.ServiceName.ToLower() == service.ServiceName.ToLower());
-                if (serviceExists)
-                {
-                    return new JsonResult(new
-                    {
-                        error = true,
-                        message = "Edit error!"
-                    });
-                }
 
                 service.ServiceName = Request.Form["ServiceName"];
                 service.Price = decimal.Parse(Request.Form["Price"]);
                 service.Description = Request.Form["Description"];
-                // Save service to database
+                service.CreatedDate = DateTime.Now;
+                service.UpdateDate = DateTime.Now;
+                service.Status = ServiceStatus.ACTIVE;
+            // Save service to database
                 _context.Services.Add(service);
                 await _context.SaveChangesAsync();
 
-                foreach (var imageDTO in imageDTOs)
+            var images = Request.Form.Files;
+            for (int i = 0; i < images.Count; i++)
+            {
+                var file = images[i];
+                var imageIndex = int.Parse(Request.Form[$"Images[{i}][index]"]);
+
+                // New image
+                var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
                 {
-                    if (imageDTO.ImageFile != null && imageDTO.ImageFile.Length > 0)
-                    {
-                        // New image
-                        var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
-                        {
-                            File = new FileDescription(imageDTO.ImageFile.FileName, imageDTO.ImageFile.OpenReadStream()),
-                            Folder = "hotel_images"
-                        });
+                    File = new FileDescription(file.FileName, file.OpenReadStream()),
+                    Folder = "hotel_images"
+                });
 
-                        var serviceImage = new ServiceImage
-                        {
-                            ServiceId = service.ServiceId,
-                            ImageUrl = uploadResult.Url.ToString(),
-                            ImageIndex = imageDTO.Index
-                        };
+                var serviceImage = new ServiceImage
+                {
+                    ServiceId = service.ServiceId,
+                    ImageUrl = uploadResult.Url.ToString(),
+                    ImageIndex = imageIndex
+                };
 
-                        _context.ServiceImages.Add(serviceImage);
-                    }
-
-                 
+                _context.ServiceImages.Add(serviceImage);
                     
+
+                   
                 }
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "Service created successfully!";
-                return RedirectToPage("./List");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Error creating service: " + ex.Message);
-                return Page();
-            }
+                return new JsonResult(new { success = true });
+            
+            
+        }
+
+        public async Task<IActionResult> OnPostCheckServiceNameAsync(string serviceName)
+        {
+            var serviceExited = await _context.Services.AnyAsync(s => s.ServiceName == serviceName && s.Status != ServiceStatus.DELETED);
+            return new JsonResult(new { exists = serviceExited });
         }
     }
 
