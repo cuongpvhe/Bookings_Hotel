@@ -78,13 +78,9 @@
                     <div class="sidebar__list">
                         @if (User.IsInRole(RoleName.STAFF))
                         {
-                            <a asp-page="/Manager/Statistic" class="sidebar__link @(IsActive("/Manager/Statistic") ? "active-link" : "")">
-                                <i class="ri-team-line"></i>
-                                <span>Phân Tích</span>
-                            </a>
                             <a asp-page="/Manager/Customers/List" class="sidebar__link @(IsActive("/Manager/Customers/List") ? "active-link" : "")">
                                 <i class="ri-team-line"></i>
-                                <span>Quản lý khác hàng</span>
+                                <span>Quản lý khách hàng</span>
                             </a>
 
                             <a asp-page="/Manager/Room/List" class="sidebar__link @(IsActive("/Manager/Room/List") ? "active-link" : "")">
@@ -108,6 +104,10 @@
 
                         @if (User.IsInRole(RoleName.MANAGER))
                         {
+                            <a asp-page="/Manager/Statistic" class="sidebar__link @(IsActive("/Manager/Statistic") ? "active-link" : "")">
+                                <i class="ri-team-line"></i>
+                                <span>Phân Tích</span>
+                            </a>
                             <a asp-page="/Manager/Staffs/List" class="sidebar__link @(IsActive("/Manager/Staffs/List") ? "active-link" : "")">
                                 <i class="ri-group-2-fill"></i>
                                 <span>Quản lý nhân viên</span>

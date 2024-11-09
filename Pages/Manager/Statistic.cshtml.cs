@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookings_Hotel.Pages.Manager
 {
-    [Authorize(Policy = "StaffOnly")]
+    [Authorize(Policy = "ManagerOnly")]
     public class StatisticModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
