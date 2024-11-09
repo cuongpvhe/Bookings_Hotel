@@ -1,0 +1,239 @@
+﻿@page "/Manager/Statistic"
+@model Bookings_Hotel.Pages.Manager.StatisticModel
+@{
+    ViewData["Title"] = "Báo Cáo";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+<h1 class="text-center my-4">Báo Cáo</h1>
+<div class="container-fluid">
+    <div class="row gap-5 justify-content-center">
+        <div class="col-7 shadow">
+            <h3 class="mt-3 text-center">Doanh Thu Đặt Phòng</h3>
+            <div class="row justify-content-end">
+                <div class="col-2 mt-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="yearRevenue">
+                            <option value="1" selected>2024</option>
+                            <option value="2">2023</option>
+                            <option value="3">2022</option>
+                        </select>
+                        <label for="year">Năm</label>
+                    </div>
+                </div>
+            </div>
+            <canvas id="yearlyRevenueChart" width="400" height="200"></canvas>
+        </div>
+        <div class="col-4 shadow">
+            <h3 class="mt-3 text-center">Số Lượng Phòng Được Đặt</h3>
+            <div class="row justify-content-center">
+                <div class="col-4 mt-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="monthRoomType">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <label for="month">Tháng</label>
+                    </div>
+                </div>
+                <div class="col-4 mt-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="yearRoomType">
+                            <option value="1" selected>2024</option>
+                            <option value="2">2023</option>
+                            <option value="3">2022</option>
+                        </select>
+                        <label for="year">Năm</label>
+                    </div>
+                </div>
+            </div>
+            <canvas class="my-3" id="roomTypePieChart" width="300" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" role="dialog" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết Booking</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="$('#bookingDetailsModal').modal('hide');">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            onchangeRecenueYear();
+            loadRevenueData(2024);
+
+            onchangeRoomTypeBookingMonthAndYear()
+            loadRoomTypeBookingData(2024,11);
+        });
+        //
+        function onchangeRecenueYear() {
+            $("#yearRevenue").change(function () {
+                const selectedValue = $(this).find("option:selected").text();
+                loadRevenueData(selectedValue)
+            });
+        }
+        //
+        let yearlyRevenueChartInstance = null;
+        function loadRevenueData(year) {
+            $.ajax({
+                url: `/Manager/Statistic?handler=RevenueByYear&year=${year}`, // Đường dẫn tới API Razor Page
+                method: 'GET',
+                success: function (response) {
+                    // Parse dữ liệu trả về để đưa vào biểu đồ
+                    const labels = response.map(data => `Tháng ${data.month}`);
+                    const revenueData = response.map(data => data.totalRevenue);
+
+                    // Kiểm tra nếu biểu đồ đã tồn tại, hủy biểu đồ cũ
+                    if (yearlyRevenueChartInstance) {
+                        yearlyRevenueChartInstance.destroy();
+                    }
+
+                    // Tạo biểu đồ doanh thu theo tháng
+                    const ctx = document.getElementById('yearlyRevenueChart').getContext('2d');
+                    yearlyRevenueChartInstance = new Chart(ctx, {
+                        type: 'bar', // Loại biểu đồ cột
+                        data: {
+                            labels: labels, // Nhãn cho các tháng
+                            datasets: [{
+                                label: 'Doanh thu (VNĐ)',
+                                data: revenueData, // Dữ liệu doanh thu theo tháng
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Màu cột
+                                borderColor: 'rgba(75, 192, 192, 1)', // Màu viền
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true, // Bắt đầu trục y từ 0
+                                    title: {
+                                        display: true,
+                                        text: 'Doanh thu (VNĐ)' // Nhãn cho trục y
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Tháng trong năm' // Nhãn cho trục x
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top' // Vị trí của chú thích
+                                },
+                                tooltip: {
+                                    enabled: true // Bật tooltip khi hover vào từng cột
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error("Lỗi khi gọi API:", error);
+                }
+            });
+        }
+        
+        //
+        function onchangeRoomTypeBookingMonthAndYear() {
+            $("#monthRoomType, #yearRoomType").change(function () {
+                const selectedMonth = $("#monthRoomType").find("option:selected").text();
+                const selectedYear = $("#yearRoomType").find("option:selected").text();
+                loadRoomTypeBookingData(selectedYear, selectedMonth)
+            });
+        }
+        //
+        let roomTypePieChartInstance = null;
+        function loadRoomTypeBookingData(year, month) {
+            $.ajax({
+                url: `/Manager/Statistic?handler=RoomTypeBookingByMonth&year=${year}&month=${month}`,
+                method: 'GET',
+                success: function (response) {
+                    // Chuẩn bị dữ liệu cho biểu đồ tròn
+                    const labels = response.map(data => data.roomType);
+                    const bookingCounts = response.map(data => data.bookedRoomCount);
+                    // Kiểm tra nếu biểu đồ đã tồn tại, hủy biểu đồ cũ
+                    if (roomTypePieChartInstance) {
+                        roomTypePieChartInstance.destroy();
+                    }
+                    // Tạo biểu đồ tròn hiển thị số lượng loại phòng được đặt
+                    const ctx = document.getElementById('roomTypePieChart').getContext('2d');
+                    roomTypePieChartInstance = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Số lượng loại phòng được đặt',
+                                data: bookingCounts,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            return `${label}: ${value} phòng`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.error("Lỗi khi gọi API:", error);
+                }
+            });
+        }
+    </script>
+}
