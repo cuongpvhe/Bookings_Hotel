@@ -202,27 +202,23 @@ function collectImageDTOs() {
     return imageDTOs;
 }
 
-
-// Xử lý form submit
-document.getElementById('addServiceForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
+a
+async function submitFormAjax() {
+    const form = $('#addServiceForm');
 
     if (!validateServiceForm()) {
         return; 
     }
 
-    if (uploadedImages.size === 0) {
-        Swal.fire({
-            title: 'Warning',
-            text: 'Vui lòng thêm ít nhất một ảnh!',
-            icon: 'warning'
-        });
-        return;
-    }
 
     const formData = new FormData(this);
-    uploadedImages.forEach((file, index) => {
-        formData.append(`ImageFiles`, file);
+    formData.append("ServiceName", document.getElementById("ServiceName").value);
+    formData.append("Price", document.getElementById("Price").value);
+    formData.append("Description", document.getElementById("Description").value);
+    const imageDTOs = collectImageDTOs();
+    imageDTOs.forEach((imageDTO, index) => {
+        formData.append(`imageDTOS[${index}][index]`, imageDTO.index);
+        formData.append(`imageDTOS[${index}][imageFile]`, imageDTO.imageFile);
     });
 
     Swal.fire({
@@ -235,34 +231,39 @@ document.getElementById('addServiceForm').addEventListener('submit', async funct
         }
     });
 
-    try {
-        const response = await fetch(this.action, {
-            method: 'POST',
-            body: formData
-        });
-        if (response.ok) {
+    // AJAX request
+    $.ajax({
+        url: '/Manager/Services/Create?handler=Post', // URL tới phương thức xử lý
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        headers: {
+            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+        },
+        beforeSend: function () {
             Swal.fire({
-                title: 'Success!',
-                text: 'Thêm mới dịch vụ thành công',
-                icon: 'success',
-                showConfirmButton: true
-            }).then(() => {
-                window.location.href = './List';
+                title: 'Đang xử lý',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
             });
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Thêm mới dịch vụ thất bại!',
-                icon: 'error'
-            });
+        },
+        success: function (response) {
+            if (response.success) {
+                Swal.fire("Success", "Thêm dịch vụ thành công!", "success")
+                    .then(() => window.location.href = '/Manager/Services/List'); // Redirect to rooms list
+            }
+        },
+        error: function (xhr, status, error) {
+            Swal.fire("Error", "Đã có lỗi trong quá trình lưu thông tin dịch vụ.", "error");
+            console.log(xhr.responseText);
         }
-    } catch (error) {
-        Swal.fire({
-            title: 'Error!',
-            text: error.message,
-            icon: 'error'
-        });
-    }
+
+    });
+
 });
 
 function validateServiceForm() {
@@ -287,17 +288,17 @@ function validateServiceForm() {
             }*/
         },
         messages: {
-            'service.ServiceName': {
+            'ServiceName': {
                 required: "Vui lòng nhập tên dịch vụ.",
                 minlength: "Tên dịch vụ phải dài ít nhất 2 ký tự.",
                 maxlength: "Tên dịch vụ không quá 50 ký tự."
             },
-            'service.Price': {
+            'Price': {
                 required: "Vui lòng nhập giá dịch vụ.",
                 min: "Giá phải lơn hơn 0.",
                 number: "Vui lòng nhập giá hợp lệ."
             },
-            'service.Description': {
+            'Description': {
                 maxlength: "Mô tả không quá 500 ký tự."
             },
 /*            'service.Status': {
@@ -306,91 +307,14 @@ function validateServiceForm() {
         },
         errorElement: 'span',
         errorPlacement: function (error, element) {
-            error.addClass('text-danger');
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent()); // For price input with $ symbol
+            error.addClass("text-danger");
+            if (element.prop("tagName") === "SELECT") {
+                error.insertAfter(element.next('.select2-container'));
             } else {
                 error.insertAfter(element);
             }
         },
-        highlight: function (element, errorClass, validClass) {
-            $(element).addClass('is-invalid').removeClass('is-valid');
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).addClass('is-valid').removeClass('is-invalid');
-        },
-        submitHandler: function (form) {
-            // Kiểm tra xem có ít nhất một ảnh được tải lên
-            if (uploadedImages.size === 0) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Vui lòng thêm ít nhất 1 ảnh',
-                    icon: 'error'
-                });
-                return false;
-            }
-
-
-            // If all validations pass, show loading state
-            Swal.fire({
-                title: 'Processing',
-                text: 'Chờ xử lý...',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            form.submit();
-        }
     });
-
-    // Thêm custom method để validate giá tiền
-    $.validator.addMethod("money", function (value, element) {
-        return this.optional(element) || /^\d{0,10}(\.\d{0,2})?$/.test(value);
-    }, "Vui lòng nhập giá hợp lệ.");
-
-
-    // Real-time price formatting
-    $('input[name="service.Price"]').on('input', function () {
-        let value = $(this).val();
-        // Remove non-numeric characters except decimal point
-        value = value.replace(/[^\d.]/g, '');
-        // Ensure only one decimal point
-        value = value.replace(/(\..*)\./g, '$1');
-        // Limit to 2 decimal places
-        const parts = value.split('.');
-        if (parts.length > 1) {
-            parts[1] = parts[1].slice(0, 2);
-            value = parts.join('.');
-        }
-        $(this).val(value);
-    });
-
-    // Add keypress validation for price input
-    $('input[name="service.Price"]').keypress(function (e) {
-        if (e.which != 8 && e.which != 0 && e.which != 46 && (e.which < 48 || e.which > 57)) {
-            return false;
-        }
-    });
-
-    // Initialize tooltips for validation messages
-    $('[data-toggle="tooltip"]').tooltip();
 
     return $('#addServiceForm').valid();
 }
-
-
-$(document).ready(function () {
-    $('#imageInput').on('change', handleImageUpload);
-
-    $('#cropImageButton').on('click', handleCropSave);
-
-    $('#cropImageModal').on('hidden.bs.modal', function () {
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    });
-});

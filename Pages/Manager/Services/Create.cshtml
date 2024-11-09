@@ -80,59 +80,45 @@
 
         <div class="ps-2 col m-0 p-0">
             <div class="form-group mb-3">
-                <label asp-for="service.ServiceName" class="form-label">Tên dịch vụ<span class="text-danger">*</span></label>
-            <input type="text" asp-for="service.ServiceName" name="ServiceName" id="ServiceName" class="form-control" required />
-                <span asp-validation-for="service.ServiceName" class="text-danger"></span>
+                <label for="ServiceName"  class="form-label">Tên dịch vụ<span class="text-danger">*</span></label>
+                <input type="text" name="ServiceName" id="ServiceName" class="form-control" required />
             </div>
 
-            <div class="row mb-3">
+@*             <div class="row mb-3">
                 <div class="col">
                     <div class="form-group">
-                        <label asp-for="service.CreatedDate" class="form-label">Ngày tạo</label>
-                        <input type="date" asp-for="service.CreatedDate" class="form-control bg-opacity-10" disabled />
-                        <input type="hidden" asp-for="service.CreatedDate" />
+                        <label for="CreatedDate" class="form-label">Ngày tạo</label>
+                    <input type="date" value="service.CreatedDate" id="CreatedDate" name="CreatedDate" class="form-control bg-opacity-10" disabled />
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
-                        <label asp-for="service.UpdateDate" class="form-label">Ngày cập nhật</label>
-                        <input type="date" asp-for="service.UpdateDate" class="form-control bg-opacity-10" disabled />
-                        <input type="hidden" asp-for="service.UpdateDate" />
+                        <label for="UpdateDate" class="form-label">Ngày cập nhật</label>
+                        <input type="date" value="service.UpdateDate" id="UpdateDate" name="UpdateDate" class="form-control bg-opacity-10" disabled />
                     </div>
                 </div>
-            </div>
+            </div> *@
 
             <div class="form-group mb-3">
-                <label asp-for="service.Price" class="form-label">Giá <span class="text-danger"> *</span></label>
+                <label for="Price" class="form-label">Giá <span class="text-danger"> *</span></label>
                 <div class="input-group">
-                    <input type="number" asp-for="service.Price" class="form-control" step="0.01" min="0" required />
+                <input type="number" name="Price" id="Price" class="form-control" step="0.01" min="0" required />
                     <span class="input-group-text">VND</span>
                 </div>
-                <span asp-validation-for="service.Price" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="service.Description" class="form-label">Mô tả</label>
-                <textarea asp-for="service.Description" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="service.Description" class="text-danger"></span>
+                <label for="Description" class="form-label">Mô tả</label>
+            <textarea name="Description" id="Description" class="form-control" rows="4"></textarea>
             </div>
-
-            <div class="form-group mb-4">
-                <label asp-for="service.Status" class="form-label">Trạng thái</label>
-                <select asp-for="service.Status" class="form-select">
-                    <option value="Active">Hoạt động</option>
-                    <option value="Inactive">Không hoạt động</option>
-                </select>
-                <span asp-validation-for="service.Status" class="text-danger"></span>
-            </div>
-
 
         <div class="d-flex justify-content-center">
             <a type="button" class="btn btn-outline-dark px-4 rounded-pill me-2" asp-page="./List">Hủy</a>
-            <button type="submit" class="btn btn-primary px-4 rounded-pill" >Lưu</button>
+            <button type="button" class="btn btn-primary px-4 rounded-pill" onclick="submitFormAjax()">Lưu</button>
         </div>
         </div>
     </form>
+@Html.AntiForgeryToken()
 
 <!--        Model-->
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using static Bookings_Hotel.Pages.Manager.TypeRoom.UpdateModel;
 
 namespace Bookings_Hotel.Pages.Manager.Services
 {
@@ -21,11 +22,8 @@ namespace Bookings_Hotel.Pages.Manager.Services
             _cloudinary = cloudinary;
         }
 
-        [BindProperty]
         public Bookings_Hotel.Models.Service service { get; set; } = new Bookings_Hotel.Models.Service();
 
-        [BindProperty]
-        public List<string> ImageUrls { get; set; } = new List<string>();
 
         public IActionResult OnGet()
         {
@@ -37,7 +35,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
 
         
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync([FromForm] List<ImageDTO> imageDTOs)
         {
             if (!ModelState.IsValid)
             {
@@ -57,26 +55,36 @@ namespace Bookings_Hotel.Pages.Manager.Services
                     });
                 }
 
+                service.ServiceName = Request.Form["ServiceName"];
+                service.Price = decimal.Parse(Request.Form["Price"]);
+                service.Description = Request.Form["Description"];
                 // Save service to database
                 _context.Services.Add(service);
                 await _context.SaveChangesAsync();
 
-                // Save images to cloud storage
-                var files = Request.Form.Files;
-                foreach (var file in files)
+                foreach (var imageDTO in imageDTOs)
                 {
-                    var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                    if (imageDTO.ImageFile != null && imageDTO.ImageFile.Length > 0)
                     {
-                        File = new FileDescription(file.FileName, file.OpenReadStream()),
-                        Folder = "hotel_images"
-                    });
+                        // New image
+                        var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
+                        {
+                            File = new FileDescription(imageDTO.ImageFile.FileName, imageDTO.ImageFile.OpenReadStream()),
+                            Folder = "hotel_images"
+                        });
 
-                    var serviceImage = new ServiceImage
-                    {
-                        ImageUrl = uploadResult.Url.ToString(),
-                        ServiceId = service.ServiceId
-                    };
-                    _context.ServiceImages.Add(serviceImage);
+                        var serviceImage = new ServiceImage
+                        {
+                            ServiceId = service.ServiceId,
+                            ImageUrl = uploadResult.Url.ToString(),
+                            ImageIndex = imageDTO.Index
+                        };
+
+                        _context.ServiceImages.Add(serviceImage);
+                    }
+
+                 
+                    
                 }
                 await _context.SaveChangesAsync();
 
@@ -89,6 +97,14 @@ namespace Bookings_Hotel.Pages.Manager.Services
                 return Page();
             }
         }
+    }
+
+    public class ImageDTO
+    {
+        public int ImageId { get; set; }
+        public string ImageUrl { get; set; }
+        public int Index { get; set; }
+        public IFormFile ImageFile { get; set; }
     }
 }
 
