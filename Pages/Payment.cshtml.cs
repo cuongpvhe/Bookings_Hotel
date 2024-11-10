@@ -67,7 +67,7 @@ namespace Bookings_Hotel.Pages
 
             //Check if the order wasn't placed 5 minutes ago
             var timeSinceOrderPlaced = DateTime.Now - order.OrderDate;
-            if (timeSinceOrderPlaced.TotalMinutes > 5)
+            if (timeSinceOrderPlaced.TotalMinutes > 1)
             {
                 // Update the order status to "Canceled"
                 order.OrderStatus = OrderStatus.CANCEL;

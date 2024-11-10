@@ -1,6 +1,7 @@
 ﻿using Bookings_Hotel.DTO;
 using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -234,6 +235,35 @@ namespace Bookings_Hotel.Pages
             }
 
             return new string(stringChars);
+        }
+
+        public async Task<IActionResult> OnPostBatchUpdateOrderStatus()
+        {
+            List<Order> lstOrder = _context.Orders
+                .Where(o => o.OrderStatus.Equals(OrderStatus.WAITING_PAYMENT))
+            .ToList();
+
+            lstOrder.ForEach(order =>
+            {
+                var timeSinceOrderPlaced = DateTime.Now - order.OrderDate;
+                if (timeSinceOrderPlaced.TotalMinutes > 1)
+                {
+                    // Update the order status to "Canceled"
+                    order.OrderStatus = OrderStatus.CANCEL;
+
+                    // Save the changes to the database
+                    _context.Orders.Update(order);
+                    _context.SaveChangesAsync();
+                }
+            });
+            
+            
+
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Udate successfully!"
+            });
         }
     }
 }

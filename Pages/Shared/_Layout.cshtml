@@ -306,8 +306,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     @RenderSection("Scripts", required: false)
-    
 
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Booking?handler=BatchUpdateOrderStatus',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () { },
+                success: function (response) {
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    </script>
     
 </body>
 </html>

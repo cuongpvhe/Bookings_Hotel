@@ -180,6 +180,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
 
     @RenderSection("Scripts", required: false)
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Booking?handler=BatchUpdateOrderStatus',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () { },
+                success: function (response) {
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

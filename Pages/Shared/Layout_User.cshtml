@@ -243,7 +243,24 @@
     <script src="~/template/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @RenderSection("Scripts", required: false)
-
+    @Html.AntiForgeryToken()
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Booking?handler=BatchUpdateOrderStatus',
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () { },
+                success: function (response) {
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    </script>
 
 
 </body>
