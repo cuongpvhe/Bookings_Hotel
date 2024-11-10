@@ -54,6 +54,37 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
+        function confirmDelete(button) {
+            const form = button.closest('form');
+            if (confirm("Bạn có chắc chắn muốn xóa phản hồi của khách hàng này không?")) {
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: new FormData(form),
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Xóa tài phản hồi thành công',
+                            icon: 'success',
+                            showConfirmButton: true
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Có lỗi xảy ra khi xóa phản hồi',
+                            icon: 'error',
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            }
+        }
+
         $(document).ready(function () {
            
             $('#searchButton').on('click', function () {

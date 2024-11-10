@@ -33,11 +33,19 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                @* <a asp-page="./Details" asp-route-id="@item.ReviewId">Details</a> *@
                                 <a class="dropdown-item" asp-page="Detail" asp-route-id="@Model.Feedbacks[i].ReviewId" class="btn btn-primary">
                                     <i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i>
                                     Xem chi tiết
                                 </a>
+                            <li>
+                                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                    <input type="hidden" name="id" value="@Model.Feedbacks[i].ReviewId" />
+                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </li>
                             </li>
                         </ul>
                     </div>
