@@ -57,21 +57,17 @@
 </div>
 
 @Html.AntiForgeryToken()
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+@section Scripts {
 <script>
     function confirmDelete(typeRoomId) {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you really want to delete this type Room?",
+            text: "Bạn muốn xóa loại phòng này không?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteRoom(typeRoomId);
@@ -91,8 +87,7 @@
             },
             beforeSend: function () {
                 Swal.fire({
-                    title: 'Processing',
-                    text: 'Please wait while we checking...',
+                    title: 'Đang xử lý',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     willOpen: () => {
@@ -109,8 +104,8 @@
             error: function (xhr, status, error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'There was an error processing your checking!'
+                    title: 'Đã có lỗi xảy ra',
+                    text: 'Đã có lỗi xảy ra trong quá trình xóa'
                 });
 
                 var errorMessage = xhr.responseText; 
@@ -175,3 +170,4 @@
 
 
 </script>
+}

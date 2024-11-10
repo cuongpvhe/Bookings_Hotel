@@ -18,6 +18,7 @@ namespace Bookings_Hotel.Pages.Manager.Staffs
         private readonly Bookings_Hotel.Models.HotelBookingSystemContext _context;
 
         private readonly Cloudinary _cloudinary;
+        private readonly String DefaultImage = "https://res.cloudinary.com/dt9hjydap/image/upload/v1731182417/hrrx6nnwuvrxbaqlacne.jpg";
 
         public CreateModel(Bookings_Hotel.Models.HotelBookingSystemContext context, Cloudinary cloudinary)
         {
@@ -71,6 +72,9 @@ namespace Bookings_Hotel.Pages.Manager.Staffs
                         Folder = "hotel_images"
                     });
                     Account.Avatar = uploadResult.SecureUrl.ToString();
+                } else
+                {
+                    Account.Avatar = DefaultImage;
                 }
                 Account.RoleId = _context.Roles.FirstOrDefault(a => a.RoleName == RoleName.STAFF).RoleId;
                 Account.Dob = (Account.Dob != null ? Account.Dob : DateTime.Now);

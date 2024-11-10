@@ -1,0 +1,118 @@
+﻿@page "{orderId:int}/{roomId:int}"
+@model Bookings_Hotel.Pages.Users.FeedBackModel
+@{
+    Layout = "~/Pages/Shared/Layout_User.cshtml";
+}
+
+<h2 class="text-center mb-4">Đánh Giá Phòng</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="OrderId" />
+    <input type="hidden" asp-for="RoomId" />
+
+    <!-- Đánh giá sao -->
+    <div class="form-group">
+        <label class="font-weight-bold">Đánh giá sao:</label>
+        <div class="rating d-flex justify-content-center">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <input type="hidden" id="Rating" name="Rating" asp-for="Rating" />
+    </div>
+
+    <!-- Viết đánh giá -->
+    <div class="form-group">
+        <label class="font-weight-bold">Viết đánh giá:</label>
+        <textarea asp-for="Comment" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn..." rows="5"></textarea>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-lg">Gửi đánh giá</button>
+    </div>
+</form>
+
+<!-- Thêm CSS và JavaScript cho ngôi sao -->
+<style>
+    .star {
+        font-size: 35px; /* Kích thước ngôi sao */
+        color: #ddd; /* Màu sắc sao khi chưa chọn */
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+        .star.selected {
+            color: #FFD700; /* Màu vàng khi sao được chọn */
+        }
+
+        .star.hover {
+            color: #FFA500; /* Màu cam khi người dùng hover vào sao */
+        }
+
+    .rating {
+        display: inline-block;
+    }
+
+    /* Thêm một số kiểu cho form và nút */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    textarea {
+        resize: none; /* Không cho phép thay đổi kích thước textarea */
+    }
+
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1.1rem;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('Rating');
+
+        // Lắng nghe sự kiện hover để thay đổi màu sắc sao
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                const value = parseInt(star.getAttribute('data-value'));
+                updateStars(value, 'hover');
+            });
+
+            star.addEventListener('mouseout', () => {
+                const value = parseInt(ratingInput.value);
+                updateStars(value, 'hover');
+            });
+
+            // Lắng nghe sự kiện click để chọn sao
+            star.addEventListener('click', () => {
+                const value = parseInt(star.getAttribute('data-value'));
+                ratingInput.value = value;
+                updateStars(value, 'selected');
+            });
+        });
+
+        // Hàm cập nhật màu sắc các sao
+        function updateStars(value, mode) {
+            stars.forEach(star => {
+                const starValue = parseInt(star.getAttribute('data-value'));
+                if (mode === 'hover') {
+                    if (starValue <= value) {
+                        star.classList.add('hover');
+                    } else {
+                        star.classList.remove('hover');
+                    }
+                } else if (mode === 'selected') {
+                    if (starValue <= value) {
+                        star.classList.add('selected');
+                    } else {
+                        star.classList.remove('selected');
+                    }
+                }
+            });
+        }
+    });
+</script>

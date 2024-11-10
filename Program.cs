@@ -9,7 +9,8 @@ using Microsoft.AspNetCore.Http.Features;
 using CloudinaryDotNet; // Import Cloudinary namespace
 using CloudinaryAccount = CloudinaryDotNet.Account;
 using Bookings_Hotel.Service;
-using Bookings_Hotel.Util; // Alias to avoid conflict with your Models.Account
+using Bookings_Hotel.Util;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,10 +30,27 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login";  
-        options.LogoutPath = "/Home/LogOut"; 
-        options.AccessDeniedPath = "/AccessDenied"; 
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(10); 
+        options.LoginPath = "/Login";
+        options.LogoutPath = "/Home/LogOut";
+        options.AccessDeniedPath = "/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = true; // Cookie sẽ được làm mới khi có thao tác
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                // Kiểm tra xem nếu yêu cầu không phải là trang login (tránh vòng lặp)
+                // Tránh chuyển hướng nếu người dùng đã ở trên trang đăng nhập
+                if (!context.Request.Path.StartsWithSegments("/Login"))
+                {
+                    context.Response.Redirect("/Login"); // Chuyển hướng về trang đăng nhập
+                }
+                return Task.CompletedTask;
+            },
+
+            
+          
+        };
     });
 
 builder.Services.Configure<FormOptions>(options =>
@@ -69,5 +87,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapRazorPages();
 });
+
+
 
 app.Run();

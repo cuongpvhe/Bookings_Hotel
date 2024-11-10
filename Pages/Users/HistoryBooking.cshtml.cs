@@ -78,9 +78,10 @@ namespace Bookings_Hotel.Pages.Users
                             .Where(r => r.RoomId == od.RoomId.Value)
                             .Select(r => r.RoomNumber.ToString())
                             .FirstOrDefault() ?? "Unknown"
-                            : "Unknown"
-
-                    }).ToList()
+                            : "Unknown",
+                            HasFeedback = _context.Feedbacks.Any(f => f.OrderId == od.OrderId)
+                    }).ToList(),
+                    
                 })
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
@@ -109,6 +110,7 @@ namespace Bookings_Hotel.Pages.Users
             public decimal TotalMoney { get; set; }
             public string OrderStatus { get; set; }
             public List<OrderDetailViewModel> OrderDetails { get; set; }
+           
         }
 
         public class OrderDetailViewModel
@@ -117,6 +119,7 @@ namespace Bookings_Hotel.Pages.Users
             public string RoomNumber { get; set; }
             public DateTime CheckIn { get; set; }
             public DateTime CheckOut { get; set; }
+            public bool HasFeedback { get; set; }
         }
     }
 }

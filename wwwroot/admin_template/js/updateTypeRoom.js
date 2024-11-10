@@ -3,6 +3,9 @@ const uploadedImages = {};
 
 let cropper;
 let currentImageIndex;
+let hasExistingImages = false;
+
+
 const urlParams = new URLSearchParams(window.location.search);
 
 const typeId = urlParams.get('id');
@@ -36,6 +39,7 @@ function handleImageUpload(input) {
         reader.readAsDataURL(input.files[0]);
         input.value = ''; // Reset input value to allow re-upload of the same file
     }
+    hasExistingImages = true;
 }
 
 $('#cropImageModal').on('hidden.bs.modal', function () {
@@ -178,90 +182,24 @@ function deleteLastImage() {
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
+
                 const carouselInner = document.getElementById('carousel-inner');
                 const thumbnailContainer = document.querySelector('.thumbnail-container');
 
-                const lastCarouselItem = carouselInner.lastElementChild;
-                const lastThumbnailItem = thumbnailContainer.lastElementChild;
+                carouselInner.removeChild(carouselInner.lastElementChild);
+                thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
 
-                const imageId = lastCarouselItem.getAttribute('data-image-id');
-                const dataIndex = lastCarouselItem.getAttribute('data-index');
-
-                // Send the imageId to the server if it's not zero
-                if (imageId && parseInt(imageId) !== 0) {
-                    $.ajax({
-                        url: '/Manager/TypeRoom/Update?handler=DeleteLastImage',
-                        type: 'POST',
-                        data: { id: imageId },
-                        headers: {
-                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        beforeSend: function () {
-                            Swal.fire({
-                                title: 'Đang xử lý',
-                                allowOutsideClick: false,
-                                showConfirmButton: false,
-                                willOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                        },
-                        success: function (response) {
-                            // Remove the last image from carousel
-                            carouselInner.removeChild(lastCarouselItem);
-                            // Remove the last thumbnail
-                            thumbnailContainer.removeChild(lastThumbnailItem);
-
-                            // Update imageIndex
-                            imageIndex--;
-
-                            // If the deleted image was the active one, make the last image active
-                            if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
-                                carouselInner.lastElementChild.classList.add('active');
-                            }
-
-                            Swal.fire(
-                                'Hoàn tất',
-                                'Đã xóa ảnh thành công!',
-                                'success'
-                            );
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error occurred during Ajax request:', error);
-                            Swal.fire({
-                                title: "Error",
-                                icon: "error",
-                                text: "Failed to delete the image. Please try again later.",
-                                confirmButtonText: "Đóng",
-                            });
-                        },
-
-                    });
-                } else {
-                    // Remove the last image from carousel
-                    carouselInner.removeChild(lastCarouselItem);
-                    // Remove the last thumbnail
-                    thumbnailContainer.removeChild(lastThumbnailItem);
-
-                    // Update imageIndex
-                    imageIndex--;
-
-                    // If the deleted image was the active one, make the last image active
-                    if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
-                        carouselInner.lastElementChild.classList.add('active');
-                    }
-
-                    Swal.fire(
-                    'Hoàn tất',
-                        'Đã xóa ảnh thành công!',
-                        'success'
-                    );
+                imageIndex--;
+                if (carouselInner.children.length === 0) {
+                    hasExistingImages = false;
+                }
+                if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
+                    carouselInner.lastElementChild.classList.add('active');
                 }
             }
         });
     }
 }
-
 function collectImageDTOs() {
     const imageDTOs = [];
     const carouselItems = document.getElementById('carousel-inner').getElementsByClassName('carousel-item');
@@ -287,11 +225,37 @@ function loadImagesForUpdate(imageDTOs) {
 async function submitUpdateFormAjax() {
     const form = $('#updateTypeRoomForm');
 
+    if (Object.keys(uploadedImages).length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return; // Stop the submission if no image is present
+    } else if (!hasExistingImages) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return;
+    }
+
     // Kiểm tra tính hợp lệ của form
     if (!validateTypeRoomForm()) {
         return; // Dừng lại nếu form không hợp lệ
     }
+    const originalTypeName = document.getElementById("OriginalTypeName").value;
+    const typeName = document.getElementById("TypeName").value;
 
+    try {
+        if (typeName !== originalTypeName) {
+            const exists = await checkTypeNameExists(typeName);
+            if (exists) {
+                showTypeNameError();
+                return; // Dừng lại nếu số phòng đã tồn tại
+            }
+        }
 
     const formData = new FormData();
 
@@ -363,8 +327,11 @@ async function submitUpdateFormAjax() {
         }
 
     });
-
+    } catch (error) {
+        console.log("Error ", error);
+    }
 }
+
 
 function validateTypeRoomForm() {
     // Thiết lập validate cho form
@@ -482,3 +449,35 @@ document.getElementById('scaleY').addEventListener('click', function () {
     const currentScaleY = cropper.getData().scaleY || 1;
     cropper.scaleY(-currentScaleY);
 });
+
+
+function checkTypeNameExists(typeName) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/Manager/TypeRoom/Update?handler=CheckTypeRoomName', // URL tới phương thức kiểm tra
+            type: 'POST',
+            data: { typeRoomName: typeName },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                resolve(response.exists); // Trả về kết quả tồn tại của số phòng qua Promise
+            },
+            error: function () {
+                Swal.fire("Error", "The room number is existed.", "error");
+                reject();
+            }
+        });
+    });
+}
+
+function showTypeNameError() {
+    const TypeNameField = $("#TypeName");
+    TypeNameField.addClass("is-invalid"); // Đánh dấu trường là không hợp lệ
+
+    // Kiểm tra xem đã có thông báo lỗi chưa, nếu chưa thì thêm vào
+    if (!$("#TypeName-error").length) {
+        $("<span id='TypeName-error' class='text-danger'>Tên loại phòng này đã tồn tại.</span>")
+            .insertAfter(TypeNameField);
+    }
+}

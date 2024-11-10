@@ -33,6 +33,12 @@ namespace Bookings_Hotel.Pages
         [BindProperty]
         public List<TypeRoom> TypeRoomsTopBooking { get; set; }
 
+        [BindProperty]
+        public List<Bookings_Hotel.Models.Service> Services { get; set; }
+
+        [BindProperty]
+        public List<Bookings_Hotel.Models.Feedback> Feedbacks { get; set; }
+
         public async Task OnGetAsync()
         {
             NumberRoom = _context.Rooms.ToList().Count;
@@ -63,6 +69,12 @@ namespace Bookings_Hotel.Pages
                     .SelectMany(r => r.OrderDetails)
                     .Count()
                 }).OrderByDescending(x => x.BookingCount).Take(10).Select(x => x.TypeRoom).ToListAsync();
+
+            Services = await _context.Services.Include(x => x.ServiceImages).Where(x => x.Status == ServiceStatus.ACTIVE).ToListAsync();
+
+            Feedbacks = await _context.Feedbacks.Include(f => f.FeedbackImages).Include(f => f.Account)
+                                                .Where(x => x.Account.Status == AccountStatus.ACTIVE)
+                                                .OrderByDescending(x => x.Rating).Take(10).ToListAsync();
         }
     }
 }
