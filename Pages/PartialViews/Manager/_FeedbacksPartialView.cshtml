@@ -1,0 +1,59 @@
+﻿@model Bookings_Hotel.Pages.Manager.Feedbacks.ListModel
+
+<table class="table m-0" id="feedbacksTable">
+    <thead>
+        <tr>
+            @foreach (var header in Model.TableHeaders)
+            {
+                <th scope="col" class="bg-table-head">@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Feedbacks.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Feedbacks[i].Account.Email)
+                </td>
+                <td>
+                    @(string.IsNullOrEmpty(Model.Feedbacks[i].Comment)
+                        ? "Không có mô tả nào"
+                        : (Model.Feedbacks[i].Comment.Length > 100
+                        ? Model.Feedbacks[i].Comment.Substring(0, 100) + "..."
+                        : Model.Feedbacks[i].Comment))
+                </td>
+                <td>@Model.Feedbacks[i].Rating</td>
+                <td>@Model.Feedbacks[i].ReviewDate</td>
+                <td class="action-column">
+                    <div class="dropdown dropstart">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-2-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" asp-page="Detail" asp-route-id="@Model.Feedbacks[i].ReviewId" class="btn btn-primary">
+                                    <i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i>
+                                    Xem chi tiết
+                                </a>
+                            <li>
+                                <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                    <input type="hidden" name="id" value="@Model.Feedbacks[i].ReviewId" />
+                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </li>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+

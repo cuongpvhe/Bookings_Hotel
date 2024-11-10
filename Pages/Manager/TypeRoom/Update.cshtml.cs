@@ -117,6 +117,22 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
                 _context.TypeRoomServices.Add(typeRoomService);
             }
 
+            var existingImages = typeRoom.TypeRoomImages.ToList();
+
+            var imagesToDelete = existingImages.Where(existingImage =>
+                !imageDTOs.Any(dto => dto.ImageId == existingImage.TypeRoomImageId)
+            ).ToList();
+
+            foreach (var imageToDelete in imagesToDelete)
+            {
+                var deleteResult = await OnPostDeleteImageAsync(imageToDelete.TypeRoomImageId);
+                if (deleteResult is not JsonResult || !((JsonResult)deleteResult).Value.ToString().Contains("success"))
+                {
+                    // Nếu xóa ảnh không thành công, trả về lỗi
+                    return new JsonResult(new { success = false, message = "Xóa ảnh thất bại" });
+                }
+            }
+
             // Cập nhật ảnh
             foreach (var imageDTO in imageDTOs)
             {
@@ -127,9 +143,12 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
                     if (existingImage != null && imageDTO.ImageFile != null && imageDTO.ImageFile.Length > 0)
                     {
                         // Delete the old image from Cloudinary
-                        var publicId = existingImage.ImageUrl.Split('/').Last().Split('.').First();
-                        await _cloudinary.DestroyAsync(new DeletionParams(publicId));
 
+                        var deleteResult = await OnPostDeleteImageAsync(existingImage.TypeRoomImageId);
+                        if (deleteResult is not JsonResult || !((JsonResult)deleteResult).Value.ToString().Contains("success"))
+                        {
+                            return new JsonResult(new { success = false, message = "Xóa ảnh cũ thất bại" });
+                        }
                         // Upload the new image
                         var uploadResult = await _cloudinary.UploadAsync(new ImageUploadParams
                         {
@@ -165,7 +184,7 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
 
             return new JsonResult(new { success = true });
         }
-        public async Task<IActionResult> OnPostDeleteLastImageAsync(int id)
+        public async Task<IActionResult> OnPostDeleteImageAsync(int id)
         {
             var image = await _context.TypeRoomImages.FirstOrDefaultAsync(img => img.TypeRoomImageId == id);
             if (image == null)
@@ -173,22 +192,22 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
                 return NotFound();
             }
 
-            var publicId = image.ImageUrl.Split('/').Last().Split('.').First();
+            var publicId = "hotel_images/" + image.ImageUrl.Split('/').Last().Split('.').First();
+
 
             var deletionParams = new DeletionParams(publicId);
             var deletionResult = await _cloudinary.DestroyAsync(deletionParams);
-
-/*            if (deletionResult.Result != "ok")
-            {
-                return BadRequest("Xảy ra lỗi trong quá trình xóa file trên Cloudinary");
-            }*/
 
             _context.TypeRoomImages.Remove(image);
             await _context.SaveChangesAsync();
 
             return new JsonResult(new { success = true, message = "Xóa ảnh thành công" });
         }
-
+        public async Task<IActionResult> OnPostCheckTypeRoomNameAsync(string typeRoomName)
+        {
+            var typeRoomExists = await _context.TypeRooms.AnyAsync(r => r.TypeName == typeRoomName && r.Deleted != true);
+            return new JsonResult(new { exists = typeRoomExists });
+        }
         public class TypeRoomImageDTO
         {
             public int ImageId { get; set; }

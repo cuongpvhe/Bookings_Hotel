@@ -88,7 +88,8 @@ namespace Bookings_Hotel.Pages
                 order.OrderId,
                 order.TotalMoney,
                 order.PaymentCode,
-                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                order.OrderDate.ToString()
             ); 
 
             return Page();
@@ -128,7 +129,8 @@ namespace Bookings_Hotel.Pages
                 order.OrderId,
                 order.TotalMoney,
                 order.PaymentCode,
-                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                order.OrderDate.ToString()
             );
 
            bool isPaymented = CheckTransactions(jsonData, payment);

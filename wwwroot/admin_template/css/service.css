@@ -117,23 +117,21 @@ form label {
     overflow: hidden; /* Ẩn phần nội dung thừa nếu cần */
     object-fit: cover; /* Đảm bảo hình ảnh bao phủ hoàn toàn carousel */
 }
-
 .carousel-transition {
     opacity: 0;
     transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
-
-#carouselExample::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    /* border: 2px solid #ccc;  */
-    box-sizing: border-box; /* Đảm bảo viền tính vào kích thước của phần tử giả */
-    pointer-events: none; /* Đảm bảo phần tử giả không ảnh hưởng đến sự tương tác */
-}
+    #carouselExample::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        /* border: 2px solid #ccc;  */
+        box-sizing: border-box; /* Đảm bảo viền tính vào kích thước của phần tử giả */
+        pointer-events: none; /* Đảm bảo phần tử giả không ảnh hưởng đến sự tương tác */
+    }
 
 .modal-dialog {
     /*max-width: 1000px;*/

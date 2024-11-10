@@ -32,6 +32,7 @@ namespace Bookings_Hotel.Pages
         public int CurrentPage { get; set; } = 1;
 
         public int TotalPages { get; set; }
+
         public const int ItemsPerPage = 10;
 
         // Lists
@@ -41,9 +42,17 @@ namespace Bookings_Hotel.Pages
         [BindProperty(SupportsGet = true)]
         public List<string> SelectedTypeRooms { get; set; } = new List<string>();
 
+        [BindProperty]
         public List<Room> Rooms { get; set; }
+
+        [BindProperty]
         public List<Bookings_Hotel.Models.Service> Services { get; set; }
+
+        [BindProperty]
         public List<Bookings_Hotel.Models.TypeRoom> TypeRooms { get; set; }
+
+        [BindProperty]
+        public List<Bookings_Hotel.Models.Feedback> Feedbacks { get; set; }
 
         // New properties for search
         [BindProperty(SupportsGet = true)]
@@ -61,6 +70,10 @@ namespace Bookings_Hotel.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             Services = await _context.Services.Where(s => s.Status == ServiceStatus.ACTIVE).ToListAsync();
+
+            Feedbacks = await _context.Feedbacks.Include(f => f.FeedbackImages).Include(f => f.Account)
+                                                .Where(x => x.Account.Status == AccountStatus.ACTIVE)
+                                                .OrderByDescending(x => x.Rating).Take(10).ToListAsync();
 
             TypeRooms = await _context.TypeRooms.Where(x => x.Rooms.Count > 0)
                 .Include(tr => tr.Rooms)

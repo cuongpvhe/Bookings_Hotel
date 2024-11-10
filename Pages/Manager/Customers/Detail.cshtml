@@ -4,70 +4,89 @@
     ViewData["Title"] = "Customer Details";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
 
-<div class="d-flex justify-content-center">
-    <div class="card p-4" style="width: 700px;">
-        <h2 class="text-center">Chi tiết người dùng</h2>
+<div class="main-header d-flex justify-content-start">
 
-        <div class="mb-3">
-            <strong>Họ và tên:</strong>
-            <span>@Model.Account.FullName</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>ID:</strong>
-            <span>@Model.Account.AccountId</span>
-        </div>
-        <div class="mb-3">
-            <strong>Tên tài khoản:</strong>
-            <span>@Model.Account.UseName</span>
-        </div>
-        <div class="mb-3">
-            <strong>Mật khẩu:</strong>
-            <span>@Model.Account.Password</span>
-        </div>
-        <div class="mb-3">
-            <strong>Email:</strong>
-            <span>@Model.Account.Email</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Số điện thoại:</strong>
-            <span>@Model.Account.Phonenumber</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Ngày sinh:</strong>
-            <span>@(Model.Account.Dob.HasValue ? Model.Account.Dob.Value.ToShortDateString() : "N/A")</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Giới tính:</strong>
-            <span>@Model.Account.Gender</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Địa chỉ:</strong>
-            <span>@Model.Account.Address</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Trạng thái:</strong>
-            <span>@Model.Account.Status</span>
-        </div>
-
-        <div class="mb-3">
-            <strong>Ngày tạo:</strong>
-            <span>@(Model.Account.CreatedDate.HasValue ? Model.Account.CreatedDate.Value.ToShortDateString() : "N/A")</span>
-        </div>
-        <div class="mb-3">
-            <strong>Ngày tạo:</strong>
-            <span>@(Model.Account.UpdateDate.HasValue ? Model.Account.UpdateDate.Value.ToShortDateString() : "N/A")</span>
-        </div>
-
-        <div class="text-center mt-4">
-            <a asp-page="./List" class="btn btn-secondary me-2">Trở về</a>
-            <a asp-page="./Edit" asp-route-id="@Model.Account.AccountId" class="btn btn-primary">Chỉnh sửa</a>
-        </div>
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Chi tiết người dùng</span>
     </div>
 </div>
+
+<form method="post" class="form-container mt-3 p-3 mx-0">
+    <div class="row row-cols-3 mx-0">
+        <div class="col m-0 p-0">
+
+            <div class="form-group mb-3">
+                <strong>Họ và tên:</strong>
+                <span>@Model.Account.FullName</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>ID:</strong>
+                <span>@Model.Account.AccountId</span>
+            </div>
+            <div class="form-group mb-3">
+                <strong>Tên tài khoản:</strong>
+                <span>@Model.Account.UseName</span>
+            </div>
+            <div class="form-group mb-3">
+                <strong>Mật khẩu:</strong>
+                <span>@Model.Account.Password</span>
+            </div>
+            <div class="form-group mb-3">
+                <strong>Email:</strong>
+                <span>@Model.Account.Email</span>
+            </div>
+
+
+            <div class="form-group mb-3">
+                <strong>Ngày tạo:</strong>
+                <span>@(Model.Account.CreatedDate.HasValue ? Model.Account.CreatedDate.Value.ToShortDateString() : "N/A")</span>
+            </div>
+
+        </div>
+
+        <div class="col m-0 p-0">
+
+            <div class="form-group mb-3">
+                <strong>Số điện thoại:</strong>
+                <span>@Model.Account.Phonenumber</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>Ngày sinh:</strong>
+                <span>@(Model.Account.Dob.HasValue ? Model.Account.Dob.Value.ToShortDateString() : "N/A")</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>Giới tính:</strong>
+                <span>@Model.Account.Gender</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>Địa chỉ:</strong>
+                <span>@Model.Account.Address</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>Trạng thái:</strong>
+                <span>@Model.Account.Status</span>
+            </div>
+
+            <div class="form-group mb-3">
+                <strong>Ngày cập nhật:</strong>
+                <span>@(Model.Account.UpdateDate.HasValue ? Model.Account.UpdateDate.Value.ToShortDateString() : "N/A")</span>
+            </div>
+        </div>
+</div>
+
+    <div class="text-start mt-4">
+        <a asp-page="./List" class="btn btn-outline-dark px-4 rounded-pill me-2">Trở về</a>
+        <a asp-page="./Edit" asp-route-id="@Model.Account.AccountId" class="btn btn-primary px-4 rounded-pill">Chỉnh sửa</a>
+    </div>
+</form>

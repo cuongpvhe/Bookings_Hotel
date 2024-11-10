@@ -1,0 +1,160 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Feedbacks.ListModel
+
+@{
+    ViewData["Title"] = "List Feedback";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/room.css" />
+</head>
+
+<div class="main-header d-flex justify-content-between">
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Danh sách phản hồi</span>
+    </div>
+</div>
+
+<div class="search-bar d-flex justify-content-start">
+    <div class="d-flex justify-content-between">
+        <input id="searchInput" class="form-control me-2" type="search" placeholder="Hãy nhập gì đó..." aria-label="Tìm kiếm">
+        <button class="btn btn-primary me-0" type="button" id="searchButton"><i class="ri-search-line"></i></button>
+    </div>
+</div>
+
+
+<div class="table-container">
+    <!-- List feedback Start -->
+    <div id="feedbackListContainer">
+        @await Html.PartialAsync("PartialViews/Manager/_FeedbacksPartialView", Model)
+    </div>
+    <!-- List feedback End -->
+</div>
+
+
+<div class="pagination-container">
+    <nav aria-label="...">
+        <ul class="pagination m-0">
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage - 1)" data-page="@(Model.CurrentPage - 1)">Previous</a>
+            </li>
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                    <a class="page-link ajax-page" href="?pageIndex=@i" data-page="@i">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link ajax-page" href="?pageIndex=@(Model.CurrentPage + 1)" data-page="@(Model.CurrentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function confirmDelete(button) {
+            const form = button.closest('form');
+            if (confirm("Bạn có chắc chắn muốn xóa phản hồi của khách hàng này không?")) {
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: new FormData(form),
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Xóa tài phản hồi thành công',
+                            icon: 'success',
+                            showConfirmButton: true
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Có lỗi xảy ra khi xóa phản hồi',
+                            icon: 'error',
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+           
+            $('#searchButton').on('click', function () {
+                var query = $('#searchInput').val();
+                loadPageContent({ searchTerm: query, pageIndex: 1 });
+            });
+
+            // Handle pagination clicks
+            $(document).on('click', '.ajax-page', function (e) {
+                e.preventDefault();
+                var pageIndex = $(this).data('page');
+                var query = $('#searchInput').val();
+
+                if (pageIndex > 0) {
+                    loadPageContent({ searchTerm: query, pageIndex: pageIndex });
+                    updatePagination(pageIndex);
+                }
+            });
+
+            function loadPageContent(data) {
+                $.ajax({
+                    url: '/Manager/Feedbacks/List?handler=Search',
+                    type: 'GET',
+                    data: data,
+                    success: function (result) {
+                        $('#feedbackListContainer').html(result);
+                        updatePagination(data.pageIndex);
+                    },
+                    error: function () {
+                        alert('Error fetching data');
+                    }
+                });
+            }
+
+            $(document).on('click', '.ajax-page', function (e) {
+                e.preventDefault();
+                var pageIndex = $(this).data('page');
+                var query = $('#searchInput').val();
+
+                if (pageIndex > 0) {
+                    loadPageContent({
+                        searchTerm: query,
+                        pageIndex: pageIndex
+                    });
+                    updatePagination(pageIndex);
+                }
+            });
+
+            function updatePagination(currentPage) {
+                $('.pagination .page-item').removeClass('active');
+                $('.pagination .page-item').each(function () {
+                    var pageLink = $(this).find('.page-link');
+                    if (pageLink.data('page') == currentPage) {
+                        $(this).addClass('active');
+                    }
+                });
+
+                var prevPageItem = $('.pagination .page-item').first();
+                prevPageItem.toggleClass('disabled', currentPage == 1);
+                prevPageItem.find('.page-link').data('page', parseInt(currentPage) - 1);
+
+                var nextPageItem = $('.pagination .page-item').last();
+                var totalPages = @Model.TotalPages;
+                nextPageItem.toggleClass('disabled', currentPage == totalPages);
+                nextPageItem.find('.page-link').data('page', parseInt(currentPage) + 1);
+            }
+        });
+    </script>
+    <!-- Thêm thư viện SweetAlert2 từ CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+}

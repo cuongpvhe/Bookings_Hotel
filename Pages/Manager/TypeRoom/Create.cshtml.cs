@@ -104,10 +104,10 @@ namespace Bookings_Hotel.Pages.Manager.TypeRoom
             return new JsonResult(new { success = true });
         }
 
-/*        public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
+        public async Task<IActionResult> OnPostCheckTypeRoomNameAsync(string typeRoomName)
         {
-            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
-            return new JsonResult(new { exists = roomExists });
-        }*/
+            var typeRoomExists = await _context.TypeRooms.AnyAsync(r => r.TypeName == typeRoomName && r.Deleted != true);
+            return new JsonResult(new { exists = typeRoomExists });
+        }
     }
 }

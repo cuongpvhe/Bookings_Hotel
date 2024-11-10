@@ -59,7 +59,7 @@ namespace Bookings_Hotel.Pages.Manager
 
         public async Task<IActionResult> OnPostCheckRoomNumberAsync(int roomNumber)
         {
-            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber);
+            var roomExists = await _context.Rooms.AnyAsync(r => r.RoomNumber == roomNumber && r.RoomStatus != RoomStatus.DELETED);
             return new JsonResult(new { exists = roomExists });
         }
     }

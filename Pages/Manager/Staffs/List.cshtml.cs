@@ -3,7 +3,6 @@ using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using static Bookings_Hotel.Pages.Manager.StaffsModel;
 
 namespace Bookings_Hotel.Pages.Manager.Staffs
 {
@@ -41,7 +40,7 @@ namespace Bookings_Hotel.Pages.Manager.Staffs
         public async Task<IActionResult> OnGetSearchAsync(string searchTerm, string status, int pageIndex = 1)
         {
             CurrentPage = pageIndex;
-            IQueryable<Models.Account> staffsQuery = _context.Accounts.Where(x => x.Role.RoleName == RoleName.STAFF);
+            var staffsQuery = _context.Accounts.Where(x => x.Role.RoleName == RoleName.STAFF);
 
             // Filter by search term
             if (!string.IsNullOrWhiteSpace(searchTerm))
