@@ -63,5 +63,20 @@ namespace Bookings_Hotel.Pages.Manager.Feedbacks
 
             return Partial("PartialViews/Manager/_FeedbacksPartialView", this);
         }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var feedback = await _context.Feedbacks.FindAsync(id);
+
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            _context.Feedbacks.Remove(feedback);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage();
+        }
     }
 }
