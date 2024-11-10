@@ -13,6 +13,8 @@ using System.Security.Claims;
 
 namespace Bookings_Hotel.Pages
 {
+    [Route("/Payment")]
+    [Route("/Manager/Payment")]
     public class PaymentModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;

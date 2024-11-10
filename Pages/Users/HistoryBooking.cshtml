@@ -68,8 +68,21 @@
                     <td>
                         @if (string.Equals(order.OrderStatus, "SUCCESS", StringComparison.OrdinalIgnoreCase) && order.OrderDetails.Any(od => od.CheckIn < DateTime.Now))
                         {
-                            <a href="/Users/FeedBack/@order.OrderId/@order.OrderDetails.FirstOrDefault()?.RoomId" class="btn btn-primary">Đánh giá</a>
+                            var orderDetail = order.OrderDetails.FirstOrDefault();
+
+                            if (orderDetail != null)
+                            {
+                                if (orderDetail.HasFeedback)
+                                {
+                                    <span class="text-success">Đã đánh giá</span>
+                                }
+                                else
+                                {
+                                    <a href="/Users/FeedBack/@order.OrderId/@orderDetail.RoomId" class="btn btn-primary">Đánh giá</a>
+                                }
+                            }
                         }
+
 
                     </td>
 

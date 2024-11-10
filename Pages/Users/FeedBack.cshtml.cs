@@ -32,9 +32,6 @@ namespace Bookings_Hotel.Pages.Users
         [BindProperty]
         public string Comment { get; set; }
 
-        [BindProperty]
-        public List<IFormFile> ImageFiles { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
             var accountId = User.Claims.FirstOrDefault(c => c.Type == "AccountId")?.Value;
@@ -57,7 +54,7 @@ namespace Bookings_Hotel.Pages.Users
             await _context.SaveChangesAsync();
 
 
-            return RedirectToPage("/Users/FeedBack", new { orderId = OrderId, roomId = RoomId, success = true });
+            return RedirectToPage("/Users/HistoryBooking");
         }
     }
 }

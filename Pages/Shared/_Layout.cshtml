@@ -16,6 +16,7 @@
     <meta content="" name="keywords">
     <meta content="" name="description">
 
+   
     <!-- Favicon -->
     <link href="~/template/img/favicon.ico" rel="icon">
 
@@ -103,7 +104,7 @@
 
                             @if (User.Identity.IsAuthenticated)
                             {
-                                if (User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF))
+                                if ((User.IsInRole(RoleName.MANAGER) || User.IsInRole(RoleName.STAFF)) && currentPage != "/payment")
                                 {
                                     <script type="text/javascript">
                                         window.location.href = '/Manager/Welcome';
