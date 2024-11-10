@@ -17,7 +17,14 @@
                 <td>@Model.Staffs[i].Email</td>
                 <td>@Model.Staffs[i].FullName</td>
                 <td>@Model.Staffs[i].Phonenumber</td>
-                <td>@Model.Staffs[i].Dob.Value.ToString("dd/MM/yyyy")</td>
+                @if (@Model.Staffs[i].Dob.HasValue)
+                {
+                    <td>@Model.Staffs[i].Dob.Value.ToString("dd/MM/yyyy")</td>
+                }
+                else
+                {
+                    <td>N/A</td>
+                }
                 <td>@Model.Staffs[i].Gender</td>
                 <td>
                     <span class="status-value btn btn-sm @(Model.Staffs[i].Status == "Active" ? "btn-outline-success text-success" : "btn-outline-warning text-warning") rounded-pill text-opacity-75">
@@ -39,11 +46,12 @@
                             <li>
                                 <form method="post" asp-page-handler="Delete" style="display: inline;">
                                     <input type="hidden" name="id" value="@Model.Staffs[i].AccountId" />
-                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                    <a type="button" onclick="confirmDelete(this)" class="dropdown-item">
                                         <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
                                         Xóa
-                                    </button>
+                                    </a>
                                 </form>
+
                             </li>
                         </ul>
                     </div>

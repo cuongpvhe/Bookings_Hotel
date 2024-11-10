@@ -1,4 +1,6 @@
 ﻿using Bookings_Hotel.Models;
+using CloudinaryDotNet.Actions;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,15 +17,16 @@ namespace Bookings_Hotel.Pages.Users
     {
         private readonly HotelBookingSystemContext _context;
         private readonly IHostEnvironment _environment;
-
-        public ProfileModel(HotelBookingSystemContext context, IHostEnvironment environment)
+        private readonly Cloudinary _cloudinary;
+        public ProfileModel(HotelBookingSystemContext context, IHostEnvironment environment, Cloudinary cloudinary)
         {
             _context = context;
             _environment = environment;
+            _cloudinary = cloudinary;
         }
 
         [BindProperty]
-        public Account Account { get; set; }
+        public Models.Account Account { get; set; }
 
         [BindProperty]
         public IFormFile? AvatarUpload { get; set; }
@@ -102,57 +105,102 @@ namespace Bookings_Hotel.Pages.Users
             existingAccount.Address = Account.Address;
 
             // Chỉ xử lý việc tải ảnh lên nếu có
+            /*            if (AvatarUpload != null && AvatarUpload.Length > 0)
+                        {
+                            // Kiểm tra định dạng tệp
+                            var permittedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                            var extension = Path.GetExtension(AvatarUpload.FileName).ToLowerInvariant();
+
+                            if (!permittedExtensions.Contains(extension))
+                            {
+                                ModelState.AddModelError("AvatarUpload", "Vui lòng tải lên tệp hình ảnh hợp lệ (jpg, jpeg, png, gif).");
+                                return Page();
+                            }
+
+
+
+                            // Lưu đường dẫn tới thư mục uploads trong wwwroot
+                            var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads");
+
+                            // Tạo thư mục nếu chưa có
+                            if (!Directory.Exists(uploadsFolder))
+                            {
+                                Directory.CreateDirectory(uploadsFolder);
+                            }
+
+                            // Tạo tên file
+                            var fileName = $"{existingAccount.AccountId}_{Path.GetFileName(AvatarUpload.FileName)}";
+                            var filePath = Path.Combine(uploadsFolder, fileName);
+
+                            // Lưu file lên server
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await AvatarUpload.CopyToAsync(fileStream);
+                            }
+
+                            // Lưu đường dẫn ảnh vào DB
+                            existingAccount.Avatar = $"/uploads/{fileName}";
+
+                            // Cập nhật claim Avatar
+                            var identity = (ClaimsIdentity)User.Identity;
+                            var avatarClaim = identity.FindFirst("Avatar");
+
+                            if (avatarClaim != null)
+                            {
+                                identity.RemoveClaim(avatarClaim);
+                            }
+                            identity.AddClaim(new Claim("Avatar", existingAccount.Avatar));
+
+                            // Reload lại claims của người dùng
+                            await HttpContext.SignInAsync(User);
+                        }*/
             if (AvatarUpload != null && AvatarUpload.Length > 0)
             {
-                // Kiểm tra định dạng tệp
-                var permittedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                var extension = Path.GetExtension(AvatarUpload.FileName).ToLowerInvariant();
 
-                if (!permittedExtensions.Contains(extension))
+                if (!string.IsNullOrEmpty(existingAccount.Avatar))
                 {
-                    ModelState.AddModelError("AvatarUpload", "Vui lòng tải lên tệp hình ảnh hợp lệ (jpg, jpeg, png, gif).");
-                    return Page();
+                    // Extract public ID from the existing URL
+                    var publicId = Path.GetFileNameWithoutExtension(new Uri(existingAccount.Avatar).AbsolutePath);
+                    var deleteParams = new DeletionParams(publicId);
+                    await _cloudinary.DestroyAsync(deleteParams);
                 }
 
-               
 
-                // Lưu đường dẫn tới thư mục uploads trong wwwroot
-                var uploadsFolder = Path.Combine(_environment.ContentRootPath, "wwwroot/uploads");
-
-                // Tạo thư mục nếu chưa có
-                if (!Directory.Exists(uploadsFolder))
+                using (var stream = AvatarUpload.OpenReadStream())
                 {
-                    Directory.CreateDirectory(uploadsFolder);
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(AvatarUpload.FileName, stream),
+                        Folder = "hotel_avatars", // Your Cloudinary folder
+                        PublicId = $"{existingAccount.AccountId}_{Path.GetFileNameWithoutExtension(AvatarUpload.FileName)}"
+                    };
+
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+                    if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        existingAccount.Avatar = uploadResult.SecureUrl.AbsoluteUri;
+
+                        // Update claim
+                        var identity = (ClaimsIdentity)User.Identity;
+                        var avatarClaim = identity.FindFirst("Avatar");
+
+                        if (avatarClaim != null)
+                        {
+                            identity.RemoveClaim(avatarClaim);
+                        }
+                        identity.AddClaim(new Claim("Avatar", existingAccount.Avatar));
+                        await HttpContext.SignInAsync(User);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("AvatarUpload", "Lỗi tải ảnh lên Cloudinary.");
+                        return Page();
+                    }
                 }
-
-                // Tạo tên file
-                var fileName = $"{existingAccount.AccountId}_{Path.GetFileName(AvatarUpload.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                // Lưu file lên server
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await AvatarUpload.CopyToAsync(fileStream);
-                }
-
-                // Lưu đường dẫn ảnh vào DB
-                existingAccount.Avatar = $"/uploads/{fileName}";
-
-                // Cập nhật claim Avatar
-                var identity = (ClaimsIdentity)User.Identity;
-                var avatarClaim = identity.FindFirst("Avatar");
-
-                if (avatarClaim != null)
-                {
-                    identity.RemoveClaim(avatarClaim);
-                }
-                identity.AddClaim(new Claim("Avatar", existingAccount.Avatar));
-
-                // Reload lại claims của người dùng
-                await HttpContext.SignInAsync(User);
             }
 
-            
+
 
 
             existingAccount.UpdateDate = DateTime.Now;

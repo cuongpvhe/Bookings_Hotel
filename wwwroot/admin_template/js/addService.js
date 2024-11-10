@@ -1,244 +1,241 @@
-﻿// Khởi tạo các biến global
-let imageCounter = 0;
-const uploadedImages = new Map();
-let cropper;
+﻿let imageIndex = 0;
+const uploadedImages = {};
 
-// Xử lý khi chọn file ảnh
-function handleImageUpload(event) {
-    const files = event.target.files;
-    if (files && files[0]) {
+let cropper;
+let currentImageIndex;
+let hasExistingImages = false;
+function handleImageUpload(input) {
+    if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            showCropModal(e.target.result);
+            $('#cropImageModal').modal('show');
+            $('#imageToCrop').attr('src', e.target.result);
+            $('#cropImageModal').on('shown.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(document.getElementById('imageToCrop'), {
+                    aspectRatio: 5 / 3,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    scalable: true,
+                    zoomable: true,
+                    ready() {
+                        this.cropper.setCropBoxData({
+                            width: this.cropper.getContainerData().width,
+                            height: this.cropper.getContainerData().height,
+                        });
+                    },
+                });
+            });
+            currentImageIndex = imageIndex;
         };
-        reader.readAsDataURL(files[0]);
+        reader.readAsDataURL(input.files[0]);
+        input.value = ''; // Reset input value to allow re-upload of the same file
     }
+    hasExistingImages = true;
 }
 
-// Hiển thị modal crop ảnh
-function showCropModal(imageSrc) {
-    const modal = $('#cropImageModal');
-    const image = $('#imageToCrop');
+$('#cropImageModal').on('hidden.bs.modal', function () {
+    if (cropper) {
+        cropper.destroy();
+    }
+});
 
-    image.attr('src', imageSrc);
-    modal.modal('show');
-
-    // Khởi tạo cropper khi modal hiển thị
-    modal.on('shown.bs.modal', function () {
-        if (cropper) {
-            cropper.destroy();
-        }
-
-        cropper = new Cropper(image[0], {
-            aspectRatio: 16 / 9,
-            viewMode: 2,
-            autoCropArea: 1,
-            responsive: true,
-            restore: false,
-            guides: true,
-            center: true,
-            highlight: false,
-            cropBoxMovable: true,
-            cropBoxResizable: true,
-            toggleDragModeOnDblclick: false
-        });
-    });
-}
-
-// Xử lý khi nhấn nút lưu ảnh đã crop
-function handleCropSave() {
-    if (!cropper) return;
-
+$('#cropImageButton').on('click', function () {
     const canvas = cropper.getCroppedCanvas({
-        width: 800,
-        height: 450
+        width: 1000,
+        height: 600,
     });
 
     canvas.toBlob(function (blob) {
-        // Tạo URL cho ảnh đã crop
-        const croppedImageUrl = URL.createObjectURL(blob);
-
-        // Thêm ảnh vào carousel
-        addImageToCarousel(croppedImageUrl);
-
-        // Lưu blob để upload
-        const imageFile = new File([blob], `image-${imageCounter}.jpg`, { type: 'image/jpeg' });
-        uploadedImages.set(imageCounter - 1, imageFile);
-
-        // Đóng modal
+        const url = URL.createObjectURL(blob);
+        if (currentImageIndex === imageIndex) {
+            addImageToCarousel(url);
+            addThumbnail(url);
+        } else {
+            updateImageInCarousel(url, currentImageIndex);
+            updateThumbnail(url, currentImageIndex);
+        }
+        uploadedImages[currentImageIndex] = new File([blob], 'croppedImage.jpg', { type: 'image/jpeg' });
         $('#cropImageModal').modal('hide');
     }, 'image/jpeg');
+});
+
+function handleThumbnailChange(input, index) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            $('#cropImageModal').modal('show');
+            $('#imageToCrop').attr('src', e.target.result);
+            $('#cropImageModal').on('shown.bs.modal', function () {
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(document.getElementById('imageToCrop'), {
+                    aspectRatio: 5 / 3,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    scalable: true,
+                    zoomable: true,
+                    ready() {
+                        this.cropper.setCropBoxData({
+                            width: this.cropper.getContainerData().width,
+                            height: this.cropper.getContainerData().height,
+                        });
+                    },
+                });
+            });
+            currentImageIndex = index;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
 
-// Thêm ảnh vào carousel
 function addImageToCarousel(imageSrc) {
     const carouselInner = document.getElementById('carousel-inner');
-    const newDiv = document.createElement('div');
-    newDiv.className = `carousel-item ${imageCounter === 0 ? 'active' : ''}`;
-    newDiv.innerHTML = `
-        <img src="${imageSrc}" class="d-block w-100" alt="Service Image ${imageCounter + 1}">
-    `;
-    carouselInner.appendChild(newDiv);
-    imageCounter++;
+    const div = document.createElement('div');
+    div.className = 'carousel-item' + (imageIndex === 0 ? ' active' : '');
+    div.setAttribute('data-index', imageIndex);
+    div.innerHTML = `<img src="${imageSrc}" class="d-block w-100" alt="Image ${imageIndex}">`;
+    carouselInner.appendChild(div);
+    imageIndex++;
 }
 
-// Xóa ảnh cuối cùng
-function deleteLastImage() {
-    if (imageCounter > 0) {
-        const carouselInner = document.getElementById('carousel-inner');
-        carouselInner.removeChild(carouselInner.lastChild);
-        uploadedImages.delete(imageCounter - 1);
-        imageCounter--;
+function addThumbnail(imageSrc) {
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    const thumbnailItem = document.createElement('div');
+    thumbnailItem.className = 'thumbnail-item';
+    const img = document.createElement('img');
+    img.src = imageSrc;
+    img.alt = `Thumbnail ${imageIndex - 1}`;
+    img.setAttribute('data-index', imageIndex - 1);
+    img.onclick = function () {
+        const carousel = new bootstrap.Carousel(document.getElementById('carouselExample'));
+        carousel.to(parseInt(img.getAttribute('data-index')));
+    };
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.setAttribute('data-index', imageIndex - 1);
+    input.onchange = function () {
+        handleThumbnailChange(this, parseInt(input.getAttribute('data-index')));
+    };
+    const button = document.createElement('button');
+    button.className = 'btn btn-sm btn-primary';
+    button.type = 'button';
+    button.innerText = 'Thay đổi';
+    button.onclick = function () {
+        input.click();
+    };
 
-        // Nếu xóa hết ảnh, reset counter
-        if (imageCounter === 0) {
-            const input = document.getElementById('imageInput');
-            if (input) input.value = '';
+    thumbnailItem.appendChild(img);
+    thumbnailItem.appendChild(button);
+    thumbnailItem.appendChild(input);
+    thumbnailContainer.appendChild(thumbnailItem);
+}
+
+function updateImageInCarousel(imageSrc, index) {
+    const carouselInner = document.getElementById('carousel-inner');
+    const items = carouselInner.getElementsByClassName('carousel-item');
+    for (let item of items) {
+        if (parseInt(item.getAttribute('data-index')) === index) {
+            item.querySelector('img').src = imageSrc;
         }
     }
 }
 
-// Xử lý các nút điều chỉnh ảnh
-document.getElementById('rotateLeft').addEventListener('click', () => cropper?.rotate(-90));
-document.getElementById('rotateRight').addEventListener('click', () => cropper?.rotate(90));
-document.getElementById('scaleX').addEventListener('click', () => {
-    const scaleX = cropper.getData().scaleX;
-    cropper.scaleX(scaleX === 1 ? -1 : 1);
-});
-document.getElementById('scaleY').addEventListener('click', () => {
-    const scaleY = cropper.getData().scaleY;
-    cropper.scaleY(scaleY === 1 ? -1 : 1);
-});
-
-// Xử lý form submit
-document.getElementById('addServiceForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-
-    if (!validateServiceForm()) {
-        return; 
+function updateThumbnail(imageSrc, index) {
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    const imgs = thumbnailContainer.getElementsByTagName('img');
+    for (let img of imgs) {
+        if (parseInt(img.getAttribute('data-index')) === index) {
+            img.src = imageSrc;
+        }
     }
+}
 
-    if (uploadedImages.size === 0) {
+function deleteLastImage() {
+    if (imageIndex > 0) {
+        const carouselInner = document.getElementById('carousel-inner');
+        const thumbnailContainer = document.querySelector('.thumbnail-container');
+
+        carouselInner.removeChild(carouselInner.lastElementChild);
+        thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
+
+        imageIndex--;
+        if (carouselInner.children.length === 0) {
+            hasExistingImages = false;
+        }
+        if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
+            carouselInner.lastElementChild.classList.add('active');
+        }
+    }
+}
+
+document.getElementById('rotateLeft').addEventListener('click', function () {
+    cropper.rotate(-45);
+});
+
+document.getElementById('rotateRight').addEventListener('click', function () {
+    cropper.rotate(45);
+});
+
+document.getElementById('scaleX').addEventListener('click', function () {
+    const currentScaleX = cropper.getData().scaleX || 1;
+    cropper.scaleX(-currentScaleX);
+});
+
+document.getElementById('scaleY').addEventListener('click', function () {
+    const currentScaleY = cropper.getData().scaleY || 1;
+    cropper.scaleY(-currentScaleY);
+});
+
+
+
+function collectImageDTOs() {
+    const imageDTOs = [];
+    for (let index in uploadedImages) {
+        if (uploadedImages.hasOwnProperty(index)) {
+            const formData = new FormData();
+            formData.append('index', index);
+            formData.append('imageFile', uploadedImages[index]);
+            imageDTOs.push({ index: index, imageFile: uploadedImages[index] });
+        }
+    }
+    return imageDTOs;
+}
+
+async function submitFormAjax() {
+    const form = $('#addServiceForm');
+
+    if (!hasExistingImages) {
         Swal.fire({
-            title: 'Warning',
-            text: 'Vui lòng thêm ít nhất một ảnh!',
-            icon: 'warning'
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
         });
         return;
     }
 
-    const formData = new FormData(this);
-    uploadedImages.forEach((file, index) => {
-        formData.append(`ImageFiles`, file);
-    });
-
-    Swal.fire({
-        title: 'Processing',
-        text: 'Chờ xử lý...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    try {
-        const response = await fetch(this.action, {
-            method: 'POST',
-            body: formData
-        });
-        if (response.ok) {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Thêm mới dịch vụ thành công',
-                icon: 'success',
-                showConfirmButton: true
-            }).then(() => {
-                window.location.href = './List';
-            });
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Thêm mới dịch vụ thất bại!',
-                icon: 'error'
-            });
-        }
-    } catch (error) {
-        Swal.fire({
-            title: 'Error!',
-            text: error.message,
-            icon: 'error'
-        });
+    if (!validateServiceForm()) {
+        return;
     }
-});
+    const serviceName = document.getElementById("ServiceName").value;
+    try {
+        const exists = await checkServiceNameExists(serviceName);
+        if (exists) {
+            showServiceNameError();
+        } else {
+            const formData = new FormData();
+            formData.append("ServiceName", document.getElementById("ServiceName").value);
+            formData.append("Price", document.getElementById("Price").value);
+            formData.append("Description", document.getElementById("Description").value);
+            const imageDTOs = collectImageDTOs();
+            imageDTOs.forEach((imageDTO, index) => {
+                formData.append(`Images[${index}][index]`, imageDTO.index);
+                formData.append(`Images[${index}][imageFile]`, imageDTO.imageFile);
+            });
 
-function validateServiceForm() {
-    // Thiết lập validate cho form
-    $('#addServiceForm').validate({
-        rules: {
-            'service.ServiceName': {
-                required: true,
-                minlength: 2,
-                maxlength: 50
-            },
-            'service.Price': {
-                required: true,
-                min: 0.01,
-                number: true
-            },
-            'service.Description': {
-                maxlength: 500
-            },
-/*            'service.Status': {
-                required: true
-            }*/
-        },
-        messages: {
-            'service.ServiceName': {
-                required: "Vui lòng nhập tên dịch vụ.",
-                minlength: "Tên dịch vụ phải dài ít nhất 2 ký tự.",
-                maxlength: "Tên dịch vụ không quá 50 ký tự."
-            },
-            'service.Price': {
-                required: "Vui lòng nhập giá dịch vụ.",
-                min: "Giá phải lơn hơn 0.",
-                number: "Vui lòng nhập giá hợp lệ."
-            },
-            'service.Description': {
-                maxlength: "Mô tả không quá 500 ký tự."
-            },
-/*            'service.Status': {
-                required: "Vui lòng chọn trạng thái."
-            }*/
-        },
-        errorElement: 'span',
-        errorPlacement: function (error, element) {
-            error.addClass('text-danger');
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent()); // For price input with $ symbol
-            } else {
-                error.insertAfter(element);
-            }
-        },
-        highlight: function (element, errorClass, validClass) {
-            $(element).addClass('is-invalid').removeClass('is-valid');
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).addClass('is-valid').removeClass('is-invalid');
-        },
-        submitHandler: function (form) {
-            // Kiểm tra xem có ít nhất một ảnh được tải lên
-            if (uploadedImages.size === 0) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Vui lòng thêm ít nhất 1 ảnh',
-                    icon: 'error'
-                });
-                return false;
-            }
-
-
-            // If all validations pass, show loading state
             Swal.fire({
                 title: 'Processing',
                 text: 'Chờ xử lý...',
@@ -249,55 +246,124 @@ function validateServiceForm() {
                 }
             });
 
-            form.submit();
+            // AJAX request
+            $.ajax({
+                url: '/Manager/Services/Create?handler=Post', // URL tới phương thức xử lý
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                beforeSend: function () {
+                    Swal.fire({
+                        title: 'Đang xử lý',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire("Success", "Thêm dịch vụ thành công!", "success")
+                            .then(() => window.location.href = '/Manager/Services/List'); // Redirect to rooms list
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire("Error", "Đã có lỗi trong quá trình lưu thông tin dịch vụ.", "error");
+                    console.log(xhr.responseText);
+                }
+            });
         }
+    } catch (error) {
+        console.log("Error ", error);
+    }
+};
+
+function validateServiceForm() {
+    // Thiết lập validate cho form
+    $('#addServiceForm').validate({
+        rules: {
+            'ServiceName': {
+                required: true,
+                minlength: 2,
+                maxlength: 50
+            },
+            'Price': {
+                required: true,
+                min: 0,
+                number: true
+            },
+            'Description': {
+                maxlength: 500
+            },
+/*            'service.Status': {
+                required: true
+            }*/
+        },
+        messages: {
+            'ServiceName': {
+                required: "Vui lòng nhập tên dịch vụ.",
+                minlength: "Tên dịch vụ phải dài ít nhất 2 ký tự.",
+                maxlength: "Tên dịch vụ không quá 50 ký tự."
+            },
+            'Price': {
+                required: "Vui lòng nhập giá dịch vụ.",
+                min: "Giá phải lớn hơn hoặc bằng 0.",
+                number: "Vui lòng nhập giá hợp lệ."
+            },
+            'Description': {
+                maxlength: "Mô tả không quá 500 ký tự."
+            },
+/*            'service.Status': {
+                required: "Vui lòng chọn trạng thái."
+            }*/
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+            error.addClass("text-danger");
+            if (element.prop("tagName") === "SELECT") {
+                error.insertAfter(element.next('.select2-container'));
+            } else {
+                error.insertAfter(element);
+            }
+        },
     });
-
-    // Thêm custom method để validate giá tiền
-    $.validator.addMethod("money", function (value, element) {
-        return this.optional(element) || /^\d{0,10}(\.\d{0,2})?$/.test(value);
-    }, "Vui lòng nhập giá hợp lệ.");
-
-
-    // Real-time price formatting
-    $('input[name="service.Price"]').on('input', function () {
-        let value = $(this).val();
-        // Remove non-numeric characters except decimal point
-        value = value.replace(/[^\d.]/g, '');
-        // Ensure only one decimal point
-        value = value.replace(/(\..*)\./g, '$1');
-        // Limit to 2 decimal places
-        const parts = value.split('.');
-        if (parts.length > 1) {
-            parts[1] = parts[1].slice(0, 2);
-            value = parts.join('.');
-        }
-        $(this).val(value);
-    });
-
-    // Add keypress validation for price input
-    $('input[name="service.Price"]').keypress(function (e) {
-        if (e.which != 8 && e.which != 0 && e.which != 46 && (e.which < 48 || e.which > 57)) {
-            return false;
-        }
-    });
-
-    // Initialize tooltips for validation messages
-    $('[data-toggle="tooltip"]').tooltip();
 
     return $('#addServiceForm').valid();
 }
 
-
-$(document).ready(function () {
-    $('#imageInput').on('change', handleImageUpload);
-
-    $('#cropImageButton').on('click', handleCropSave);
-
-    $('#cropImageModal').on('hidden.bs.modal', function () {
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
+function checkServiceNameExists(name) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/Manager/Services/Create?handler=CheckServiceName', // URL tới phương thức kiểm tra
+            type: 'POST',
+            data: { serviceName: name },
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                resolve(response.exists); // Trả về kết quả tồn tại của số phòng qua Promise
+            },
+            error: function () {
+                Swal.fire("Error", "Error", "error");
+                reject();
+            }
+        });
     });
-});
+}
+
+// Hàm hiển thị lỗi nếu số phòng đã tồn tại
+function showServiceNameError() {
+    const serviceNameField = $("#ServiceName");
+    serviceNameField.addClass("is-invalid"); // Use serviceNameField instead of serviceNamerField
+
+    // Check if an error message already exists, and add it if it doesn't
+    if (!$("#ServiceName-error").length) {
+        $("<span id='ServiceName-error' class='text-danger'>Tên dịch vụ này đã tồn tại</span>")
+            .insertAfter(serviceNameField);
+    }
+}

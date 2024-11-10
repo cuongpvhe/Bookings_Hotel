@@ -17,7 +17,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
         }
 
         // List
-        public List<string>? TableHeaders { get; set; } = new List<string> { ".No", "Tên dịch vụ", "Ngày tạo", "Ngày cập nhật", "Trạng thái", "Thao tác" };
+        public List<string>? TableHeaders { get; set; } = new List<string> { "#", "Tên dịch vụ", "Ngày tạo", "Ngày cập nhật", "Trạng thái", "Thao tác" };
         public List<Models.Service> Services { get; set; }
 
         // Pagination
@@ -28,7 +28,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
         public async Task<IActionResult> OnGetAsync(int pageIndex = 1)
         {
             CurrentPage = pageIndex;
-            var servicesQuery = _context.Services.AsQueryable();
+            var servicesQuery = _context.Services.Where(s => s.Status != ServiceStatus.DELETED).AsQueryable();
             TotalPages = (int)Math.Ceiling(await servicesQuery.CountAsync() / (double)PageSize);
 
             Services = await servicesQuery
@@ -55,7 +55,7 @@ namespace Bookings_Hotel.Pages.Manager.Services
         public async Task<IActionResult> OnGetSearchAsync(string searchTerm, string status, int pageIndex = 1)
         {
             CurrentPage = pageIndex;
-            IQueryable<Models.Service> servicesQuery = _context.Services;
+            IQueryable<Models.Service> servicesQuery = _context.Services.Where(s => s.Status != ServiceStatus.DELETED);
 
             // Filter by search term
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -81,22 +81,19 @@ namespace Bookings_Hotel.Pages.Manager.Services
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
             var ser = await _context.Services.FindAsync(id);
-            var serviceImage = _context.ServiceImages.Where(x => x.ServiceId == id);
-
-            foreach (var image in serviceImage)
-            {
-                _context.ServiceImages.Remove(image);
-            }
-
             if (ser == null)
             {
                 return NotFound();
             }
 
-            _context.Services.Remove(ser);
+            ser.Status = ServiceStatus.DELETED;
             await _context.SaveChangesAsync();
 
-            return RedirectToPage();
+            return new JsonResult(new
+            {
+                success = true,
+                message = "Delete Success"
+            });
         }
 
     }

@@ -4,72 +4,117 @@
     ViewData["Title"] = "List customer";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/room.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-<h2>Danh sách người dùng</h2>
-<div class="mb-3">
-    <a asp-page="Create" class="btn btn-success">Tạo mới người dùng</a>
+</head>
+
+
+
+<div class="main-header d-flex justify-content-between">
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Danh sách người dùng</span>
+    </div>
+
+    <div>
+        <a class=" btn btn-primary rounded-pill px-4" asp-page="Create">Tạo mới người dùng</a>
+    </div>
 </div>
-<form method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="searchString" class="form-control" placeholder="Search" value="@Model.SearchString" />
-        <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+<div class="search-bar d-flex justify-content-start align-items-center">
+<form method="get">
+    <div class="d-flex justify-content-start">
+            <div class="m-0 me-2">
+                <input type="text" name="searchString" class="form-control " placeholder="Search" value="@Model.SearchString" />
+            </div>
+            <button class="btn btn-primary me-0" type="submit">Tìm kiếm</button>
     </div>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Họ và tên</th>
-            <th>Email</th>
-            <th>Số điện thoại</th>
-            <th>Ngày sinh</th>
-            <th>Giớ tính</th>
-            <th>Địa chỉ</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var customer in Model.Accounts)
-        {
-            <tr ondblclick="window.location='@Url.Page("Detail", new { id = customer.AccountId })'">
-                <td>@customer.FullName</td>
-                <td>@customer.Email</td>
-                <td>@customer.Phonenumber</td>
-                <td>
-                   @if (customer.Dob.HasValue)
-                  {
-                   @customer.Dob.Value.ToString("dd/MM/yyyy")
-                  }
-                  else
-                  {
-                   <span>N/A</span>
-                  }
-                </td>
-                <td>@customer.Gender</td>
-                <td>@customer.Address</td>
-                <td>
-                    <form method="post" asp-page-handler="ToggleStatus">
-                        <input type="hidden" name="id" value="@customer.AccountId" />
-                        <button type="button" onclick="confirmDeactivation(this)" class="btn @(customer.Status == "Active" ? "btn-success" : "btn-warning")">
-                            @(customer.Status)
-                        </button>
-                    </form>
-                </td>
-                <td>
-                    <a asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">Edit</a>
-                    <form method="post" asp-page-handler="Delete" style="display:inline-block; margin-left: 10px;">
-                        <input type="hidden" name="id" value="@customer.AccountId" />
-                        <button type="button" onclick="confirmDelete(this)" class="btn btn-danger">Delete</button> 
-                    </form>
-
-                </td>
-
-
-
+</div>
+<div class="table-container">
+    <table class="table m-0">
+        <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Ngày sinh</th>
+                <th>Giớ tính</th>
+                <th>Địa chỉ</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var customer in Model.Accounts)
+            {
+                <tr ondblclick="window.location='@Url.Page("Detail", new { id = customer.AccountId })'">
+                    <td>@customer.FullName</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.Phonenumber</td>
+                    <td>
+                        @if (customer.Dob.HasValue)
+                        {
+                            @customer.Dob.Value.ToString("dd/MM/yyyy")
+                        }
+                        else
+                        {
+                            <span>N/A</span>
+                        }
+                    </td>
+                    <td>@customer.Gender</td>
+                    <td>@customer.Address</td>
+                    <td>
+                        <form method="post" asp-page-handler="ToggleStatus">
+                            <input type="hidden" name="id" value="@customer.AccountId" />
+                            <button type="button" onclick="confirmDeactivation(this)" class="btn @(customer.Status == "Active" ? "btn-success" : "btn-warning")">
+                                @(customer.Status)
+                            </button>
+                        </form>
+                    </td>
+@*                     <td>
+                        <a asp-page="Edit" asp-route-id="" class="btn btn-primary">Edit</a>
+                        <form method="post" asp-page-handler="Delete" style="display:inline-block; margin-left: 10px;">
+                            <input type="hidden" name="id" value="@customer.AccountId" />
+                            <button type="button" onclick="confirmDelete(this)" class="btn btn-danger">Delete</button>
+                        </form>
+
+                    </td> *@
+                    <td class="action-column">
+                        <div class="dropdown dropstart">
+                            <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-more-2-fill"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" asp-page="Edit" asp-route-id="@customer.AccountId" class="btn btn-primary">
+                                        <i class="ri-edit-box-line text-primary text-opacity-75 fs-4"></i>
+                                        Cập nhật
+                                    </a>
+                                </li>
+                                <li>
+                                    <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                        <input type="hidden" name="id" value="@customer.AccountId" />
+                                        <a type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                            <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
+                                            Xóa
+                                        </a>
+                                    </form>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="pagination-container " style="height: 55px ">
+    
+</div>
 
 <script>
     function confirmDeactivation(button) {

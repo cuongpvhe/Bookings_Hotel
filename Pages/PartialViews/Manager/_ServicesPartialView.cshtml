@@ -15,15 +15,18 @@
             <tr>
                 <td>@(i + 1)</td>
                 <td>@Model.Services[i].ServiceName</td>
-                <td>@Model.Services[i].CreatedDate</td>
-                <td>@Model.Services[i].UpdateDate</td>
+                <td>@Model.Services[i].CreatedDate.ToString("dd-MM-yyyy")</td>
+                <td>@Model.Services[i].UpdateDate?.ToString("dd-MM-yyyy")</td>
                 <td>
-                    <form method="post" asp-page-handler="ToggleStatus">
-                        <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
-                        <button type="button" onclick="confirmDeactivation(this)" class="btn @(Model.Services[i].Status == "Active" ? "btn-success" : "btn-warning")">
-                            @(Model.Services[i].Status == "Active" ? "Hoạt động" : "Không hoạt động")
-                        </button>
-                    </form>
+
+                    @if (Model.Services[i].Status == "Active")
+                    {
+                        <span class="status-value btn btn-sm btn-outline-success rounded-pill text-opacity-75 text-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="status-value btn btn-sm btn-outline-danger rounded-pill text-opacity-75 text-danger">Không hoạt động</span>
+                    }
                 </td>
                 <td class="action-column">
                     <div class="dropdown dropstart">
@@ -38,13 +41,10 @@
                                 </a>
                             </li>
                             <li>
-                                <form method="post" asp-page-handler="Delete" style="display: inline;">
-                                    <input type="hidden" name="id" value="@Model.Services[i].ServiceId" />
-                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
-                                        <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
-                                        Xóa
-                                    </button>
-                                </form>
+
+                                <a class="dropdown-item" onclick="confirmDelete(@Model.Services[i].ServiceId)">
+                                    <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i> Xóa
+                                </a>
                             </li>
                         </ul>
                     </div>

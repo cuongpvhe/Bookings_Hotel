@@ -5,26 +5,26 @@
     ViewData["Title"] = "Edit Staff";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/add-staff.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<div class="main-header d-flex justify-content-start">
 
-<div class="d-flex justify-content-center">
-    <div class="card p-4" style="width: 700px;">
-        <h2 class="text-center">Cập nhật thông tin nhân viên</h2>
-        <form method="post" id="editStaffForm" enctype="multipart/form-data">
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="form-group mb-3">
-                    <div class="d-flex justify-content-center mb-3">
-                        @if (!string.IsNullOrEmpty(Model.Account.Avatar))
-                        {
-                            <img id="image-preview" src="@Model.Account.Avatar" class=" rounded-circle img- mb-3" style="width: 150px; height: 150px; object-fit: cover;" />
-                        }
-                    </div>
-                    <input type="file" name="AvatarFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
-                </div>
-            </div>
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Cập nhật thông tin nhân viên</span>
+    </div>
+</div>
+
+<form method="post" id="editStaffForm" enctype="multipart/form-data" class="form-container  mt-3 p-3 mx-0">
 
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row row-cols-2 mx-0">
+        <div class="col m-0 ps-1">
             <div class="form-group mb-3">
                 <label asp-for="Account.AccountId" class="control-label">Mã nhân viên</label>
                 <input type="text" asp-for="Account.AccountId" class="form-control" readonly />
@@ -48,16 +48,6 @@
                 <span asp-validation-for="Account.Email" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <label asp-for="Account.UseName" class="control-label">Tên đăng nhập</label>
-                <input asp-for="Account.UseName" class="form-control" />
-                <span asp-validation-for="Account.UseName" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Account.Password" class="control-label">Mật khẩu</label>
-                <input asp-for="Account.Password" class="form-control" />
-                <span asp-validation-for="Account.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
                 <label asp-for="Account.Phonenumber" class="control-label">Số điện thoại</label>
                 <input asp-for="Account.Phonenumber" class="form-control" />
                 <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
@@ -74,6 +64,18 @@
                 <label asp-for="Account.Address" class="control-label">Địa chỉ</label>
                 <input asp-for="Account.Address" class="form-control" />
                 <span asp-validation-for="Account.Address" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col m-0 pe-1">
+            <div class="form-group mb-3">
+                <label asp-for="Account.UseName" class="control-label">Tên đăng nhập</label>
+                <input asp-for="Account.UseName" class="form-control" />
+                <span asp-validation-for="Account.UseName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Account.Password" class="control-label">Mật khẩu</label>
+                <input asp-for="Account.Password" class="form-control" />
+                <span asp-validation-for="Account.Password" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Account.CreatedDate" class="control-label">Ngày tạo</label>
@@ -93,13 +95,30 @@
                 </select>
                 <span asp-validation-for="Account.Status" class="text-danger"></span>
             </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
-                <a asp-page="./List" class="btn btn-secondary">Trở lại</a>
+            <div class="form-group mb-3">
+                <label class="form-label">Ảnh đại diện </label>
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="form-group mb-3">
+                        <div class="d-flex justify-content-center mb-3">
+                            @if (!string.IsNullOrEmpty(Model.Account.Avatar))
+                            {
+                                <img id="image-preview" src="@Model.Account.Avatar" class=" rounded-circle img- mb-3" style="width: 200px; height: 200px; object-fit: cover;" />
+                            }
+                        </div>
+                        <input type="file" name="AvatarFile" class="form-control" accept="image/*" onchange="previewImage(this)" />
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+
+    <div class="d-flex justify-content-center">
+        <a asp-page="./List" class="btn btn-outline-dark px-4 rounded-pill me-2">Hủy</a>
+        <button type="submit" class="btn btn-primary px-4 rounded-pill">Lưu</button>
+    </div>
+</form>
+
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>

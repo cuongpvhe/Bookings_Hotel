@@ -55,7 +55,7 @@
         </select>
     </div>
 
-    <div class="pagination-container">
+    <div>
         <nav aria-label="...">
             <ul class="pagination m-0">
                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
@@ -83,14 +83,14 @@
 
 <script>
     function confirmDelete(roomId) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you really want to delete this room?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            Swal.fire({
+                text: "Bạn muốn xóa phòng này không?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteRoom(roomId);
@@ -111,8 +111,8 @@
             },
             beforeSend: function () {
                 Swal.fire({
-                    title: 'Processing',
-                    text: 'Please wait while we checking...',
+                    title: 'Đang xử lý',
+
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     willOpen: () => {
@@ -127,11 +127,11 @@
                 
             },
             error: function (xhr, status, error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'There was an error processing your checking!'
-                });
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Đã có lỗi xảy ra',
+                        text: 'Đã có lỗi xảy ra trong quá trình xóa'
+                    });
 
                 var errorMessage = xhr.responseText; 
                 console.log(errorMessage);
@@ -204,64 +204,6 @@
         }
     });
 
-        $('#searchButton').on('click', function () {
-            var query = $('#searchInput').val();
-            var status = $('#statusFilter').val();
-            loadPageContent({ searchTerm: query, status: status, pageIndex: 1 });
-        });
-
-        // Handle pagination clicks
-        $(document).on('click', '.ajax-page', function (e) {
-            e.preventDefault();
-            var pageIndex = $(this).data('page');
-            var query = $('#searchInput').val();
-            var status = $('#statusFilter').val();
-
-            if (pageIndex > 0) {
-                loadPageContent({
-                    searchTerm: query,
-                    status: status,
-                    pageIndex: pageIndex
-                });
-                updatePagination(pageIndex);
-            }
-        });
-
-        function loadPageContent(data) {
-            $.ajax({
-                url: '/Manager/Room/List?handler=Search',
-                type: 'GET',
-                data: data,
-                success: function (result) {
-                    $('#roomListContainer').html(result);
-                    updatePagination(data.pageIndex);
-                },
-                error: function () {
-                    alert('Error fetching data');
-                }
-            });
-        }
-
-        function updatePagination(currentPage) {
-            $('.pagination .page-item').removeClass('active');
-            $('.pagination .page-item').each(function () {
-                var pageLink = $(this).find('.page-link');
-                if (pageLink.data('page') == currentPage) {
-                    $(this).addClass('active');
-                }
-            });
-
-            var prevPageItem = $('.pagination .page-item').first();
-            prevPageItem.toggleClass('disabled', currentPage == 1);
-            prevPageItem.find('.page-link').data('page', parseInt(currentPage) - 1);
-
-            var nextPageItem = $('.pagination .page-item').last();
-            var totalPages = @Model.TotalPages;
-            nextPageItem.toggleClass('disabled', currentPage == totalPages);
-            nextPageItem.find('.page-link').data('page', parseInt(currentPage) + 1);
-        }
-    });
-
-
+      
 </script>
 }
