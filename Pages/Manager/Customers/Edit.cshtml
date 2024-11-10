@@ -4,71 +4,81 @@
     ViewData["Title"] = "Edit customer";
     Layout = "~/Pages/Shared/Layout_admin.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="~/admin_template/css/add-room.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
 
-<div class="d-flex justify-content-center">
-    <div class="card p-4" style="width: 700px;">
-        <h2 class="text-center">Edit Customer</h2>
+<div class="main-header d-flex justify-content-start">
 
-        <form method="post">
-            <input type="hidden" asp-for="Account.AccountId" />
-            <input type="hidden" asp-for="Account.RoleId" />
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.UseName" class="form-label">Tài khoản:</label>
-                <input type="text" asp-for="Account.UseName" class="form-control" />
-                <span asp-validation-for="Account.UseName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Password" class="form-label">Mật khẩu:</label>
-                <input type="text" asp-for="Account.Password" class="form-control" />
-                <span asp-validation-for="Account.Password" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Email" class="form-label">Email:</label>
-                <input type="email" asp-for="Account.Email" class="form-control" />
-                <span asp-validation-for="Account.Email" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.FullName" class="form-label">Họ và tên:</label>
-                <input type="text" asp-for="Account.FullName" class="form-control" />
-                <span asp-validation-for="Account.FullName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Dob" class="form-label">Ngày sinh:</label>
-                <input type="date" asp-for="Account.Dob" class="form-control" />
-                <span asp-validation-for="Account.Dob" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Phonenumber" class="form-label">Số điện thoại:</label>
-                <input type="text" asp-for="Account.Phonenumber" class="form-control" />
-                <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Gender" class="form-label">Giới tính:</label>
-                <select asp-for="Account.Gender" class="form-select">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-                <span asp-validation-for="Account.Gender" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="Account.Address" class="form-label">Địa chỉ:</label>
-                <input type="text" asp-for="Account.Address" class="form-control" />
-                <span asp-validation-for="Account.Address" class="text-danger"></span>
-            </div>
-
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Lưu thay đôi</button>
-                <a asp-page="./List" class="btn btn-secondary">Trở về</a>
-            </div>
-        </form>
+    <div>
+        <span class="mb-0 fs-3 fw-bold">Cập nhật thông tin người dùng</span>
     </div>
 </div>
+
+<form method="post" class="form-container mt-3 p-3 row row-cols-2 mx-0">
+    <div class="col m-0 p-0">
+        <input type="hidden" asp-for="Account.AccountId" />
+        <input type="hidden" asp-for="Account.RoleId" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.UseName" class="form-label">Tài khoản:</label>
+            <input type="text" asp-for="Account.UseName" class="form-control" />
+            <span asp-validation-for="Account.UseName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Password" class="form-label">Mật khẩu:</label>
+            <input type="text" asp-for="Account.Password" class="form-control" />
+            <span asp-validation-for="Account.Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Email" class="form-label">Email:</label>
+            <input type="email" asp-for="Account.Email" class="form-control" />
+            <span asp-validation-for="Account.Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.FullName" class="form-label">Họ và tên:</label>
+            <input type="text" asp-for="Account.FullName" class="form-control" />
+            <span asp-validation-for="Account.FullName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Dob" class="form-label">Ngày sinh:</label>
+            <input type="date" asp-for="Account.Dob" class="form-control" />
+            <span asp-validation-for="Account.Dob" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Phonenumber" class="form-label">Số điện thoại:</label>
+            <input type="text" asp-for="Account.Phonenumber" class="form-control" />
+            <span asp-validation-for="Account.Phonenumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Gender" class="form-label">Giới tính:</label>
+            <select asp-for="Account.Gender" class="form-select">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <span asp-validation-for="Account.Gender" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Account.Address" class="form-label">Địa chỉ:</label>
+            <input type="text" asp-for="Account.Address" class="form-control" />
+            <span asp-validation-for="Account.Address" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex justify-content-center">
+            <a asp-page="./List" class="btn btn-outline-dark px-4 rounded-pill me-2">Hủy</a>
+
+            <button type="submit" class="btn btn-primary px-4 rounded-pill">Lưu</button>
+        </div>
+    </div>
+
+</form>

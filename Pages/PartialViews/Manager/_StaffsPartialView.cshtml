@@ -39,11 +39,12 @@
                             <li>
                                 <form method="post" asp-page-handler="Delete" style="display: inline;">
                                     <input type="hidden" name="id" value="@Model.Staffs[i].AccountId" />
-                                    <button type="button" onclick="confirmDelete(this)" class="dropdown-item">
+                                    <a type="button" onclick="confirmDelete(this)" class="dropdown-item">
                                         <i class="ri-delete-bin-line text-danger text-opacity-75 fs-4"></i>
                                         Xóa
-                                    </button>
+                                    </a>
                                 </form>
+
                             </li>
                         </ul>
                     </div>

@@ -3,10 +3,7 @@ const uploadedImages = {};
 
 let cropper;
 let currentImageIndex;
-const urlParams = new URLSearchParams(window.location.search);
-
-const typeId = urlParams.get('id');
-
+let hasExistingImages = false;
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -36,6 +33,7 @@ function handleImageUpload(input) {
         reader.readAsDataURL(input.files[0]);
         input.value = ''; // Reset input value to allow re-upload of the same file
     }
+    hasExistingImages = true;
 }
 
 $('#cropImageModal').on('hidden.bs.modal', function () {
@@ -190,7 +188,7 @@ function deleteLastImage() {
                 // Send the imageId to the server if it's not zero
                 if (imageId && parseInt(imageId) !== 0) {
                     $.ajax({
-                        url: '/Manager/TypeRoom/Update?handler=DeleteLastImage',
+                        url: '/Manager/Services/Edit?handler=DeleteLastImage',
                         type: 'POST',
                         data: { id: imageId },
                         headers: {
@@ -283,186 +281,139 @@ function loadImagesForUpdate(imageDTOs) {
             imageIndex = imageDTO.index + 1;
         }
     });
+
+    hasExistingImages = imageDTOs.length > 0;
 }
-async function submitUpdateFormAjax() {
-    const form = $('#updateTypeRoomForm');
+async function submitEditFormAjax() {
+    const form = $('#editServiceForm');
+    console.log(hasExistingImages);
+    if (Object.keys(uploadedImages).length === 0 ) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return; // Stop the submission if no image is present
+    } else if (!hasExistingImages) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return;
+    }
 
     // Kiểm tra tính hợp lệ của form
-    if (!validateTypeRoomForm()) {
+    if (!validateServiceForm()) {
         return; // Dừng lại nếu form không hợp lệ
     }
-    const originalTypeName = document.getElementById("OriginalTypeName").value;
-    const typeName = document.getElementById("TypeName").value;
-
+    const originalServiceName = document.getElementById("OriginalServiceName").value;
+    const serviceName = document.getElementById("ServiceName").value;
     try {
-        if (typeName !== originalTypeName) {
-            const exists = await checkTypeNameExists(typeName);
+        if (serviceName !== originalServiceName) {
+            const exists = await checkServiceNameExists(serviceName);
             if (exists) {
-                showTypeNameError();
+                showServiceNameError();
                 return; // Dừng lại nếu số phòng đã tồn tại
             }
         }
+        const formData = new FormData();
 
-    const formData = new FormData();
+        // Thu thập dữ liệu từ form
+        formData.append("ServiceId", document.getElementById("ServiceId").value);
+        formData.append("ServiceName", document.getElementById("ServiceName").value);
+        formData.append("Price", document.getElementById("Price").value);
+        formData.append("Status", document.getElementById("Status").value);
 
-    // Thu thập dữ liệu từ form
-    formData.append("TypeId", typeId);
-    formData.append("TypeName", document.getElementById("TypeName").value);
-    formData.append("NumberOfBeds", document.getElementById("NumberOfBeds").value);
+        formData.append("Description", document.getElementById("Description").value);
 
-    formData.append("NumberOfAdults", document.getElementById("NumberOfAdults").value);
-    formData.append("MaximumExtraAdult", document.getElementById("MaximumExtraAdult").value);
-    formData.append("ExtraAdultFee", document.getElementById("ExtraAdultFee").value);
+        const imageDTOs = collectImageDTOs();
 
-    formData.append("NumberOfChildren", document.getElementById("NumberOfChildren").value);
-    formData.append("MaximumExtraChild", document.getElementById("MaximumExtraChild").value);
-    formData.append("ExtraChildFee", document.getElementById("ExtraChildFee").value);
-
-    formData.append("Price", document.getElementById("Price").value);
-    formData.append("Description", document.getElementById("Description").value);
-
-    // Thu thập danh sách dịch vụ từ Select2
-    const selectedServices = $('#Services').val();
-    if (selectedServices) {
-        selectedServices.forEach(serviceId => {
-            formData.append("ServiceIds", serviceId);
-        });
-        console.log("Selected Services: ", selectedServices);
-    }
-
-    // Thu thập các ảnh từ collectImageDTOs
-    const imageDTOs = collectImageDTOs();
- 
-    imageDTOs.forEach((imageDTO, index) => {
-        formData.append(`imageDTOS[${index}].index`, imageDTO.index);
-        formData.append(`imageDTOS[${index}].imageId`, imageDTO.imageId);
-        if (imageDTO.imageFile) {
-            formData.append(`imageDTOS[${index}].imageFile`, imageDTO.imageFile);
-        }
-    });
-
-    // AJAX request
-    $.ajax({
-        url: '/Manager/TypeRoom/Update?handler=Post', // URL tới phương thức xử lý
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        headers: {
-            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-        },
-        beforeSend: function () {
-            Swal.fire({
-                title: 'Đang xử lý',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                willOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        },
-        success: function (response) {
-            if (response.success) {
-                Swal.fire("Success", "Cập nhật thông tin loại phòng  thành công!", "success")
-                    .then(() => window.location.href = '/Manager/TypeRoom/List'); // Redirect to rooms list
+        imageDTOs.forEach((imageDTO, index) => {
+            formData.append(`imageDTOS[${index}].index`, imageDTO.index);
+            formData.append(`imageDTOS[${index}].imageId`, imageDTO.imageId);
+            if (imageDTO.imageFile) {
+                formData.append(`imageDTOS[${index}].imageFile`, imageDTO.imageFile);
             }
-        },
-        error: function (xhr, status, error) {
-            Swal.fire("Error", "Đã có lỗi trong quá trình cập nhật thông tin loại phòng.", "error");
-            console.log(xhr.responseText);
-        }
+        });
 
-    });
+        // AJAX request
+        $.ajax({
+            url: '?handler=Post', // URL tới phương thức xử lý
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            },
+            beforeSend: function () {
+                Swal.fire({
+                    title: 'Đang xử lý',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire("Success", "Cập nhật thông tin dịch vụ  thành công!", "success")
+                        .then(() => window.location.href = '/Manager/Services/List'); // Redirect to rooms list
+                }
+            },
+            error: function (xhr, status, error) {
+                Swal.fire("Error", "Đã có lỗi trong quá trình cập nhật thông tin dịch vụ.", "error");
+                console.log(xhr.responseText);
+            }
+
+        });
     } catch (error) {
         console.log("Error ", error);
     }
 }
 
-
-function validateTypeRoomForm() {
+function validateServiceForm() {
     // Thiết lập validate cho form
-    $('#updateTypeRoomForm').validate({
+    $('#editServiceForm').validate({
         rules: {
-            TypeName: {
+            'ServiceName': {
                 required: true,
+                minlength: 2,
+                maxlength: 50
             },
-            NumberOfBeds: {
+            'Price': {
                 required: true,
-                min: 1,
+                min: 0.01,
+                number: true
             },
-            NumberOfAdults: {
-                required: true,
-                min: 1,
+            'Description': {
+                maxlength: 500
             },
-            MaximumExtraAdult: {
-                required: true,
-                min: 0,
-            },
-            ExtraAdultFee: {
-                required: true,
-                min: 0,
-            },
-            NumberOfChildren: {
-                required: true,
-                min: 0,
-            },
-            MaximumExtraChild: {
-                required: true,
-                min: 0,
-            },
-            ExtraChildFee: {
-                required: true,
-                min: 0,
-            },
-            Price: {
-                required: true,
-                min: 0
-            },
-/*            ServiceIds: {
-                required: true
-            },*/
-
+            /*            'service.Status': {
+                            required: true
+                        }*/
         },
         messages: {
-            TypeName: {
-                required: "Hãy nhập tên loại phòng.",
+            'ServiceName': {
+                required: "Vui lòng nhập tên dịch vụ.",
+                minlength: "Tên dịch vụ phải dài ít nhất 2 ký tự.",
+                maxlength: "Tên dịch vụ không quá 50 ký tự."
             },
-            NumberOfBeds: {
-                required: "Hãy nhập số giường.",
-                min: "Số giường ít nhất phải phải là 1.",
+            'Price': {
+                required: "Vui lòng nhập giá dịch vụ.",
+                min: "Giá phải lơn hơn 0.",
+                number: "Vui lòng nhập giá hợp lệ."
             },
-            NumberOfAdults: {
-                required: "Hãy nhập số người lớn.",
-                min: "Số người lớn ít nhất là 1.",
+            'Description': {
+                maxlength: "Mô tả không quá 500 ký tự."
             },
-            MaximumExtraAdult: {
-                required: "Hãy nhập số người lớn được phép thêm.",
-                min: "Số người lớn được phép thêm nhỏ nhất là 0.",
-            },
-            ExtraAdultFee: {
-                required: "Hãy nhập phụ phí thêm người lớn.",
-                min: "Phụ phí nhỏ nhất là 0.",
-            },
-            NumberOfChildren: {
-                required: "Hãy nhập số trẻ em.",
-                min: "Số trẻ ít nhất là 0.",
-            },
-            MaximumExtraChild: {
-                required: "Hãy nhập số trẻ em được phép thêm.",
-                min: "Số trẻ em được phép thêm nhỏ nhất là 0.",
-            },
-            ExtraChildFee: {
-                required: "Hãy nhập phụ phí thêm trẻ em.",
-                min: "Phụ phí nhỏ nhất là 0.",
-            },
-            Price: {
-                required: "Hãy nhập giá phòng.",
-                min: "Giá phòng nhỏ nhất là 0."
-            },
-/*            ServiceIds: {
-                required: "Hãy chọn ít nhất 1 dịch vụ."
-            },*/
+            /*            'service.Status': {
+                            required: "Vui lòng chọn trạng thái."
+                        }*/
         },
+        errorElement: 'span',
         errorPlacement: function (error, element) {
             error.addClass("text-danger");
             if (element.prop("tagName") === "SELECT") {
@@ -470,11 +421,10 @@ function validateTypeRoomForm() {
             } else {
                 error.insertAfter(element);
             }
-        }
+        },
     });
 
-    // Trả về kết quả hợp lệ của form
-    return $('#updateTypeRoomForm').valid();
+    return $('#editServiceForm').valid();
 }
 
 
@@ -495,14 +445,115 @@ document.getElementById('scaleY').addEventListener('click', function () {
     const currentScaleY = cropper.getData().scaleY || 1;
     cropper.scaleY(-currentScaleY);
 });
+function deleteLastImage() {
+    if (imageIndex > 0) {
+        Swal.fire({
+            title: 'Bạn có chắc không?',
+            text: "Bạn có thực sự muốn xóa hình ảnh cuối cùng?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const carouselInner = document.getElementById('carousel-inner');
+                const thumbnailContainer = document.querySelector('.thumbnail-container');
 
+                const lastCarouselItem = carouselInner.lastElementChild;
+                const lastThumbnailItem = thumbnailContainer.lastElementChild;
 
-function checkTypeNameExists(typeName) {
+                const imageId = lastCarouselItem.getAttribute('data-image-id');
+                const dataIndex = lastCarouselItem.getAttribute('data-index');
+
+                // Send the imageId to the server if it's not zero
+                if (imageId && parseInt(imageId) !== 0) {
+                    $.ajax({
+                        url: '?handler=DeleteLastImage',
+                        type: 'POST',
+                        data: { id: imageId },
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        beforeSend: function () {
+                            Swal.fire({
+                                title: 'Đang xử lý',
+                                allowOutsideClick: false,
+                                showConfirmButton: false,
+                                willOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function (response) {
+                            // Remove the last image from carousel
+                            carouselInner.removeChild(lastCarouselItem);
+                            // Remove the last thumbnail
+                            thumbnailContainer.removeChild(lastThumbnailItem);
+
+                            // Update imageIndex
+                            imageIndex--;
+                            if (carouselInner.children.length === 0) {
+                                hasExistingImages = false;
+                            }
+                            console.log(hasExistingImages);
+                            console.log(Object.keys(uploadedImages).length === 0);
+                            // If the deleted image was the active one, make the last image active
+                            if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
+                                carouselInner.lastElementChild.classList.add('active');
+                            }
+
+                            Swal.fire(
+                                'Hoàn tất',
+                                'Đã xóa ảnh thành công!',
+                                'success'
+                            );
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error occurred during Ajax request:', error);
+                            Swal.fire({
+                                title: "Error",
+                                icon: "error",
+                                text: "Failed to delete the image. Please try again later.",
+                                confirmButtonText: "Đóng",
+                            });
+                        },
+
+                    });
+                } else {
+                    // Remove the last image from carousel
+                    carouselInner.removeChild(lastCarouselItem);
+                    // Remove the last thumbnail
+                    thumbnailContainer.removeChild(lastThumbnailItem);
+
+                    // Update imageIndex
+                    imageIndex--;
+                    if (carouselInner.children.length === 0) {
+                        hasExistingImages = false;
+                    }
+                    // If the deleted image was the active one, make the last image active
+                    if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
+                        carouselInner.lastElementChild.classList.add('active');
+                    }
+
+                    Swal.fire(
+                        'Hoàn tất',
+                        'Đã xóa ảnh thành công!',
+                        'success'
+                    );
+                }
+            }
+        });
+    }
+}
+
+function checkServiceNameExists(name) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            url: '/Manager/TypeRoom/Update?handler=CheckTypeRoomName', // URL tới phương thức kiểm tra
+            url: '/Manager/Services/Create?handler=CheckServiceName', // URL tới phương thức kiểm tra
             type: 'POST',
-            data: { typeRoomName: typeName },
+            data: { serviceName: name },
             headers: {
                 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
             },
@@ -510,20 +561,21 @@ function checkTypeNameExists(typeName) {
                 resolve(response.exists); // Trả về kết quả tồn tại của số phòng qua Promise
             },
             error: function () {
-                Swal.fire("Error", "The room number is existed.", "error");
+                Swal.fire("Error", "Error", "error");
                 reject();
             }
         });
     });
 }
 
-function showTypeNameError() {
-    const TypeNameField = $("#TypeName");
-    TypeNameField.addClass("is-invalid"); // Đánh dấu trường là không hợp lệ
+// Hàm hiển thị lỗi nếu số phòng đã tồn tại
+function showServiceNameError() {
+    const serviceNameField = $("#ServiceName");
+    serviceNameField.addClass("is-invalid"); // Use serviceNameField instead of serviceNamerField
 
-    // Kiểm tra xem đã có thông báo lỗi chưa, nếu chưa thì thêm vào
-    if (!$("#TypeName-error").length) {
-        $("<span id='TypeName-error' class='text-danger'>Tên loại phòng này đã tồn tại.</span>")
-            .insertAfter(TypeNameField);
+    // Check if an error message already exists, and add it if it doesn't
+    if (!$("#ServiceName-error").length) {
+        $("<span id='ServiceName-error' class='text-danger'>Tên dịch vụ này đã tồn tại</span>")
+            .insertAfter(serviceNameField);
     }
 }
