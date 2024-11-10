@@ -9,6 +9,7 @@ const uploadedImages = {};
 
 let cropper;
 let currentImageIndex;
+let hasExistingImages = false;
 
 function handleImageUpload(input) {
     if (input.files && input.files[0]) {
@@ -39,6 +40,8 @@ function handleImageUpload(input) {
         reader.readAsDataURL(input.files[0]);
         input.value = ''; // Reset input value to allow re-upload of the same file
     }
+    hasExistingImages = true;
+
 }
 
 $('#cropImageModal').on('hidden.bs.modal', function () {
@@ -168,7 +171,9 @@ function deleteLastImage() {
         thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
 
         imageIndex--;
-
+        if (carouselInner.children.length === 0) {
+            hasExistingImages = false;
+        }
         if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
             carouselInner.lastElementChild.classList.add('active');
         }
@@ -209,6 +214,14 @@ function collectImageDTOs() {
 }
 async function submitFormAjax() {
         const form = $('#addTypeRoomForm');
+    if (!hasExistingImages) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu ảnh',
+            text: 'Vui lòng thêm ít nhất một ảnh trước khi lưu.',
+        });
+        return;
+    }
 
         // Kiểm tra tính hợp lệ của form
         if (!validateTypeRoomForm()) {

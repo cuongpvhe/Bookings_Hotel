@@ -162,104 +162,6 @@ function updateThumbnail(imageSrc, index) {
     }
 }
 
-
-function deleteLastImage() {
-    if (imageIndex > 0) {
-        Swal.fire({
-            title: 'Bạn có chắc không?',
-            text: "Bạn có thực sự muốn xóa hình ảnh cuối cùng?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Có',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const carouselInner = document.getElementById('carousel-inner');
-                const thumbnailContainer = document.querySelector('.thumbnail-container');
-
-                const lastCarouselItem = carouselInner.lastElementChild;
-                const lastThumbnailItem = thumbnailContainer.lastElementChild;
-
-                const imageId = lastCarouselItem.getAttribute('data-image-id');
-                const dataIndex = lastCarouselItem.getAttribute('data-index');
-
-                // Send the imageId to the server if it's not zero
-                if (imageId && parseInt(imageId) !== 0) {
-                    $.ajax({
-                        url: '/Manager/Services/Edit?handler=DeleteLastImage',
-                        type: 'POST',
-                        data: { id: imageId },
-                        headers: {
-                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        beforeSend: function () {
-                            Swal.fire({
-                                title: 'Đang xử lý',
-                                allowOutsideClick: false,
-                                showConfirmButton: false,
-                                willOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                        },
-                        success: function (response) {
-                            // Remove the last image from carousel
-                            carouselInner.removeChild(lastCarouselItem);
-                            // Remove the last thumbnail
-                            thumbnailContainer.removeChild(lastThumbnailItem);
-
-                            // Update imageIndex
-                            imageIndex--;
-
-                            // If the deleted image was the active one, make the last image active
-                            if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
-                                carouselInner.lastElementChild.classList.add('active');
-                            }
-
-                            Swal.fire(
-                                'Hoàn tất',
-                                'Đã xóa ảnh thành công!',
-                                'success'
-                            );
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error occurred during Ajax request:', error);
-                            Swal.fire({
-                                title: "Error",
-                                icon: "error",
-                                text: "Failed to delete the image. Please try again later.",
-                                confirmButtonText: "Đóng",
-                            });
-                        },
-
-                    });
-                } else {
-                    // Remove the last image from carousel
-                    carouselInner.removeChild(lastCarouselItem);
-                    // Remove the last thumbnail
-                    thumbnailContainer.removeChild(lastThumbnailItem);
-
-                    // Update imageIndex
-                    imageIndex--;
-
-                    // If the deleted image was the active one, make the last image active
-                    if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
-                        carouselInner.lastElementChild.classList.add('active');
-                    }
-
-                    Swal.fire(
-                    'Hoàn tất',
-                        'Đã xóa ảnh thành công!',
-                        'success'
-                    );
-                }
-            }
-        });
-    }
-}
-
 function collectImageDTOs() {
     const imageDTOs = [];
     const carouselItems = document.getElementById('carousel-inner').getElementsByClassName('carousel-item');
@@ -458,92 +360,22 @@ function deleteLastImage() {
             cancelButtonText: 'Hủy'
         }).then((result) => {
             if (result.isConfirmed) {
-                const carouselInner = document.getElementById('carousel-inner');
-                const thumbnailContainer = document.querySelector('.thumbnail-container');
+                
+                    const carouselInner = document.getElementById('carousel-inner');
+                    const thumbnailContainer = document.querySelector('.thumbnail-container');
 
-                const lastCarouselItem = carouselInner.lastElementChild;
-                const lastThumbnailItem = thumbnailContainer.lastElementChild;
+                    carouselInner.removeChild(carouselInner.lastElementChild);
+                    thumbnailContainer.removeChild(thumbnailContainer.lastElementChild);
 
-                const imageId = lastCarouselItem.getAttribute('data-image-id');
-                const dataIndex = lastCarouselItem.getAttribute('data-index');
-
-                // Send the imageId to the server if it's not zero
-                if (imageId && parseInt(imageId) !== 0) {
-                    $.ajax({
-                        url: '?handler=DeleteLastImage',
-                        type: 'POST',
-                        data: { id: imageId },
-                        headers: {
-                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        beforeSend: function () {
-                            Swal.fire({
-                                title: 'Đang xử lý',
-                                allowOutsideClick: false,
-                                showConfirmButton: false,
-                                willOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                        },
-                        success: function (response) {
-                            // Remove the last image from carousel
-                            carouselInner.removeChild(lastCarouselItem);
-                            // Remove the last thumbnail
-                            thumbnailContainer.removeChild(lastThumbnailItem);
-
-                            // Update imageIndex
-                            imageIndex--;
-                            if (carouselInner.children.length === 0) {
-                                hasExistingImages = false;
-                            }
-                            console.log(hasExistingImages);
-                            console.log(Object.keys(uploadedImages).length === 0);
-                            // If the deleted image was the active one, make the last image active
-                            if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
-                                carouselInner.lastElementChild.classList.add('active');
-                            }
-
-                            Swal.fire(
-                                'Hoàn tất',
-                                'Đã xóa ảnh thành công!',
-                                'success'
-                            );
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error occurred during Ajax request:', error);
-                            Swal.fire({
-                                title: "Error",
-                                icon: "error",
-                                text: "Failed to delete the image. Please try again later.",
-                                confirmButtonText: "Đóng",
-                            });
-                        },
-
-                    });
-                } else {
-                    // Remove the last image from carousel
-                    carouselInner.removeChild(lastCarouselItem);
-                    // Remove the last thumbnail
-                    thumbnailContainer.removeChild(lastThumbnailItem);
-
-                    // Update imageIndex
                     imageIndex--;
                     if (carouselInner.children.length === 0) {
                         hasExistingImages = false;
                     }
-                    // If the deleted image was the active one, make the last image active
+
                     if (carouselInner.querySelector('.carousel-item.active') === null && imageIndex > 0) {
                         carouselInner.lastElementChild.classList.add('active');
                     }
-
-                    Swal.fire(
-                        'Hoàn tất',
-                        'Đã xóa ảnh thành công!',
-                        'success'
-                    );
                 }
-            }
         });
     }
 }
@@ -568,7 +400,6 @@ function checkServiceNameExists(name) {
     });
 }
 
-// Hàm hiển thị lỗi nếu số phòng đã tồn tại
 function showServiceNameError() {
     const serviceNameField = $("#ServiceName");
     serviceNameField.addClass("is-invalid"); // Use serviceNameField instead of serviceNamerField
@@ -579,3 +410,4 @@ function showServiceNameError() {
             .insertAfter(serviceNameField);
     }
 }
+
