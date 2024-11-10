@@ -44,7 +44,7 @@ namespace Bookings_Hotel.Models
             {
                 entity.ToTable("Account");
 
-                entity.HasIndex(e => e.Email, "UQ__Account__A9D1053448870F61")
+                entity.HasIndex(e => e.Email, "UQ__Account__A9D10534587EA889")
                     .IsUnique();
 
                 entity.Property(e => e.AccountId).HasColumnName("Account_ID");
@@ -84,7 +84,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<Feedback>(entity =>
             {
                 entity.HasKey(e => e.ReviewId)
-                    .HasName("PK__Feedback__F85DA7EB003FE3E3");
+                    .HasName("PK__Feedback__F85DA7EBD7835DBE");
 
                 entity.ToTable("Feedback");
 
@@ -121,7 +121,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<FeedbackImage>(entity =>
             {
                 entity.HasKey(e => e.ReviewImageId)
-                    .HasName("PK__Feedback__E961B89C39C7D8C7");
+                    .HasName("PK__Feedback__E961B89CBD1F44CB");
 
                 entity.ToTable("Feedback_Image");
 
@@ -176,7 +176,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.HasKey(e => e.OdId)
-                    .HasName("PK__Order_De__3D0CE883756B73AA");
+                    .HasName("PK__Order_De__3D0CE883CC3D42B5");
 
                 entity.ToTable("Order_Details");
 
@@ -273,6 +273,8 @@ namespace Bookings_Hotel.Models
 
                 entity.Property(e => e.ServiceImageId).HasColumnName("Service_Image_ID");
 
+                entity.Property(e => e.ImageIndex).HasColumnName("Image_Index");
+
                 entity.Property(e => e.ImageUrl).HasColumnName("Image_Url");
 
                 entity.Property(e => e.ServiceId).HasColumnName("Service_ID");
@@ -286,7 +288,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoom>(entity =>
             {
                 entity.HasKey(e => e.TypeId)
-                    .HasName("PK__Type_Roo__FE90DDFEF6D7FAA2");
+                    .HasName("PK__Type_Roo__FE90DDFE44C52D7E");
 
                 entity.ToTable("Type_Room");
 
@@ -338,7 +340,7 @@ namespace Bookings_Hotel.Models
             modelBuilder.Entity<TypeRoomService>(entity =>
             {
                 entity.HasKey(e => e.TypeServiceId)
-                    .HasName("PK__Type_Roo__B51908659DE8C568");
+                    .HasName("PK__Type_Roo__B51908656BD1117B");
 
                 entity.ToTable("Type_Room_Service");
 
