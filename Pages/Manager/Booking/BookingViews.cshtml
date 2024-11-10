@@ -96,8 +96,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating date" data-target-input="nearest">
-                                    <label for="checkinDate" class="form-label">Ngày nhận phòng</label>
-                                    <input type="date" id="checkinDate" name="checkIn" />
+                                    <input type="date" class="form-control" id="checkinDate"placeholder="Ngày Nhận Phòng" />
+                                    <label for="checkinDate">Ngày Nhận Phòng</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -131,14 +131,14 @@
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            @* <div class="col-12 d-none">
                                 <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
                                     <small class="text-center text-primary" id="extra-adult-alert">*Lưu ý: Thêm Người Lớn Sẽ Tính Thêm <b>@Model.typeRoomDTO.ExtraAdultFeeString VNĐ/Người</b></small>
                                 </div>
                                 <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
                                     <small class="text-center text-primary" id="extra-child-alert">*Lưu ý: Thêm Trẻ Em Sẽ Tính Thêm <b>@Model.typeRoomDTO.ExtraChildFeeString VNĐ/Người</b></small>
                                 </div>
-                            </div>
+                            </div> *@
 
                             <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
                                 <h6 class="section-title text-center text-primary text-uppercase">Tổng Tiền</h6>
@@ -195,7 +195,16 @@
                     data: { floorId },
                     success: function (data) {
                         data.forEach(room => {
-                            $('#roomSelect').append(`<option value="${room.roomId}">${room.roomNumber}</option>`);
+                            $('#roomSelect').append(`<option value="${room.roomId}" 
+                            data-price="${room.price}" 
+                            data-maxAdult="${room.maxAdult}" 
+                            data-maxChild="${room.maxChild}"
+                            data-extraAdultFee="${room.extraAdultFee}" 
+                            data-extraChildFee="${room.extraChildFee}"
+                            data-maxExtraAdult="${room.maxExtraAdult}"
+                            data-maxExtraChild="${room.maxExtraChild}">
+                            ${room.roomNumber}
+                            </option>`);
                         });
                     },
                     error: function (xhr, status, error) {
@@ -312,6 +321,7 @@
 
 
         $(document).ready(function () {
+            createOrder();
             $(document).on('click', '#bookingStatusGrid td', function () {
                 // Lấy ngày từ thuộc tính data-date (đã được định dạng theo yyyy-mm-dd)
                 const selectedDate = $(this).data('date');
@@ -328,14 +338,16 @@
 
                 // Tạo đối tượng ngày từ selectedDate
                 const selectedDateObj = new Date(selectedDate);
-                selectedDateObj.setHours(0, 0, 0, 0);  // Đảm bảo chỉ so sánh ngày, không phải giờ
+                selectedDateObj.setHours(0, 0, 0, 0);
 
                 // Kiểm tra điều kiện nếu ngày lớn hơn hôm nay và có trạng thái "Còn Trống"
                 if ($(this).text().includes("Còn Trống") && selectedDateObj >= today) {
                     // Nếu ngày chọn là ngày trong tương lai và phòng còn trống, thực hiện đặt phòng
                     // Bạn có thể mở Modal hoặc tiếp tục xử lý khác tại đây
                     $('#bookingModal').modal('show');
-                    $('#checkinDate').val(selectedDate);
+                    const checkinDate = new Date(selectedDateObj);
+                    checkinDate.setDate(checkinDate.getDate() + 2);
+                    $('#checkinDate').val(checkinDate.toISOString().split('T')[0]);
                 } else if ($(this).text().includes("Còn Trống") && selectedDateObj < today) {
                     // Nếu ngày chọn đã qua hoặc là hôm nay, hiển thị thông báo lỗi
                     alert("Ngày đã chọn không hợp lệ. Vui lòng chọn ngày trong tương lai.");
@@ -371,29 +383,45 @@ function calculateTotal() {
         return;
     }
 
-    // Lấy giá trị từ data-* attributes trong roomData
-    const roomData = $('#roomData');
-    const roomPricePerDay = parseFloat(roomData.data('price-per-day')) || 0;
-    const maxAdult = parseInt(roomData.data('max-adult')) || 0;
-    const maxChild = parseInt(roomData.data('max-child')) || 0;
-    const extraAdultFee = parseFloat(roomData.data('extra-adult-fee')) || 0;
-    const extraChildFee = parseFloat(roomData.data('extra-child-fee')) || 0;
+            // Lấy giá trị từ data-* attributes trong thẻ option đã chọn
+            const selectedOption = $('#roomSelect option:selected');
 
-    // Kiểm tra các giá trị trong console
-    console.log("Room Price Per Day:", roomPricePerDay);
-    console.log("Max Adult:", maxAdult);
-    console.log("Max Child:", maxChild);
-    console.log("Extra Adult Fee:", extraAdultFee);
+            // Lấy các giá trị từ thuộc tính data của option đã chọn
+            const roomPricePerDay = parseFloat(selectedOption.data('price')) || 0;
+            const maxAdult = parseInt(selectedOption.data('maxadult')) || 0;
+            const maxChild = parseInt(selectedOption.data('maxchild')) || 0;
+            const maxExtraAdult = parseInt(selectedOption.data('maxextraadult')) || 0;
+            const maxExtraChild = parseInt(selectedOption.data('maxextrachild')) || 0;
+            const extraAdultFee = parseFloat(selectedOption.data('extraadultfee')) || 0;
+            const extraChildFee = parseFloat(selectedOption.data('extrachildfee')) || 0;
+
+            // Sử dụng hoặc hiển thị các giá trị
+            console.log("Room Price per Day:", roomPricePerDay);
+            console.log("Max Adult:", maxAdult);
+            console.log("Max Child:", maxChild);
+            console.log("Extra Adult Fee:", extraAdultFee);
     console.log("Extra Child Fee:", extraChildFee);
+                                    console.log("maxExtraAdult:", maxExtraAdult);
+            console.log("maxExtraChild:", maxExtraChild);
 
     // Tính số ngày ở
     const days = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
     let totalRoomCost = days * roomPricePerDay;
 
-    const numberOfAdult = parseInt($('#NumberOfAdult').val()) || 0;
-    const numberOfChild = parseInt($('#NumberOfChild').val()) || 0;
-
+    let numberOfAdult = parseInt($('#NumberOfAdult').val()) || 0;
+            let numberOfChild = parseInt($('#NumberOfChild').val()) || 0;
+    if (numberOfAdult > maxAdult + maxExtraAdult) {
+      alert('Quá số lượng người lớn');
+        $('#NumberOfAdult').val(maxAdult + maxExtraAdult);
+        numberOfAdult = maxAdult + maxExtraAdult;
+    }
+    if (numberOfChild > maxChild + maxExtraChild) {
+        alert('Quá số lượng trẻ em');
+        $('#NumberOfChild').val(maxChild + maxExtraChild);
+        numberOfChild = maxChild + maxExtraChild;
+    }
     // Tính phụ phí nếu có
+    
     let extraAdult = Math.max(0, numberOfAdult - maxAdult);
     let extraChild = Math.max(0, numberOfChild - maxChild);
 
@@ -407,8 +435,8 @@ function calculateTotal() {
     const totalCostWithVAT = totalRoomCost * (1 + vatRate);
 
     // Hiển thị tổng tiền
-    $('#total-money').text(totalRoomCost.toLocaleString('vi-VN') + ' VNĐ');
-    $('#total-money-vat').text(totalCostWithVAT.toLocaleString('vi-VN') + ' VNĐ');
+    $('#total-money').text(totalRoomCost.toLocaleString('vi-VN'));
+    $('#total-money-vat').text(totalCostWithVAT.toLocaleString('vi-VN'));
 
     // Hiển thị phụ phí nếu có
     if (extraAdult > 0) {
@@ -427,7 +455,54 @@ function calculateTotal() {
         $('#surcharge-child-alert').addClass('d-none');
     }
 }
+        
+function createOrder(){
+            $('#submit-order-btn').on('click', function () {
+                const data = {
+                    RoomId: parseInt($('#roomSelect option:selected').val() || 0),
+                        CheckInDate: $('#checkinDate').val(),
+                        CheckOutDate: $('#checkout').val(),
+                    SpecialRequest: $('#message').val() || '',
+                        NumberOfAdult: $('#NumberOfAdult').val(),
+                        NumberOfChild: $('#NumberOfChild').val(),
+                };
+                $.ajax({
+                    url: '@Url.Page("BookingViews", "CreateBooking")',
+                    type: 'POST',
+                    data: data,
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    beforeSend: function () {
+                       
+                    },
+                    success: function (response) {
+                        // On success, redirect to the payment page
+                        if (response.success) {
+                            window.location.href = '/Payment?oid=' + response.data;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt Phòng Thất Bại',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        if (xhr.status === 401) {  // Detect 401 Unauthorized error
+                            window.location.href = '/login';
+                        } else {
+                           
+                        }
 
+                        var errorMessage = xhr.responseText; // Log the server error message
+                        console.log(errorMessage);
+                    }
+                });
+
+            });
+}
     </script>
 
 

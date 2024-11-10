@@ -1,6 +1,7 @@
 ﻿using Bookings_Hotel.DTO;
 using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -56,12 +57,25 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             }
 
             var rooms = _context.Rooms
-                .Where(r => r.Floor == floorId.Value)
-                .Select(r => new
-                {
-                    roomId = r.RoomId,
-                    roomNumber = r.RoomNumber
-                }).ToList();
+                .Join(_context.TypeRooms,
+                      r => r.TypeId,
+                      tr => tr.TypeId,
+                      (r, tr) => new
+                      {
+                          roomId = r.RoomId,
+                          roomNumber = r.RoomNumber,
+                          price = tr.Price,
+                          floor = r.Floor,
+                          maxAdult = tr.NumberOfAdult,
+                          maxChild = tr.NumberOfChild,
+                          maxExtraAdult = tr.MaximumExtraAdult,
+                          maxExtraChild = tr.MaximumExtraChild,
+                          extraAdultFee = tr.ExtraAdultFee,
+                          extraChildFee = tr.ExtraChildFee
+                      })
+                .Where(r => r.floor == floorId.Value)
+                .ToList();
+
 
             return new JsonResult(rooms);
         }
@@ -156,13 +170,13 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             return Page();
         }
 
-        public async Task<IActionResult> OnPostCreateBooking(string CheckInDate, string CheckOutDate, string? SpecialRequest, int TypeId, int NumberOfAdult, int NumberOfChild)
+        public async Task<IActionResult> OnPostCreateBooking(string CheckInDate, string CheckOutDate, string? SpecialRequest, int RoomId, int NumberOfAdult, int NumberOfChild)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var accountId = User.FindFirstValue("AccountId");
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
                 return BadRequest("Ngày Check-In không hợp lệ.");
@@ -173,22 +187,10 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 return BadRequest("Ngày Check-Out không hợp lệ.");
             }
 
-            var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == TypeId);
-            if (typeRoom == null)
-            {
-                return BadRequest("Phòng không tìm thấy");
-            }
+            Bookings_Hotel.Models.Room room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
 
-            var lstRoom = this.getValidLstRoom(typeRoom, checkinDate, checkout);
-            if (!lstRoom.Any())
-            {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "Tất cả các phòng đã được thuê. Vui lòng chọn ngày khác.",
-                    data = lstRoom.Count
-                });
-            }
+            Bookings_Hotel.Models.TypeRoom typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
+           
 
             var extraAdultNumber = Math.Max(0, (decimal)(NumberOfAdult - typeRoom.NumberOfAdult));
             var extraChildNumber = Math.Max(0, (decimal)(NumberOfChild - typeRoom.NumberOfChild));
@@ -209,6 +211,7 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 Note = SpecialRequest,
+                AccountId = int.Parse(accountId),
                 PaymentCode = GenerateRandomPaymentCode(),
                 NumberExtraAdult = (int?)extraAdultNumber,
                 NumberExtraChild = (int?)extraChildNumber,
@@ -219,7 +222,7 @@ namespace Bookings_Hotel.Pages.Manager.Booking
 
             var orderDetails = new OrderDetail
             {
-                RoomId = lstRoom.First().RoomId,
+                RoomId = room.RoomId,
                 CheckIn = checkinDate,
                 CheckOut = checkout,
                 OrderId = newOrder.OrderId,
@@ -236,20 +239,7 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             });
         }
 
-        public List<Bookings_Hotel.Models.Room> getValidLstRoom(Bookings_Hotel.Models.TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate)
-        {
-            //Get Valid Room By TypeID
-            return _context.Rooms
-                .Where(r => r.TypeId == typeRoom.TypeId)
-                .Where(r => r.RoomStatus.Equals(RoomStatus.ACTIVE))
-                .Where(room => !_context.OrderDetails.Any(
-                    od => od.RoomId == room.RoomId &&
-                   ((checkinDate >= od.CheckIn && checkinDate < od.CheckOut) ||
-                    (checkoutDate > od.CheckIn && checkoutDate <= od.CheckOut) ||
-                    (checkinDate <= od.CheckIn && checkoutDate >= od.CheckOut))))
-                .OrderBy(room => room.RoomNumber)
-                .ToList();
-        }
+
 
         public static string GenerateRandomPaymentCode()
         {
