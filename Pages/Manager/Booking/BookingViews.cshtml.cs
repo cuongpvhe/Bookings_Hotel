@@ -123,22 +123,17 @@ namespace Bookings_Hotel.Pages.Manager.Booking
         }
         public async Task<IActionResult> OnGetCreateBookingAsync(int? id)
         {
-            // Get parameter
             if (id == null)
             {
                 return NotFound();
             }
 
-            // Process
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
             if (typeRoom == null)
             {
-                return NotFound("Not Found ID");
+                return NotFound("Không tìm thấy phòng");
             }
 
-
-
-            // Map to DTO
             var typeRoomDTO = new TypeRoomDTO
             {
                 TypeId = typeRoom.TypeId,
@@ -157,80 +152,71 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 ExtraChildFeeString = ((decimal)typeRoom.ExtraChildFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
             };
 
-
-
+            typeRoomDTO = typeRoomDTO;
             return Page();
         }
 
-
         public async Task<IActionResult> OnPostCreateBooking(string CheckInDate, string CheckOutDate, string? SpecialRequest, int TypeId, int NumberOfAdult, int NumberOfChild)
         {
-            // Validate input
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Convert Dates
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
-                return BadRequest("Invalid Check-In Date format.");
+                return BadRequest("Ngày Check-In không hợp lệ.");
             }
 
             if (!DateTime.TryParse(CheckOutDate, out DateTime checkout))
             {
-                return BadRequest("Invalid Check-Out Date format.");
+                return BadRequest("Ngày Check-Out không hợp lệ.");
             }
 
-            // Get TypeRoom by TypeId
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == TypeId);
             if (typeRoom == null)
             {
-                return BadRequest("Room not found");
+                return BadRequest("Phòng không tìm thấy");
             }
 
-            // Get available rooms
             var lstRoom = this.getValidLstRoom(typeRoom, checkinDate, checkout);
             if (!lstRoom.Any())
             {
                 return new JsonResult(new
                 {
                     success = false,
-                    message = "Tất Cả Các Phòng Đã Được Thuê. Vui Lòng Chọn Ngày Khác",
+                    message = "Tất cả các phòng đã được thuê. Vui lòng chọn ngày khác.",
                     data = lstRoom.Count
                 });
             }
 
-            // Calculate total money
-            var extraAdultNumber = NumberOfAdult - typeRoom.NumberOfAdult < 0 ? 0 : NumberOfAdult - typeRoom.NumberOfAdult;
-            var extraChildNumber = NumberOfChild - typeRoom.NumberOfChild < 0 ? 0 : NumberOfChild - typeRoom.NumberOfChild;
+            var extraAdultNumber = Math.Max(0, (decimal)(NumberOfAdult - typeRoom.NumberOfAdult));
+            var extraChildNumber = Math.Max(0, (decimal)(NumberOfChild - typeRoom.NumberOfChild));
             var numberOfNights = (checkout - checkinDate).Days;
 
             if (numberOfNights <= 0)
             {
-                throw new ArgumentException("Check-out date must be later than check-in date.");
+                throw new ArgumentException("Ngày check-out phải sau ngày check-in.");
             }
 
-            decimal? totalMoney = (typeRoom.Price * numberOfNights + extraAdultNumber * typeRoom.ExtraAdultFee + extraChildNumber * typeRoom.ExtraChildFee) * 1.1m;
+            decimal totalMoney = (decimal)((typeRoom.Price * numberOfNights) + (extraAdultNumber * typeRoom.ExtraAdultFee) + (extraChildNumber * typeRoom.ExtraChildFee));
+            totalMoney = totalMoney * 1.1m;
 
-            // Create Order (without AccountId if not needed)
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
-                TotalMoney = (decimal)totalMoney,
+                TotalMoney = totalMoney,
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
                 Note = SpecialRequest,
                 PaymentCode = GenerateRandomPaymentCode(),
-                NumberExtraAdult = extraAdultNumber,
-                NumberExtraChild = extraChildNumber,
+                NumberExtraAdult = (int?)extraAdultNumber,
+                NumberExtraChild = (int?)extraChildNumber,
             };
 
-            // Add Order to the context
             _context.Orders.Add(newOrder);
             await _context.SaveChangesAsync();
 
-            // Create OrderDetails and link to the order
             var orderDetails = new OrderDetail
             {
                 RoomId = lstRoom.First().RoomId,
@@ -239,19 +225,16 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 OrderId = newOrder.OrderId,
             };
 
-            // Add OrderDetail to the context
             _context.OrderDetails.Add(orderDetails);
             await _context.SaveChangesAsync();
 
-            // Return result
             return new JsonResult(new
             {
                 success = true,
-                message = "Received successfully!",
+                message = "Đặt phòng thành công!",
                 data = newOrder.OrderId
             });
         }
-
 
         public List<Bookings_Hotel.Models.Room> getValidLstRoom(Bookings_Hotel.Models.TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate)
         {
