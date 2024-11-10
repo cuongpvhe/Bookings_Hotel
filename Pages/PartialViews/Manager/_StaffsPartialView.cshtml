@@ -17,7 +17,14 @@
                 <td>@Model.Staffs[i].Email</td>
                 <td>@Model.Staffs[i].FullName</td>
                 <td>@Model.Staffs[i].Phonenumber</td>
-                <td>@Model.Staffs[i].Dob.Value.ToString("dd/MM/yyyy")</td>
+                @if (@Model.Staffs[i].Dob.HasValue)
+                {
+                    <td>@Model.Staffs[i].Dob.Value.ToString("dd/MM/yyyy")</td>
+                }
+                else
+                {
+                    <td>N/A</td>
+                }
                 <td>@Model.Staffs[i].Gender</td>
                 <td>
                     <span class="status-value btn btn-sm @(Model.Staffs[i].Status == "Active" ? "btn-outline-success text-success" : "btn-outline-warning text-warning") rounded-pill text-opacity-75">

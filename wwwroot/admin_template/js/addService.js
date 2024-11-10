@@ -294,7 +294,7 @@ function validateServiceForm() {
             },
             'Price': {
                 required: true,
-                min: 0.01,
+                min: 0,
                 number: true
             },
             'Description': {
@@ -312,7 +312,7 @@ function validateServiceForm() {
             },
             'Price': {
                 required: "Vui lòng nhập giá dịch vụ.",
-                min: "Giá phải lơn hơn 0.",
+                min: "Giá phải lớn hơn hoặc bằng 0.",
                 number: "Vui lòng nhập giá hợp lệ."
             },
             'Description': {
