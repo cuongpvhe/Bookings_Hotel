@@ -1,145 +1,82 @@
 ﻿using Bookings_Hotel.DTO;
 using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Claims;
+using static Bookings_Hotel.Pages.Manager.RoomsModel;
 
 namespace Bookings_Hotel.Pages.Manager.Booking
 {
-    [Authorize(Policy = "StaffOnly")]
-    public class BookingViewsModel : PageModel
+    public class BookingStaffModel : PageModel
     {
         private readonly HotelBookingSystemContext _context;
-
-        public BookingViewsModel(HotelBookingSystemContext context)
+        public BookingStaffModel(HotelBookingSystemContext context)
         {
             _context = context;
         }
         [BindProperty(SupportsGet = true)]
+        public int? roomId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? selectedDate { get; set; }
+
+        [BindProperty(SupportsGet = true)]
         [ValidateNever]
-        public TypeRoomDTO typeRoomDTO { get; set; }
-        [BindProperty]
-        public int RoomId { get; set; }
-        [BindProperty]
-        public List<SelectListItem> Floors { get; set; }
-        public int SelectedFloor { get; set; }
+        public TypeRoomDTO typeRoomDTOGet { get; set; }
 
 
-        public void OnGet()
+
+        public async Task<IActionResult> OnGetAsync(int? id, int? roomId, DateTime? selectedDate)
         {
-            Floors = _context.Rooms
-                .Select(r => r.Floor)
-                .Distinct()
-                .OrderBy(floorId => floorId)
-                .Select(floorId => new SelectListItem
-                {
-                    Value = floorId.ToString(),
-                    Text = "Tầng " + floorId
-                }).ToList();
-        }
-
-
-        public JsonResult OnGetGetRoomsByFloor(int? floorId)
-        {
-            if (floorId == null)
-            {
-                return new JsonResult(new List<object>());
-            }
-
-            var rooms = _context.Rooms
-                .Where(r => r.Floor == floorId.Value)
-                .Select(r => new
-                {
-                    roomId = r.RoomId,
-                    roomNumber = r.RoomNumber
-                }).ToList();
-
-            return new JsonResult(rooms);
-        }
-
-
-        public JsonResult OnGetGetBookingStatus(int roomId, int? month = null, int? year = null)
-        {
-            // Set current month and year if not provided
-            month ??= DateTime.Now.Month;
-            year ??= DateTime.Now.Year;
-
-            // Fetch orders with status SUCCESS or WAITING_PAYMENT
-            var orders = _context.Orders
-                .Where(o => o.OrderStatus == OrderStatus.SUCCESS || o.OrderStatus == OrderStatus.WAITING_PAYMENT)
-                .Select(o => o.OrderId)
-                .ToList();
-
-            // Retrieve booking dates including waiting payment orders
-            var bookedDates = _context.OrderDetails
-                .Where(od => od.RoomId == roomId &&
-                             orders.Contains(od.OrderId ?? 0) &&
-                             ((od.CheckIn.Year == year && od.CheckIn.Month <= month && od.CheckOut.Month >= month && od.CheckOut.Year == year) ||
-                              (od.CheckIn.Year == year && od.CheckIn.Month == month) ||
-                              (od.CheckOut.Year == year && od.CheckOut.Month == month)))
-                .Select(od => new
-                {
-                    CheckIn = od.CheckIn,
-                    CheckOut = od.CheckOut,
-                    OrderId = od.OrderId,
-                    OrderStatus = _context.Orders
-                        .Where(o => o.OrderId == od.OrderId)
-                        .Select(o => o.OrderStatus)
-                        .FirstOrDefault()
-                })
-                .ToList();
-
-            return new JsonResult(bookedDates);
-        }
-
-
-        public JsonResult OnGetGetBookingDetails(int orderId)
-        {
-            var bookingDetail = _context.OrderDetails
-                .Where(od => od.OrderId == orderId)
-                .Select(od => new
-                {
-                    RoomNumber = od.Room.RoomNumber,
-                    RoomType = od.Room.Type.TypeName,
-                    OrderId = od.OrderId,
-                    UserId = od.Order.AccountId,
-                    UserName = od.Order.Account.FullName,
-                    CheckIn = od.CheckIn,
-                    CheckOut = od.CheckOut,
-                    TotalAmount = od.Order.TotalMoney
-                })
-                .FirstOrDefault();
-
-            return new JsonResult(bookingDetail);
-        }
-        public async Task<IActionResult> OnGetCreateBookingAsync(int? id)
-        {
-            // Get parameter
+            //Get parameter
             if (id == null)
             {
                 return NotFound();
             }
 
-            // Process
+            //Checklogin
+            var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
+
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return RedirectToPage("/Home/Login", new { returnUrl = "/Booking?id=" + id });
+            }
+
+            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+            if (account == null)
+            {
+                return RedirectToPage("/Home/Login", new { returnUrl = "/Booking?id=" + id });
+            }
+
+            //Process
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == id);
+
             if (typeRoom == null)
             {
                 return NotFound("Not Found ID");
             }
 
+            //Get Service
+            var lstServiceName = _context.TypeRoomServices
+                    .Where(trs => trs.TypeId == typeRoom.TypeId)
+                    .Join(_context.Services,
+                        trs => trs.ServiceId,
+                        s => s.ServiceId,
+                        (trs, s) => s.ServiceName)
+            .ToList();
 
+            //Get Image
+            var lstImage = _context.TypeRoomImages
+                .Where(tri => tri.TypeId == typeRoom.TypeId)
+                .OrderBy(tri => tri.ImageIndex)
+                .Select(tri => tri.ImageUrl)
+                .ToList();
 
-            // Map to DTO
-            var typeRoomDTO = new TypeRoomDTO
+            typeRoomDTOGet = new TypeRoomDTO
             {
                 TypeId = typeRoom.TypeId,
                 TypeName = typeRoom.TypeName,
@@ -149,12 +86,14 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 Price = typeRoom.Price,
                 PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
                 PriceVATString = (typeRoom.Price * 1.1m).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstService = lstServiceName,
                 MaximumExtraAdult = typeRoom.MaximumExtraAdult,
                 MaximumExtraChild = typeRoom.MaximumExtraChild,
                 ExtraAdultFee = typeRoom.ExtraAdultFee,
                 ExtraChildFee = typeRoom.ExtraChildFee,
                 ExtraAdultFeeString = ((decimal)typeRoom.ExtraAdultFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
                 ExtraChildFeeString = ((decimal)typeRoom.ExtraChildFee).ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                LstImage = lstImage,
             };
 
 
@@ -163,34 +102,49 @@ namespace Bookings_Hotel.Pages.Manager.Booking
         }
 
 
-        public async Task<IActionResult> OnPostCreateBooking(string CheckInDate, string CheckOutDate, string? SpecialRequest, int TypeId, int NumberOfAdult, int NumberOfChild)
+        public async Task<IActionResult> OnPostSubmitOrder(string CheckInDate, string CheckOutDate, string? SpecialRequest, int TypeId, int NumberOfAdult, int NumberOfChild)
         {
+            // Checklogin
+            var accountId = User.FindFirstValue("AccountId"); // Assumes "AccountId" is stored in the claims
+
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return Unauthorized();
+            }
+
+            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+            if (account == null)
+            {
+                return Unauthorized();
+            }
+
             // Validate input
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Convert Dates
+            //Convert Date
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
                 return BadRequest("Invalid Check-In Date format.");
             }
 
-            if (!DateTime.TryParse(CheckOutDate, out DateTime checkout))
+            if (!DateTime.TryParse(CheckOutDate, out DateTime checkoutDate))
             {
                 return BadRequest("Invalid Check-Out Date format.");
             }
 
-            // Get TypeRoom by TypeId
+            //Get Type by TypeID(from header request)
             var typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == TypeId);
             if (typeRoom == null)
             {
                 return BadRequest("Room not found");
             }
 
-            // Get available rooms
-            var lstRoom = this.getValidLstRoom(typeRoom, checkinDate, checkout);
+            //Get {quantity} Valid Room
+            var lstRoom = this.getValidLstRoom(typeRoom, checkinDate, checkoutDate);
+
             if (!lstRoom.Any())
             {
                 return new JsonResult(new
@@ -201,25 +155,30 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 });
             }
 
-            // Calculate total money
+            //Caculate Total Money
             var extraAdultNumber = NumberOfAdult - typeRoom.NumberOfAdult < 0 ? 0 : NumberOfAdult - typeRoom.NumberOfAdult;
             var extraChildNumber = NumberOfChild - typeRoom.NumberOfChild < 0 ? 0 : NumberOfChild - typeRoom.NumberOfChild;
-            var numberOfNights = (checkout - checkinDate).Days;
 
+            var numberOfNights = (checkoutDate - checkinDate).Days;
             if (numberOfNights <= 0)
             {
                 throw new ArgumentException("Check-out date must be later than check-in date.");
             }
 
-            decimal? totalMoney = (typeRoom.Price * numberOfNights + extraAdultNumber * typeRoom.ExtraAdultFee + extraChildNumber * typeRoom.ExtraChildFee) * 1.1m;
+            decimal? totalMoney = (typeRoom.Price * numberOfNights + extraAdultNumber * typeRoom.ExtraAdultFee + extraChildNumber * typeRoom.ExtraChildFee) * 1.1m; //1.1 VAT
+            if (totalMoney == null)
+            {
+                throw new ArgumentException("Can't caculate Total Money.");
+            }
 
-            // Create Order (without AccountId if not needed)
+            //Create Order
             var newOrder = new Order
             {
                 OrderDate = DateTime.Now,
                 TotalMoney = (decimal)totalMoney,
                 Discount = 0,
                 OrderStatus = OrderStatus.WAITING_PAYMENT,
+                AccountId = int.Parse(accountId),
                 Note = SpecialRequest,
                 PaymentCode = GenerateRandomPaymentCode(),
                 NumberExtraAdult = extraAdultNumber,
@@ -230,20 +189,22 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             _context.Orders.Add(newOrder);
             await _context.SaveChangesAsync();
 
-            // Create OrderDetails and link to the order
+            // Create the OrderDetails and link it to the order
             var orderDetails = new OrderDetail
             {
                 RoomId = lstRoom.First().RoomId,
                 CheckIn = checkinDate,
-                CheckOut = checkout,
+                CheckOut = checkoutDate,
                 OrderId = newOrder.OrderId,
             };
-
             // Add OrderDetail to the context
             _context.OrderDetails.Add(orderDetails);
+
+
+            // Save the changes to the database
             await _context.SaveChangesAsync();
 
-            // Return result
+            // Trả về kết quả
             return new JsonResult(new
             {
                 success = true,
@@ -251,7 +212,6 @@ namespace Bookings_Hotel.Pages.Manager.Booking
                 data = newOrder.OrderId
             });
         }
-
 
         public List<Bookings_Hotel.Models.Room> getValidLstRoom(Bookings_Hotel.Models.TypeRoom typeRoom, DateTime checkinDate, DateTime checkoutDate)
         {
@@ -282,7 +242,4 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             return new string(stringChars);
         }
     }
-
 }
-
-

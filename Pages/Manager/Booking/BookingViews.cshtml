@@ -6,13 +6,20 @@
 }
 
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+<!-- Thêm CSS của Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- Thêm thư viện jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Thêm JavaScript của Bootstrap -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <h1 class="text-center my-4">Quản lý Booking</h1>
-<div class="col-md-3 mb-3">
+@* <div class="col-md-3 mb-3">
     <button class="btn btn-danger" id="btnCancelledBookings">
         Danh sách hủy đặt phòng
     </button>
-</div>
+</div> *@
+
 
 <div class="container">
     <div class="row">
@@ -69,6 +76,107 @@
         </div>
     </div>
 </div>
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">Đặt phòng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="wow fadeInUp" data-wow-delay="0.2s" id="roomData" data-price-per-day="@Model.typeRoomDTO.Price"
+                     data-max-adult="@Model.typeRoomDTO.MaximumExtraAdult" data-max-child="@Model.typeRoomDTO"
+                     data-extra-adult-fee="@Model.typeRoomDTO.ExtraAdultFee" data-extra-child-fee="@Model.typeRoomDTO.ExtraChildFee">
+                    <form>
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Thời gian đặt phòng</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <label for="checkinDate" class="form-label">Ngày nhận phòng</label>
+                                    <input type="date" id="checkinDate" name="checkIn" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <input type="date" class="form-control" id="checkout" name="checkout" placeholder="Ngày Trả Phòng" />
+                                    <label for="checkout">Ngày Trả Phòng</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="NumberOfAdult" name="NumberOfAdult" placeholder="Số Lượng Người Lớn" value="@Model.typeRoomDTO.NumberOfAdult" />
+                                    <label for="NumberOfAdult">Số Lượng Người Lớn</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="NumberOfChild" name="NumberOfChild" placeholder="Số Lượng Trẻ Em" value="@Model.typeRoomDTO.NumberOfChild" />
+                                    <label for="NumberOfChild">Số Lượng Trẻ Em</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 d-none" id="surcharge-adult-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-adult-alert">* Thêm Người Lớn x <span id="surcharge-adult-quantity"></span> = <b><span id="surcharge-adult-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+                            <div class="col-12 d-none" id="surcharge-child-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-child-alert">* Thêm Trẻ Em x <span id="surcharge-child-quantity"></span> = <b><span id="surcharge-child-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary" id="extra-adult-alert">*Lưu ý: Thêm Người Lớn Sẽ Tính Thêm <b>@Model.typeRoomDTO.ExtraAdultFeeString VNĐ/Người</b></small>
+                                </div>
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary" id="extra-child-alert">*Lưu ý: Thêm Trẻ Em Sẽ Tính Thêm <b>@Model.typeRoomDTO.ExtraChildFeeString VNĐ/Người</b></small>
+                                </div>
+                            </div>
+
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Tổng Tiền</h6>
+                            </div>
+                            <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="border rounded p-1">
+                                    <div class="border rounded text-center p-4">
+                                        <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                        <h2 class="mb-1"><span id="total-money">@Model.typeRoomDTO.PriceString</span> VNĐ</h2>
+                                        <p class="mb-0">Tổng Tiền Phòng</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="border rounded p-1">
+                                    <div class="border rounded text-center p-4">
+                                        <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                        <h2 class="mb-1"><span id="total-money-vat">@Model.typeRoomDTO.PriceVATString</span> VNĐ</h2>
+                                        <p class="mb-0">Tổng Tiền Sau Thuế (VAT 10%)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Ghi Chú" id="message" style="height: 100px"></textarea>
+                                    <label for="message">Ghi Chú</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="button" id="submit-order-btn" class="btn btn-primary w-100 py-3">Thanh Toán</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -114,7 +222,7 @@
                     const bookingDays = {};
                     data.forEach(status => {
                         for (let d = new Date(status.checkIn); d <= new Date(status.checkOut); d.setDate(d.getDate() + 1)) {
-                            bookingDays[d.toLocaleDateString()] = {
+                            bookingDays[d.toISOString().split('T')[0]] = {  // Lưu theo định dạng yyyy-mm-dd
                                 orderId: status.orderId,
                                 orderStatus: status.orderStatus
                             };
@@ -131,7 +239,7 @@
                                 calendarHTML += '<td></td>';
                             } else if (day <= daysInMonth) {
                                 const date = new Date(selectedYear, selectedMonth - 1, day);
-                                const dateStr = date.toLocaleDateString();
+                                const dateStr = date.toISOString().split('T')[0];  // Định dạng ngày theo yyyy-mm-dd
                                 const bookingInfo = bookingDays[dateStr];
                                 let statusText = 'Còn Trống';
                                 let bgColor = '#ccffcc';
@@ -147,7 +255,7 @@
                                 }
 
                                 const orderId = bookingInfo ? bookingInfo.orderId : '';
-                                calendarHTML += `<td style="background-color: ${bgColor}; padding: 10px;" onclick="showBookingDetails(${orderId})">${day}<br>${statusText}</td>`;
+                                calendarHTML += `<td style="background-color: ${bgColor}; padding: 10px;" data-date="${dateStr}" onclick="showBookingDetails(${orderId})">${day}<br>${statusText}</td>`;
                                 day++;
                             } else {
                                 calendarHTML += '<td></td>';
@@ -165,7 +273,7 @@
             });
         }
 
-
+        // Hàm hiển thị chi tiết đặt phòng
         function showBookingDetails(orderId) {
             if (!orderId) return;
 
@@ -175,39 +283,155 @@
                 data: { orderId },
                 success: function (data) {
                     $('#bookingDetailsModal .modal-body').html(`
-                                <h5>Chi tiết Booking</h5>
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr><th>Số Phòng:</th><td>${data.roomNumber}</td></tr>
-                                        <tr><th>Loại Phòng:</th><td>${data.roomType}</td></tr>
-                                        <tr><th>ID Đặt Phòng:</th><td>${data.orderId}</td></tr>
-                                        <tr><th>ID Người Dùng:</th><td>${data.userId}</td></tr>
-                                        <tr><th>Họ Tên Người Dùng:</th><td>${data.userName}</td></tr>
-                                        <tr><th>Check-In:</th><td>${new Date(data.checkIn).toLocaleDateString()}</td></tr>
-                                        <tr><th>Check-Out:</th><td>${new Date(data.checkOut).toLocaleDateString()}</td></tr>
-                                        <tr><th>Tổng Tiền:</th><td>${data.totalAmount}</td></tr>
-                                    </tbody>
-                                </table>
-                            `);
+                                        <h5>Chi tiết Booking</h5>
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr><th>Số Phòng:</th><td>${data.roomNumber}</td></tr>
+                                                <tr><th>Loại Phòng:</th><td>${data.roomType}</td></tr>
+                                                <tr><th>ID Đặt Phòng:</th><td>${data.orderId}</td></tr>
+                                                <tr><th>ID Người Dùng:</th><td>${data.userId}</td></tr>
+                                                <tr><th>Họ Tên Người Dùng:</th><td>${data.userName}</td></tr>
+                                                <tr><th>Check-In:</th><td>${new Date(data.checkIn).toLocaleDateString()}</td></tr>
+                                                <tr><th>Check-Out:</th><td>${new Date(data.checkOut).toLocaleDateString()}</td></tr>
+                                                <tr><th>Tổng Tiền:</th><td>${data.totalAmount}</td></tr>
+                                            </tbody>
+                                        </table>
+                                    `);
                     $('#bookingDetailsModal').modal('show');
                 },
                 error: function (xhr, status, error) {
                     alert('Đã xảy ra lỗi khi lấy chi tiết đặt phòng: ' + error);
                 }
             });
+            $(document).on('click', '.close', function () {
+                $('#bookingDetailsModal').modal('hide'); // Đóng modal khi nhấn vào nút "X"
+            });
+
         }
+      
+
 
         $(document).ready(function () {
-            $('#btnCancelledBookings').on('click', function () {
-                const selectedRoomId = $('#roomSelect').val(); // Lấy ID phòng được chọn
-                if (selectedRoomId) {
-                    window.location.href = '@Url.Page("CancelledBookings")?roomId=' + selectedRoomId; // Điều hướng đến trang với ID phòng
+            $(document).on('click', '#bookingStatusGrid td', function () {
+                // Lấy ngày từ thuộc tính data-date (đã được định dạng theo yyyy-mm-dd)
+                const selectedDate = $(this).data('date');
+
+                // Kiểm tra nếu selectedDate không hợp lệ, thông báo lỗi
+                if (!selectedDate || isNaN(new Date(selectedDate).getTime())) {
+                    alert("Ngày không hợp lệ hoặc không được đặt đúng định dạng yyyy-mm-dd.");
+                    return;
+                }
+
+                // Tạo đối tượng ngày hiện tại và loại bỏ thời gian (so sánh chỉ ngày)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Đảm bảo không so sánh theo giờ, chỉ ngày
+
+                // Tạo đối tượng ngày từ selectedDate
+                const selectedDateObj = new Date(selectedDate);
+                selectedDateObj.setHours(0, 0, 0, 0);  // Đảm bảo chỉ so sánh ngày, không phải giờ
+
+                // Kiểm tra điều kiện nếu ngày lớn hơn hôm nay và có trạng thái "Còn Trống"
+                if ($(this).text().includes("Còn Trống") && selectedDateObj >= today) {
+                    // Nếu ngày chọn là ngày trong tương lai và phòng còn trống, thực hiện đặt phòng
+                    // Bạn có thể mở Modal hoặc tiếp tục xử lý khác tại đây
+                    $('#bookingModal').modal('show');
+                    $('#checkinDate').val(selectedDate);
+                } else if ($(this).text().includes("Còn Trống") && selectedDateObj < today) {
+                    // Nếu ngày chọn đã qua hoặc là hôm nay, hiển thị thông báo lỗi
+                    alert("Ngày đã chọn không hợp lệ. Vui lòng chọn ngày trong tương lai.");
                 } else {
-                    alert('Vui lòng chọn một phòng trước khi xem danh sách hủy đặt phòng.'); // Thông báo nếu không có phòng nào được chọn
+                    // Trường hợp nếu phòng không còn trống
+                    alert("Phòng không còn trống, xem chi tiết đặt phòng.");
                 }
             });
-        });
 
+            
+            // Đóng modal khi nhấn nút Đóng
+            $('#btnCloseBookingModal').on('click', function () {
+                $('#bookingModal').modal('hide'); // Đóng modal
+            });
+            $(document).on('click', '.close', function () {
+                $('#bookingModal').modal('hide'); // Đóng modal khi nhấn vào nút "X"
+            });
+
+        });
+     
+        $(document).ready(function() {
+    // Gọi hàm calculateTotal khi có thay đổi
+    $('#checkinDate, #checkout, #NumberOfAdult, #NumberOfChild').on('change', calculateTotal);
+});
+
+function calculateTotal() {
+    const checkinDate = new Date($('#checkinDate').val());
+    const checkoutDate = new Date($('#checkout').val());
+
+    // Kiểm tra ngày hợp lệ
+    if (isNaN(checkinDate) || isNaN(checkoutDate) || checkoutDate <= checkinDate) {
+        alert('Vui lòng chọn ngày hợp lệ!');
+        return;
+    }
+
+    // Lấy giá trị từ data-* attributes trong roomData
+    const roomData = $('#roomData');
+    const roomPricePerDay = parseFloat(roomData.data('price-per-day')) || 0;
+    const maxAdult = parseInt(roomData.data('max-adult')) || 0;
+    const maxChild = parseInt(roomData.data('max-child')) || 0;
+    const extraAdultFee = parseFloat(roomData.data('extra-adult-fee')) || 0;
+    const extraChildFee = parseFloat(roomData.data('extra-child-fee')) || 0;
+
+    // Kiểm tra các giá trị trong console
+    console.log("Room Price Per Day:", roomPricePerDay);
+    console.log("Max Adult:", maxAdult);
+    console.log("Max Child:", maxChild);
+    console.log("Extra Adult Fee:", extraAdultFee);
+    console.log("Extra Child Fee:", extraChildFee);
+
+    // Tính số ngày ở
+    const days = Math.ceil((checkoutDate - checkinDate) / (1000 * 60 * 60 * 24));
+    let totalRoomCost = days * roomPricePerDay;
+
+    const numberOfAdult = parseInt($('#NumberOfAdult').val()) || 0;
+    const numberOfChild = parseInt($('#NumberOfChild').val()) || 0;
+
+    // Tính phụ phí nếu có
+    let extraAdult = Math.max(0, numberOfAdult - maxAdult);
+    let extraChild = Math.max(0, numberOfChild - maxChild);
+
+    let extraAdultCost = extraAdult * extraAdultFee * days;
+    let extraChildCost = extraChild * extraChildFee * days;
+
+    totalRoomCost += extraAdultCost + extraChildCost;
+
+    // Tính thuế VAT
+    const vatRate = 0.1; // Thuế VAT 10%
+    const totalCostWithVAT = totalRoomCost * (1 + vatRate);
+
+    // Hiển thị tổng tiền
+    $('#total-money').text(totalRoomCost.toLocaleString('vi-VN') + ' VNĐ');
+    $('#total-money-vat').text(totalCostWithVAT.toLocaleString('vi-VN') + ' VNĐ');
+
+    // Hiển thị phụ phí nếu có
+    if (extraAdult > 0) {
+        $('#surcharge-adult-alert').removeClass('d-none');
+        $('#surcharge-adult-quantity').text(extraAdult);
+        $('#surcharge-adult-fee').text(extraAdultCost.toLocaleString('vi-VN'));
+    } else {
+        $('#surcharge-adult-alert').addClass('d-none');
+    }
+
+    if (extraChild > 0) {
+        $('#surcharge-child-alert').removeClass('d-none');
+        $('#surcharge-child-quantity').text(extraChild);
+        $('#surcharge-child-fee').text(extraChildCost.toLocaleString('vi-VN'));
+    } else {
+        $('#surcharge-child-alert').addClass('d-none');
+    }
+}
 
     </script>
+
+
+
 }
+
+

@@ -1,0 +1,504 @@
+﻿@page
+@model Bookings_Hotel.Pages.Manager.Booking.BookingStaffModel
+@{
+    ViewData["Title"] = "Booking";
+}
+
+<!-- Booking End -->
+<!-- Booking Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title text-center text-primary text-uppercase">Đặt Phòng</h6>
+            <h1 class="mb-5">Chọn ngày <span class="text-primary text-uppercase">Đặt Phòng</span></h1>
+        </div>
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <!-- Room Start -->
+                    <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Thông Tin Phòng</h6>
+                    </div>
+                    <div class="col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa-solid fa-house  fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.typeRoomDTOGet.TypeName</h2>
+                                <p class="mb-0">Loại Phòng</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-male fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfAdult</h2>
+                                <p class="mb-0">Người Lớn</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-child fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfChild</h2>
+                                <p class="mb-0">Trẻ Em</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-bed fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.typeRoomDTOGet.NumberOfBed</h2>
+                                <p class="mb-0">Giường</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="border rounded p-1">
+                            <div class="border rounded text-center p-4">
+                                <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                <h2 class="mb-1">@Model.typeRoomDTOGet.PriceString VNĐ</h2>
+                                <p class="mb-0">Mỗi Đêm</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Room End -->
+                    <!-- Service Start -->
+                    <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                        <h6 class="section-title text-center text-primary text-uppercase">Dịch Vụ Tặng Kèm</h6>
+                    </div>
+                    @foreach (var serviceName in Model.typeRoomDTOGet.LstService)
+                    {
+                        <div class="col-sm-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="border rounded p-1">
+                                <div class="border rounded text-center p-4">
+                                    <i class="fa fa-star fa-2x text-primary mb-2"></i>
+                                    <p class="mb-1">@serviceName</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <!-- Service End -->
+                </div>
+
+                @* <div class="row g-3">
+                    <div class="col-6 text-end">
+                        <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.1s" src="~/template/img/about-1.jpg" style="margin-top: 25%;">
+                    </div>
+                    <div class="col-6 text-start">
+                        <img class="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.3s" src="~/template/img/about-2.jpg">
+                    </div>
+                    <div class="col-6 text-end">
+                        <img class="img-fluid rounded w-50 wow zoomIn" data-wow-delay="0.5s" src="~/template/img/about-3.jpg">
+                    </div>
+                    <div class="col-6 text-start">
+                        <img class="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.7s" src="~/template/img/about-4.jpg">
+                    </div>
+                </div> *@
+            </div>
+            <div class="col-lg-6">
+                <div class="wow fadeInUp" data-wow-delay="0.2s">
+                    <form>
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Thời gian đặt phòng</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <input type="date" class="form-control" id="checkin" name="checkin" placeholder="Ngày Nhận Phòng" />
+                                    <label for="checkin">Ngày Nhận Phòng</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating date" data-target-input="nearest">
+                                    <input type="date" class="form-control" id="checkout" name="checkout" placeholder="Ngày Trả Phòng" />
+                                    <label for="checkout">Ngày Trả Phòng</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary">*Lưu ý: Giờ Nhận Phòng Là 14:00 và Giờ Trả Phòng Là 12:00</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="NumberOfAdult" name="NumberOfAdult" placeholder="Số Lượng Người Lớn" value="@Model.typeRoomDTOGet.NumberOfAdult" />
+                                    <label for="NumberOfAdult">Số Lượng Người Lớn</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="NumberOfChild" name="NumberOfChild" placeholder="Số Lượng Trẻ Em" value="@Model.typeRoomDTOGet.NumberOfChild" />
+                                    <label for="NumberOfChild">Số Lượng Trẻ Em</label>
+                                </div>
+                            </div>
+                            <div class="col-12 d-none">
+                                <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary">*Lưu ý: Trẻ em sẽ được tính với những em bé từ 6 tuổi trở xuống</small>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary d-none" id="extra-adult-alert">*Lưu ý: Thêm Người Lớn Sẽ Tính Thêm <b>@Model.typeRoomDTOGet.ExtraAdultFeeString VNĐ/Người</b></small>
+                                </div>
+                                <div class="text-start wow fadeInUp col-12" data-wow-delay="0.1s">
+                                    <small class="text-center text-primary d-none" id="extra-child-alert">*Lưu ý: Thêm Trẻ Em Sẽ Tính Thêm <b>@Model.typeRoomDTOGet.ExtraChildFeeString VNĐ/Người</b></small>
+                                </div>
+                            </div>
+                            <div class="text-center col-12">
+                                <h6 class="section-title text-center text-primary text-uppercase">Phụ Phí</h6>
+                            </div>
+                            <div class="col-12 d-none" id="surcharge-adult-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-adult-alert">* Thêm Người Lớn x <span id="surcharge-adult-quantity"></span> = <b><span id="surcharge-adult-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+                            <div class="col-12 d-none" id="surcharge-child-alert">
+                                <div class="text-start col-12">
+                                    <small class="text-center text-primary" id="extra-child-alert">* Thêm Trẻ Em x <span id="surcharge-child-quantity"></span> = <b><span id="surcharge-child-fee"></span> VNĐ</b></small>
+                                </div>
+                            </div>
+                            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                                <h6 class="section-title text-center text-primary text-uppercase">Tổng Tiền</h6>
+                            </div>
+                            <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="border rounded p-1">
+                                    <div class="border rounded text-center p-4">
+                                        <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                        <h2 class="mb-1"><span id="total-money">@Model.typeRoomDTOGet.PriceString</span> VNĐ</h2>
+                                        <p class="mb-0">Tổng Tiền Phòng</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 wow fadeIn" data-wow-delay="0.1s">
+                                <div class="border rounded p-1">
+                                    <div class="border rounded text-center p-4">
+                                        <i class="fa fa-money-bill fa-2x text-primary mb-2"></i>
+                                        <h2 class="mb-1"><span id="total-money-vat">@Model.typeRoomDTOGet.PriceVATString</span> VNĐ</h2>
+                                        <p class="mb-0">Tổng Tiền Sau Thuế (VAT 10%)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Ghi Chú" id="message" style="height: 100px"></textarea>
+                                    <label for="message">Ghi Chú</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="button" id="submit-order-btn" class="btn btn-primary w-100 py-3">Thanh Toán</button>
+                            </div>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                <h6 class="section-title text-center text-primary text-uppercase">Hình Ảnh Phòng</h6>
+            </div>
+            <!-- Carousel Start -->
+            <div class="container-fluid p-0 my-4 wow fadeInUp">
+                <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @* <div class="carousel-item">
+                            <img class="w-100" src="~/template/img/carousel-1.jpg" alt="Image">
+                        </div> *@
+                        
+                        @{
+                            bool isFirstImage = true; // Initialize a flag to track the first image
+                        }
+
+                        @foreach (var imageUrl in Model.typeRoomDTOGet.LstImage)
+                        {
+                            <div class="carousel-item @(isFirstImage ? "active" : "")">
+                                <img class="w-100" src="@imageUrl" alt="Image">
+                            </div>
+                            isFirstImage = false; // Set flag to false after the first iteration
+                        }
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#header-carousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+            <div class="text-center wow fadeInUp col-12" data-wow-delay="0.1s">
+                <small class="text-center text-primary">*Lưu ý: Hình ảnh chỉ mang tính chất mình họa, phòng thực tế có thể khác đôi chút do vị trí phòng</small>
+            </div>
+            <!-- Carousel End -->
+        </div>
+    </div>
+</div>
+<!-- Booking End -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            setDefaultDate();
+            validExtraNumber();
+            submit();
+        });
+        function setDefaultDate(){
+            const yesterday = new Date();
+
+            // Giá trị mặc định cho checkin (ngày mai)
+            const checkin = new Date();
+            checkin.setDate(yesterday.getDate() + 1);  // Ngày mai
+            const checkinDateString = checkin.toISOString().split('T')[0];  // Chuyển sang định dạng YYYY-MM-DD
+            $('#checkin').val(checkinDateString);  // Sử dụng jQuery để đặt giá trị cho input
+
+            // Giá trị mặc định cho checkout (ngày mốt)
+            const checkout = new Date();
+            checkout.setDate(yesterday.getDate() + 2);  // Ngày mốt
+            const checkoutDateString = checkout.toISOString().split('T')[0];  // Chuyển sang định dạng YYYY-MM-DD
+            $('#checkout').val(checkoutDateString);  // Sử dụng jQuery để đặt giá trị cho input
+
+            // Hàm xử lý khi người dùng thay đổi giá trị checkin
+            $('#checkin').on('change', function () {
+                const checkinDate = $('#checkin').val();
+                const checkoutDate = $('#checkout').val();
+
+                // Kiểm tra nếu checkin nhỏ hơn ngày hôm nay
+                if (new Date(checkinDate) < new Date()) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ngày Nhận Phòng Không Hợp Lệ',
+                        text: 'Ngày Đặt Phòng Chỉ Có Thể Bắt Đầu Từ Ngày Hôm Nay!',
+                    });
+                    $('#checkin').val(checkinDateString);  // Đặt lại về ngày mặc định (ngày mai)
+                } else if (checkoutDate && new Date(checkoutDate) <= new Date(checkinDate)) {
+                    $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
+                }
+                calculatePrice();
+            });
+
+            // Hàm xử lý khi người dùng thay đổi giá trị checkout
+            $('#checkout').on('change', function () {
+                const checkinDate = $('#checkin').val();
+                const checkoutDate = $('#checkout').val();
+
+                // Kiểm tra nếu check-out nhỏ hơn hoặc bằng check-in
+                if (new Date(checkoutDate) <= new Date(checkinDate)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Ngày Trả Phòng Không Hợp Lệ',
+                        text: 'Ngày Trả Phòng Nên Sau Ngày Nhận Phòng!',
+                    });
+                    $('#checkout').val('');  // Xóa giá trị checkout không hợp lệ
+                }
+                calculatePrice();
+            });
+
+            //Hàm Xử lí khi người dùng thay đổi giá trị NumberOfAdult
+            $('#NumberOfAdult').on('blur', function () {
+                // Nếu người dùng nhập giá trị bé hơn 1 thì Set lại mặc định
+                if ($(this).val() <= 0) {
+                    $(this).val('1');
+                }
+            });
+            //Hàm Xử lí khi người dùng thay đổi giá trị NumberOfChild
+            $('#NumberOfChild').on('blur', function () {
+                // Nếu người dùng nhập giá trị bé hơn 1 thì Set lại mặc định
+                if ($(this).val() < 0) {
+                    $(this).val('1');
+                }
+            });
+        }
+        function calculatePrice() {
+            const price = @Model.typeRoomDTOGet.Price;
+            const extraAdultFee = @Model.typeRoomDTOGet.ExtraAdultFee;
+            const extraChildFee = @Model.typeRoomDTOGet.ExtraChildFee;
+
+            const checkin = new Date($('#checkin').val());
+            checkin.setHours(0, 0, 0, 0); // Đặt giờ về 0
+
+            const checkout = new Date($('#checkout').val());
+            checkout.setHours(0, 0, 0, 0); // Đặt giờ về 0
+
+            // Tính khoảng cách theo milliseconds
+            const differenceInTime = checkout.getTime() - checkin.getTime();
+
+            // Chuyển đổi từ milliseconds sang số ngày
+            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+            //Tính số người thêm vào
+            let numberExtraAdult = parseInt($('#NumberOfAdult').val()) - @Model.typeRoomDTOGet.NumberOfAdult <0 ? 0 : parseInt($('#NumberOfAdult').val()) - @Model.typeRoomDTOGet.NumberOfAdult;
+            let numberExtraChild = parseInt($('#NumberOfChild').val()) - @Model.typeRoomDTOGet.NumberOfChild <0 ? 0 : parseInt($('#NumberOfChild').val()) - @Model.typeRoomDTOGet.NumberOfChild;
+
+            //Tính Tiền
+            if (differenceInDays > 0) {
+                var totalMoney = price * differenceInDays + numberExtraAdult * extraAdultFee + numberExtraChild * extraChildFee;
+                $('#total-money').text(totalMoney.toLocaleString('vi-VN'));
+
+                var totalMoneyVAT = totalMoney * 1.1;//VAT 10%
+                $('#total-money-vat').text(totalMoneyVAT.toLocaleString('vi-VN'));
+            } else {
+                $('#total-money').text('0'); // Tránh trường hợp tổng tiền âm
+                $('#total-money-vat').text('0')
+            }
+        }
+
+        function validExtraNumber(){
+            $('#NumberOfAdult').on('blur', function () {
+                let numberOfAdult = parseInt($(this).val());
+
+                if (isNaN(numberOfAdult) || numberOfAdult === undefined || $(this).val() === "") {
+                    $(this).val(0);
+                    numberOfAdult = 0;
+                }
+
+                let maximunAdult = @Model.typeRoomDTOGet.MaximumExtraAdult + @Model.typeRoomDTOGet.NumberOfAdult;// Tổng số lượng người tối đa
+                let numberOfExtraAdult = numberOfAdult - @Model.typeRoomDTOGet.NumberOfAdult;
+                if (numberOfExtraAdult > @Model.typeRoomDTOGet.MaximumExtraAdult) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Quá Số Lượng Người Lớn',
+                        text: 'Số Lượng Người Lớn Tối Đa Là: ' + maximunAdult
+                    });
+                    $(this).val(maximunAdult);
+                    numberOfExtraAdult = @Model.typeRoomDTOGet.MaximumExtraAdult;
+                }
+
+                if (numberOfExtraAdult > 0) {
+                    $('#extra-adult-alert').removeClass('d-none')
+                    $('#surcharge-adult-alert').removeClass('d-none')
+                    $('#surcharge-adult-quantity').text(numberOfExtraAdult)
+                    $('#surcharge-adult-fee').text((numberOfExtraAdult * @Model.typeRoomDTOGet.ExtraAdultFee).toLocaleString('vi-VN'))
+                } else {
+                    $('#extra-adult-alert').addClass('d-none')
+                    $('#surcharge-adult-alert').addClass('d-none')
+                }
+
+                calculatePrice();
+            });
+
+            $('#NumberOfChild').on('blur', function () {
+                let numberOfChild = parseInt($(this).val());
+                if (isNaN(numberOfChild) || numberOfChild === undefined || $(this).val() === "") {
+                    $(this).val(0);
+                    numberOfChild = 0;
+                }
+
+                let maximunChild = @Model.typeRoomDTOGet.MaximumExtraChild + @Model.typeRoomDTOGet.NumberOfChild;// Tổng số lượng người tối đa
+                let numberOfExtraChild = numberOfChild - @Model.typeRoomDTOGet.NumberOfChild;
+                if (numberOfExtraChild > @Model.typeRoomDTOGet.MaximumExtraChild) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Quá Số Lượng Trẻ Em',
+                        text: 'Số Lượng Trẻ Em Tối Đa Là: ' + maximunChild
+                    });
+                    $(this).val(maximunChild);
+                    numberOfExtraChild = @Model.typeRoomDTOGet.MaximumExtraChild;
+                }
+                if (numberOfExtraChild > 0) {
+                    $('#extra-child-alert').removeClass('d-none')
+                    $('#surcharge-child-alert').removeClass('d-none')
+                    $('#surcharge-child-quantity').text(numberOfExtraChild)
+                    $('#surcharge-child-fee').text((numberOfExtraChild * @Model.typeRoomDTOGet.ExtraChildFee).toLocaleString('vi-VN'))
+                } else {
+                    $('#extra-child-alert').addClass('d-none')
+                    $('#surcharge-child-alert').addClass('d-none')
+                }
+                calculatePrice();
+            });
+        }
+        function submit() {
+            $('#submit-order-btn').on('click', function () {
+                const data = {
+                    TypeId: @Model.typeRoomDTOGet.TypeId,
+                    CheckInDate: $('#checkin').val(),
+                    CheckOutDate: $('#checkout').val(),
+                    SpecialRequest: $('#message').val() || '',
+                    NumberOfAdult: $('#NumberOfAdult').val(),
+                    NumberOfChild: $('#NumberOfChild').val(),
+                };
+
+                if (!data.CheckInDate || !data.CheckOutDate) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Chọn Ngày Nhận Phòng Và Ngày Trả Phòng'
+                    });
+                    return;
+                }
+
+                if (!data.NumberOfAdult || parseInt(data.NumberOfAdult) === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Nhập Số Lượng Người Lớn'
+                    });
+                    return;
+                }
+
+                if (!data.NumberOfChild || parseInt(data.NumberOfChild) === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lưu Ý',
+                        text: 'Hãy Nhập Số Lượng Trẻ Em'
+                    });
+                    return;
+                }
+                $.ajax({
+                    url: '/Booking?handler=SubmitOrder',
+                    type: 'POST',
+                    data: data,
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    beforeSend: function () {
+                        Swal.fire({
+                            title: 'Đang Xử Lí',
+                            text: 'Vui Lòng Đợi Ít Phút...',
+                            allowOutsideClick: false,  
+                            showConfirmButton: false, 
+                            willOpen: () => {
+                                Swal.showLoading(); 
+                            }
+                        });
+                    },
+                    success: function (response) {
+                        // On success, redirect to the payment page
+                        if (response.success) {
+                            window.location.href = '/Payment?oid=' + response.data;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt Phòng Thất Bại',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        if (xhr.status === 401) {  // Detect 401 Unauthorized error
+                            window.location.href = '/login';
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Đặt Phòng Thất Bại',
+                                text: 'Máy Chủ Đang Xảy Ra Lỗi. Vui Lòng Thử Lại Sau!'
+                            });
+                        }
+
+                        var errorMessage = xhr.responseText; // Log the server error message
+                        console.log(errorMessage);
+                    }
+                });
+
+            });
+        }
+
+    
+
+    </script>
+}

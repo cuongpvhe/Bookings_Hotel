@@ -94,7 +94,7 @@
                             </div>
 
 
-
+                            <ul class="navbar-nav">
 
 
                             @using System.Security.Claims
@@ -120,7 +120,7 @@
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <form method="post" asp-page="/Home/LogOut">
-                                                <button type="submit" class="dropdown-item">Log Out</button>
+                                                <button type="submit" class="dropdown-item">Đăng xuất</button>
                                             </form>
                                         </li>
                                     </ul>
@@ -130,14 +130,14 @@
                             {
                                 <!-- Display Register and Login buttons if not logged in -->
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-page="/Home/Register">Register</a>
+                                    <a class="nav-link" asp-page="/Home/Register">Đăng ký</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" asp-page="/Home/Login">Login</a>
+                                    <a class="nav-link" asp-page="/Home/Login">Đăng nhập</a>
                                 </li>
                             }
 
-
+                            </ul>
 
 
                         </div>
