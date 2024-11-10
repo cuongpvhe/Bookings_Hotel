@@ -4,6 +4,8 @@
 @{
     var currentPage = ViewContext.RouteData.Values["page"]?.ToString()?.ToLower();
 }
+@using Bookings_Hotel.Util
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -163,9 +165,7 @@
             </div>
         </div>
         <!-- Header End -->
-        
-
-        @if (currentPage != "/booking" && currentPage != "/payment" && currentPage != "/accessdenied")
+        @if (currentPage != "/booking" && currentPage != "/payment" && currentPage != "/accessdenied" && currentPage != "/roomdetail")
         {
             <!-- Carousel Start -->
             <div class="container-fluid p-0 mb-5">

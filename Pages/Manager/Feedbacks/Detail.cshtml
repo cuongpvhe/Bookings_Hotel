@@ -1,0 +1,85 @@
+﻿@page
+@using Bookings_Hotel.Util
+@model Bookings_Hotel.Pages.Manager.Feedbacks.DetailModel
+
+@{
+    ViewData["Title"] = "Feedback Detail";
+    Layout = "~/Pages/Shared/Layout_admin.cshtml";
+}
+
+<h1 class="text-center">Phản hồi chi tiết</h1>
+
+<div class="container mt-4">
+    <!-- Feedback Information Card -->
+    <div class="card border-primary mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">Thông tin phản hồi</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Đánh giá:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Rating)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Phản hồi:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Comment)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Ngày phản hồi:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.ReviewDate)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Information Card -->
+    <div class="card border-success mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="card-title mb-0">Thông tin phòng</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Mã phòng:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Room.RoomId)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Số phòng:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Room.RoomNumber)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Trạng thái:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Room.RoomStatus)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Information Card -->
+    <div class="card border-info mb-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="card-title mb-0">Thông tin khách hàng</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Email:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Account.Email)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Tên khách hàng:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Account.FullName)</p>
+                </div>
+                <div class="col-md-4">
+                    <strong>Số điện thoại:</strong>
+                    <p class="text-dark">@Html.DisplayFor(model => model.Feedback.Account.Phonenumber)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-page="./List" class="btn btn-primary">Trở lại</a>
+    </div>
+</div>

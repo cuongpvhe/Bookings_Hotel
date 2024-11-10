@@ -21,8 +21,8 @@
         public decimal? ExtraChildFee { get; set; }
         public string? ExtraAdultFeeString {  get; set; }
         public string? ExtraChildFeeString { get; set; }
-
-        public List<String>? LstService {  get; set; }
+        public List<String>? LstService { get; set; }
+        public List<ServiceDTO>? LstServiceObject {  get; set; }
         public List<String>? LstImage { get; set; }
     }
 }

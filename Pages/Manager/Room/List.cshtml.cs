@@ -109,7 +109,7 @@ namespace Bookings_Hotel.Pages.Manager
                 return NotFound();
             }
 
-            room.RoomStatus = "Deleted";
+            room.RoomStatus = RoomStatus.DELETED;
             await _context.SaveChangesAsync();
 
 

@@ -29,6 +29,11 @@ namespace Bookings_Hotel.Pages.Home
 
         [BindProperty(SupportsGet = true)]
         public string ReturnUrl { get; set; } // Lưu đường dẫn trở lại
+        public IActionResult OnGet()
+        {
+            ModelState.Remove(nameof(ReturnUrl));
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {

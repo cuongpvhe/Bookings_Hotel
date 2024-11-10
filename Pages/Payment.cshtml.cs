@@ -65,9 +65,9 @@ namespace Bookings_Hotel.Pages
                 return NotFound();
             }
 
-            //Check if the order wasn't placed 30 minutes ago
+            //Check if the order wasn't placed 5 minutes ago
             var timeSinceOrderPlaced = DateTime.Now - order.OrderDate;
-            if (timeSinceOrderPlaced.TotalMinutes > 30)
+            if (timeSinceOrderPlaced.TotalMinutes > 5)
             {
                 // Update the order status to "Canceled"
                 order.OrderStatus = OrderStatus.CANCEL;
@@ -86,7 +86,8 @@ namespace Bookings_Hotel.Pages
                 order.OrderId,
                 order.TotalMoney,
                 order.PaymentCode,
-                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                order.OrderDate.ToString()
             ); 
 
             return Page();
@@ -94,6 +95,19 @@ namespace Bookings_Hotel.Pages
 
         public async Task<IActionResult> OnPostCheckPayment(int orderID)
         {
+            //Check Login
+            var accountId = User.FindFirstValue("AccountId");
+
+            if (string.IsNullOrEmpty(accountId))
+            {
+                return Unauthorized();
+            }
+
+            var account = await _context.Accounts.FindAsync(int.Parse(accountId));
+            if (account == null)
+            {
+                return Unauthorized();
+            }
 
             // Kiểm tra trạng thái giao dịch của order
             var order = await _context.Orders.FindAsync(orderID);
@@ -101,6 +115,8 @@ namespace Bookings_Hotel.Pages
             {
                 return new JsonResult(new { success = false, message = "Order not found." });
             }
+
+            
 
             // Lấy toàn bộ giao dịch
             string jsonData = await CassoIntegration.GetTransactionsAsync();
@@ -111,10 +127,11 @@ namespace Bookings_Hotel.Pages
                 order.OrderId,
                 order.TotalMoney,
                 order.PaymentCode,
-                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN"))
+                order.TotalMoney.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
+                order.OrderDate.ToString()
             );
 
-            bool isPaymented = CheckTransactions(jsonData, payment);
+           bool isPaymented = CheckTransactions(jsonData, payment);
 
             if (isPaymented)
             {
@@ -123,10 +140,24 @@ namespace Bookings_Hotel.Pages
                 // Save the changes to the database
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
+
                 //Send Mail
-                var subject = "Thanh Toán thành công";
-                var content = $"Bạn đã đặt đơn hàng thành công";
-                await _emailService.SendEmailAsync(order.Account.Email, subject, content);
+                OrderDetail orderDetail = _context.OrderDetails.FirstOrDefault(od => od.OrderId == order.OrderId);
+                Room room = _context.Rooms.FirstOrDefault(r => r.RoomId == orderDetail.RoomId);
+                TypeRoom typeRoom = _context.TypeRooms.FirstOrDefault(tr => tr.TypeId == room.TypeId);
+                OrderDTO orderDTO = new OrderDTO
+                {
+                    OrderId = order.OrderId,
+                    TotalMoney = order.TotalMoney,
+                    Note = order.Note,
+                    RoomType = typeRoom.TypeName,
+                    RoomNumber = room.RoomNumber.ToString(),
+                    checkinDate = orderDetail.CheckIn.ToString("dd/MM/yyyy"),
+                    checkoutDate = orderDetail.CheckOut.ToString("dd/MM/yyyy"),
+                };
+                var subject = "[Hotelier] Đặt Phòng Thành Công";
+                var content = _emailService.CreateOrderHtmlEmailContent(orderDTO);
+                await _emailService.SendEmailAsync(account.Email, subject, content);
 
                 return new JsonResult(new
                 {

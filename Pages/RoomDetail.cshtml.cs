@@ -1,4 +1,4 @@
-using Bookings_Hotel.DTO;
+﻿using Bookings_Hotel.DTO;
 using Bookings_Hotel.Models;
 using Bookings_Hotel.Util;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Globalization;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Bookings_Hotel.Pages
@@ -39,14 +40,38 @@ namespace Bookings_Hotel.Pages
                 return NotFound("Not Found ID");
             }
 
-            //Get Service
-            var lstServiceName = _context.TypeRoomServices
+            // Get Service
+            var lstService = _context.TypeRoomServices
                     .Where(trs => trs.TypeId == typeRoom.TypeId)
                     .Join(_context.Services,
                         trs => trs.ServiceId,
                         s => s.ServiceId,
-                        (trs, s) => s.ServiceName)
+                        (trs, s) => s)
             .ToList();
+
+            //Convert to ServiceDTO
+            List<ServiceDTO> listServiceDTO = new List<ServiceDTO>();
+            foreach (var item in lstService)
+            {
+                var lstImageUrl = _context.Services
+                    .Where(s => s.ServiceId == item.ServiceId)
+                    .Join(_context.ServiceImages,
+                    s => s.ServiceId,
+                    si => si.ServiceId,
+                    (s, si) => si.ImageUrl)
+                    .ToList();
+
+
+                listServiceDTO.Add(new ServiceDTO
+                {
+                    ServiceId = item.ServiceId,
+                    ServiceName = item.ServiceName,
+                    ServiceImageUrls = lstImageUrl,
+                    Description = item.Description,
+                });
+            }
+
+
 
             //Get Image
             var lstImage = _context.TypeRoomImages
@@ -54,6 +79,8 @@ namespace Bookings_Hotel.Pages
                 .OrderBy(tri => tri.ImageIndex)
                 .Select(tri => tri.ImageUrl)
                 .ToList();
+            
+
 
             typeRoomDTOGet = new TypeRoomDTO
             {
@@ -65,13 +92,13 @@ namespace Bookings_Hotel.Pages
                 NumberOfBed = typeRoom.NumberOfBed,
                 Price = typeRoom.Price,
                 PriceString = typeRoom.Price.ToString("N0", CultureInfo.GetCultureInfo("vi-VN")),
-                LstService = lstServiceName,
+                LstServiceObject = listServiceDTO,
                 LstImage = lstImage,
             };
 
 
 
-return Page();
+            return Page();
 
 
         }
