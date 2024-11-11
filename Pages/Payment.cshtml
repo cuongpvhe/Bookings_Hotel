@@ -98,7 +98,33 @@
                 // Nếu thời gian còn lại <= 0, dừng đếm ngược và thông báo "time out"
                 if (timeRemaining <= 0) {
                     clearInterval(countdownInterval);
-                    console.log("time out");
+                    Swal.fire({
+                        icon: 'fail',
+                        title: 'Hết Thời Gian Thanh Toán',
+                        text: 'Đơn Hàng Của bạn đã bị hủy. Vui Lòng Đặt lại Phòng!',
+                        confirmButtonText: 'Trang Chủ',
+                        allowOutsideClick: false, // Ngăn người dùng đóng cửa sổ khi bấm ra ngoài
+                        allowEscapeKey: false,    // Ngăn người dùng đóng cửa sổ bằng phím Esc
+                        allowEnterKey: false      // Ngăn đóng cửa sổ khi nhấn Enter
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/'; // Chuyển hướng đến trang chủ
+                        }
+                    });
+
+                    $.ajax({
+                        url: '/Booking?handler=BatchUpdateOrderStatus',
+                        type: 'POST',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        beforeSend: function () { },
+                        success: function (response) {
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(xhr.responseText);
+                        }
+                    });
                 } else {
                     // Chuyển đổi thời gian còn lại thành phút và giây
                     var totalSeconds = Math.floor(timeRemaining / 1000);
