@@ -33,7 +33,7 @@ namespace Bookings_Hotel.Pages
 
         public int TotalPages { get; set; }
 
-        public const int ItemsPerPage = 10;
+        public const int ItemsPerPage = 12;
 
         // Lists
         [BindProperty(SupportsGet = true)]

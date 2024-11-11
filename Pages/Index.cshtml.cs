@@ -57,7 +57,7 @@ namespace Bookings_Hotel.Pages
                     .SelectMany(room => room.Feedbacks)
                     .Where(review => review.Rating.HasValue)
                     .Average(review => review.Rating) ?? 0
-                }).OrderByDescending(tr => tr.AverageRating).Take(10).Select(tr => tr.TypeRoom).ToListAsync();
+                }).OrderByDescending(tr => tr.AverageRating).Take(12).Select(tr => tr.TypeRoom).ToListAsync();
 
             TypeRoomsTopBooking = await _context.TypeRooms.Where(x => x.Rooms.Count > 0).Include(x => x.Rooms).ThenInclude(x => x.OrderDetails).Include(x => x.Rooms)
                 .ThenInclude(x => x.Feedbacks).Include(x => x.TypeRoomImages).Include(x => x.TypeRoomServices).ThenInclude(y => y.Service)
@@ -68,7 +68,7 @@ namespace Bookings_Hotel.Pages
                     BookingCount = typeRoom.Rooms
                     .SelectMany(r => r.OrderDetails)
                     .Count()
-                }).OrderByDescending(x => x.BookingCount).Take(10).Select(x => x.TypeRoom).ToListAsync();
+                }).OrderByDescending(x => x.BookingCount).Take(12).Select(x => x.TypeRoom).ToListAsync();
 
             Services = await _context.Services.Include(x => x.ServiceImages).Where(x => x.Status == ServiceStatus.ACTIVE).ToListAsync();
 
