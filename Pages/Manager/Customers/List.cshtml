@@ -25,7 +25,7 @@
 <form method="get">
     <div class="d-flex justify-content-start">
             <div class="m-0 me-2">
-                <input type="text" name="searchString" class="form-control " placeholder="Search" value="@Model.SearchString" />
+                <input type="text" name="searchString" class="form-control " placeholder="Tìm kiếm" value="@Model.SearchString" />
             </div>
             <button class="btn btn-primary me-0" type="submit">Tìm kiếm</button>
     </div>
@@ -62,14 +62,18 @@
                             <span>N/A</span>
                         }
                     </td>
-                    <td>@customer.Gender</td>
+                    <td>
+                        @(customer.Gender == "Male" ? "Nam" : customer.Gender == "Female" ? "Nữ" : customer.Gender)
+                    </td>
+
                     <td>@customer.Address</td>
                     <td>
                         <form method="post" asp-page-handler="ToggleStatus">
                             <input type="hidden" name="id" value="@customer.AccountId" />
                             <button type="button" onclick="confirmDeactivation(this)" class="btn @(customer.Status == "Active" ? "btn-success" : "btn-warning")">
-                                @(customer.Status)
+                                @(customer.Status == "Active" ? "Hoạt động" : "Ngừng hoạt động")
                             </button>
+
                         </form>
                     </td>
 @*                     <td>
@@ -121,7 +125,7 @@
         const form = button.closest('form'); 
         const currentStatus = button.innerText;
 
-        let actionText = currentStatus === 'Active' ? 'ngừng hoạt động' : 'kích hoạt lại';
+        let actionText = currentStatus === 'Hoạt động' ? 'ngừng hoạt động' : 'kích hoạt lại';
 
        
         console.log("Confirming deactivation for:", currentStatus);
