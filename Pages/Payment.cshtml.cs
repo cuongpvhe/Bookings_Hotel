@@ -67,7 +67,7 @@ namespace Bookings_Hotel.Pages
                 return NotFound();
             }
 
-            //Check if the order wasn't placed 5 minutes ago
+            //Check if the order wasn't placed 1 minutes ago
             var timeSinceOrderPlaced = DateTime.Now - order.OrderDate;
             if (timeSinceOrderPlaced.TotalMinutes > 1)
             {
