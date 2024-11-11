@@ -179,12 +179,12 @@ namespace Bookings_Hotel.Pages.Manager.Booking
             var accountId = User.FindFirstValue("AccountId");
             if (!DateTime.TryParse(CheckInDate, out DateTime checkinDate))
             {
-                return BadRequest("Ngày Check-In không hợp lệ.");
+                return BadRequest("Ngày đặt phòng không hợp lệ.");
             }
 
             if (!DateTime.TryParse(CheckOutDate, out DateTime checkout))
             {
-                return BadRequest("Ngày Check-Out không hợp lệ.");
+                return BadRequest("Ngày trả phòng không hợp lệ.");
             }
 
             Bookings_Hotel.Models.Room room = _context.Rooms.FirstOrDefault(r => r.RoomId == RoomId);
@@ -198,7 +198,7 @@ namespace Bookings_Hotel.Pages.Manager.Booking
 
             if (numberOfNights <= 0)
             {
-                throw new ArgumentException("Ngày check-out phải sau ngày check-in.");
+                throw new ArgumentException("Ngày trả phòng phải sau ngày đặt phòng.");
             }
 
             decimal totalMoney = (decimal)((typeRoom.Price * numberOfNights) + (extraAdultNumber * typeRoom.ExtraAdultFee) + (extraChildNumber * typeRoom.ExtraChildFee));

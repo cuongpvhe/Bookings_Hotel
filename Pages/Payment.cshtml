@@ -89,7 +89,7 @@
             var ot = new Date('@Model.paymentDTO.OrderTime');
 
             // Thời gian hết hạn (sau 1 phút kể từ ot)
-            var expirationTime = new Date(ot.getTime() + 1 * 60 * 1000); // Thêm 1 phút
+            var expirationTime = new Date(ot.getTime() + 5 * 60 * 1000); // Thêm 5 phút
             var countdownInterval = setInterval(function () {
                 // Tính toán thời gian còn lại
                 var now = new Date();
